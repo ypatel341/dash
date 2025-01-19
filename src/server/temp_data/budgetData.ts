@@ -1,4 +1,4 @@
 export const budgetData = {
-    bucketName: 'clothes',
-    budget: 200,
-}
+  bucketName: 'clothes',
+  budget: 200,
+};
