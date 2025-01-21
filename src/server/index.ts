@@ -2,7 +2,25 @@ import express from 'express';
 import knex from 'knex';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { clothesBudgetData, dateNightBudgetData, electricBudgetData, gasBudgetData, giftsBudgetData, goingOutBudgetData, groceriesBudgetData, homeSuppliesBudgetData, internetBudgetData, netflixBudgetData, parcelBudgetData, rentBudgetData, savingsFundBudgetData, spotifyBudgetData, therapyBudgetData, vacationBudgetData, yogiActivitiesBudgetData } from './temp_data/budgetData';
+import {
+  clothesBudgetData,
+  dateNightBudgetData,
+  electricBudgetData,
+  gasBudgetData,
+  giftsBudgetData,
+  goingOutBudgetData,
+  groceriesBudgetData,
+  homeSuppliesBudgetData,
+  internetBudgetData,
+  netflixBudgetData,
+  parcelBudgetData,
+  rentBudgetData,
+  savingsFundBudgetData,
+  spotifyBudgetData,
+  therapyBudgetData,
+  vacationBudgetData,
+  yogiActivitiesBudgetData,
+} from './temp_data/budgetData';
 
 require('dotenv').config();
 
@@ -96,7 +114,7 @@ app.get('/budget/wants/gifts', (req, res) => {
 
 app.get('/budget/wants/yogi-activities', (req, res) => {
   res.json(yogiActivitiesBudgetData);
-})
+});
 
 app.get('/budget/wants/clothes', (req, res) => {
   res.json(clothesBudgetData);
@@ -104,7 +122,7 @@ app.get('/budget/wants/clothes', (req, res) => {
 
 app.get('/budget/save/savings', (req, res) => {
   res.json(savingsFundBudgetData);
-})
+});
 
 // POST: Create an endpoint that will add a new expense to the allocated bucket in the budget plan
 const port = process.env.PORT || 5000;

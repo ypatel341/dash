@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import BudgetHomePage from './budgeting-page/BudgetHomePage';
 import HomePage from './home-page/HomePage';
-import TasksHomePage from './tasks-page/TasksHomePage'
+import TasksHomePage from './tasks-page/TasksHomePage';
 
 import './App.css';
 

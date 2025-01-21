@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { BudgetCategoryResponse } from '../types/BudgetCategoryTypes'
+import { BudgetCategoryResponse } from '../types/BudgetCategoryTypes';
 
 const Spotify: React.FC = () => {
   const [data, setData] = useState<BudgetCategoryResponse>();
@@ -36,13 +36,13 @@ const Spotify: React.FC = () => {
   if (error) {
     return <div>Error: {error}</div>;
   }
-  
+
   return (
     <div>
       <h1>Spotify</h1>
-        <p>{data?.category}</p>
-        <p>{data?.bucketName}</p>
-        <p>{data?.budget}</p>
+      <p>{data?.category}</p>
+      <p>{data?.bucketName}</p>
+      <p>{data?.budget}</p>
     </div>
   );
 };

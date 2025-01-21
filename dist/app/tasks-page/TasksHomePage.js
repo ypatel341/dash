@@ -1,6 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const jsx_runtime_1 = require("react/jsx-runtime");
+'use strict';
+Object.defineProperty(exports, '__esModule', { value: true });
+const jsx_runtime_1 = require('react/jsx-runtime');
 // import Header from './shared-budget-components/Header';
 // import ClothesComponent from './clothes/Clothes';
 /**
@@ -13,6 +13,16 @@ const jsx_runtime_1 = require("react/jsx-runtime");
  * ***************
  */
 const TasksHomePage = () => {
-    return ((0, jsx_runtime_1.jsx)("div", { children: (0, jsx_runtime_1.jsx)("h1", { children: "This will your tasks, todo and calendar page" }, void 0) }, void 0));
+  return (0, jsx_runtime_1.jsx)(
+    'div',
+    {
+      children: (0, jsx_runtime_1.jsx)(
+        'h1',
+        { children: 'This will your tasks, todo and calendar page' },
+        void 0,
+      ),
+    },
+    void 0,
+  );
 };
 exports.default = TasksHomePage;

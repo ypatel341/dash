@@ -7,7 +7,7 @@ import GasComponent from './needs/Gas';
 import GroceriesComponent from './needs/Groceries';
 import HomeSuppliesComponent from './needs/HomeSupplies';
 import InternetComponent from './needs/Internet';
-import ParcelComponent from './needs/Parcel'
+import ParcelComponent from './needs/Parcel';
 import TherapyComponent from './needs/Therapy';
 
 import ClothesComponent from './wants/Clothes';
@@ -27,7 +27,7 @@ const BudgetHomePage: React.FC = () => {
       <Header />
 
       <h1>Budget Home page</h1>
-      
+
       <RentComponent />
       <ElectricityComponent />
       <GasComponent />

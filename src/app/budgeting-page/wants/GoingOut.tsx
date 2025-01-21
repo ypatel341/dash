@@ -36,13 +36,13 @@ const GoingOut: React.FC = () => {
   if (error) {
     return <div>Error: {error}</div>;
   }
-  
+
   return (
     <div>
       <h1>GoingOut</h1>
-        <p>{data?.category}</p>
-        <p>{data?.bucketName}</p>
-        <p>{data?.budget}</p>
+      <p>{data?.category}</p>
+      <p>{data?.bucketName}</p>
+      <p>{data?.budget}</p>
     </div>
   );
 };
