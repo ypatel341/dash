@@ -37,9 +37,56 @@ app.get('/users', (req, res) => {
     });
 });
 // GET: Create an endpoint that will retrieve a budget plan for a specific allocation
-app.get('/budget/clothes', (req, res) => {
-    console.log('comes here');
-    res.json(budgetData_1.budgetData);
+app.get('/budget/needs/rent', (req, res) => {
+    res.json(budgetData_1.rentBudgetData);
+});
+app.get('/budget/needs/electric', (req, res) => {
+    res.json(budgetData_1.electricBudgetData);
+});
+app.get('/budget/needs/internet', (req, res) => {
+    res.json(budgetData_1.internetBudgetData);
+});
+app.get('/budget/needs/parcel', (req, res) => {
+    res.json(budgetData_1.parcelBudgetData);
+});
+app.get('/budget/needs/groceries', (req, res) => {
+    res.json(budgetData_1.groceriesBudgetData);
+});
+app.get('/budget/needs/gas', (req, res) => {
+    res.json(budgetData_1.gasBudgetData);
+});
+app.get('/budget/needs/therapy', (req, res) => {
+    res.json(budgetData_1.therapyBudgetData);
+});
+app.get('/budget/needs/home-supplies', (req, res) => {
+    res.json(budgetData_1.homeSuppliesBudgetData);
+});
+app.get('/budget/wants/netflix', (req, res) => {
+    res.json(budgetData_1.netflixBudgetData);
+});
+app.get('/budget/wants/spotify', (req, res) => {
+    res.json(budgetData_1.spotifyBudgetData);
+});
+app.get('/budget/wants/date-night', (req, res) => {
+    res.json(budgetData_1.dateNightBudgetData);
+});
+app.get('/budget/wants/vaction', (req, res) => {
+    res.json(budgetData_1.vacationBudgetData);
+});
+app.get('/budget/wants/going-out', (req, res) => {
+    res.json(budgetData_1.goingOutBudgetData);
+});
+app.get('/budget/wants/gifts', (req, res) => {
+    res.json(budgetData_1.giftsBudgetData);
+});
+app.get('/budget/wants/yogi-activities', (req, res) => {
+    res.json(budgetData_1.yogiActivitiesBudgetData);
+});
+app.get('/budget/wants/clothes', (req, res) => {
+    res.json(budgetData_1.clothesBudgetData);
+});
+app.get('/budget/save/savings', (req, res) => {
+    res.json(budgetData_1.savingsFundBudgetData);
 });
 // POST: Create an endpoint that will add a new expense to the allocated bucket in the budget plan
 const port = process.env.PORT || 5000;

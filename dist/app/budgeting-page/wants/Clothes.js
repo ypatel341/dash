@@ -21,7 +21,7 @@ const Clothes = () => {
     }
     (0, react_1.useEffect)(() => {
         axios_1.default
-            .get('http://localhost:5000/budget/needs/clothes')
+            .get('http://localhost:5000/budget/wants/clothes')
             .then((response) => {
             setData(response.data);
             setLoading(false);
@@ -37,7 +37,6 @@ const Clothes = () => {
     if (error) {
         return (0, jsx_runtime_1.jsxs)("div", { children: ["Error: ", error] }, void 0);
     }
-    console.log(data);
-    return ((0, jsx_runtime_1.jsxs)("div", { children: [(0, jsx_runtime_1.jsx)("h1", { children: "Clothes on it" }, void 0), (0, jsx_runtime_1.jsx)("p", { children: data === null || data === void 0 ? void 0 : data.category }, void 0), (0, jsx_runtime_1.jsx)("p", { children: data === null || data === void 0 ? void 0 : data.bucketName }, void 0), (0, jsx_runtime_1.jsx)("p", { children: data === null || data === void 0 ? void 0 : data.budget }, void 0)] }, void 0));
+    return ((0, jsx_runtime_1.jsxs)("div", { children: [(0, jsx_runtime_1.jsx)("h1", { children: "Clothes" }, void 0), (0, jsx_runtime_1.jsx)("p", { children: data === null || data === void 0 ? void 0 : data.category }, void 0), (0, jsx_runtime_1.jsx)("p", { children: data === null || data === void 0 ? void 0 : data.bucketName }, void 0), (0, jsx_runtime_1.jsx)("p", { children: data === null || data === void 0 ? void 0 : data.budget }, void 0)] }, void 0));
 };
 exports.default = Clothes;

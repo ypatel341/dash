@@ -2,7 +2,7 @@ import express from 'express';
 import knex from 'knex';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { budgetData } from './temp_data/budgetData';
+import { clothesBudgetData, dateNightBudgetData, electricBudgetData, gasBudgetData, giftsBudgetData, goingOutBudgetData, groceriesBudgetData, homeSuppliesBudgetData, internetBudgetData, netflixBudgetData, parcelBudgetData, rentBudgetData, savingsFundBudgetData, spotifyBudgetData, therapyBudgetData, vacationBudgetData, yogiActivitiesBudgetData } from './temp_data/budgetData';
 
 require('dotenv').config();
 
@@ -38,13 +38,75 @@ app.get('/users', (req, res) => {
 });
 
 // GET: Create an endpoint that will retrieve a budget plan for a specific allocation
-app.get('/budget/clothes', (req, res) => {
-  console.log('comes here');
-  res.json(budgetData);
+app.get('/budget/needs/rent', (req, res) => {
+  res.json(rentBudgetData);
 });
 
-// POST: Create an endpoint that will add a new expense to the allocated bucket in the budget plan
+app.get('/budget/needs/electric', (req, res) => {
+  res.json(electricBudgetData);
+});
 
+app.get('/budget/needs/internet', (req, res) => {
+  res.json(internetBudgetData);
+});
+
+app.get('/budget/needs/parcel', (req, res) => {
+  res.json(parcelBudgetData);
+});
+
+app.get('/budget/needs/groceries', (req, res) => {
+  res.json(groceriesBudgetData);
+});
+
+app.get('/budget/needs/gas', (req, res) => {
+  res.json(gasBudgetData);
+});
+
+app.get('/budget/needs/therapy', (req, res) => {
+  res.json(therapyBudgetData);
+});
+
+app.get('/budget/needs/home-supplies', (req, res) => {
+  res.json(homeSuppliesBudgetData);
+});
+
+app.get('/budget/wants/netflix', (req, res) => {
+  res.json(netflixBudgetData);
+});
+
+app.get('/budget/wants/spotify', (req, res) => {
+  res.json(spotifyBudgetData);
+});
+
+app.get('/budget/wants/date-night', (req, res) => {
+  res.json(dateNightBudgetData);
+});
+
+app.get('/budget/wants/vaction', (req, res) => {
+  res.json(vacationBudgetData);
+});
+
+app.get('/budget/wants/going-out', (req, res) => {
+  res.json(goingOutBudgetData);
+});
+
+app.get('/budget/wants/gifts', (req, res) => {
+  res.json(giftsBudgetData);
+});
+
+app.get('/budget/wants/yogi-activities', (req, res) => {
+  res.json(yogiActivitiesBudgetData);
+})
+
+app.get('/budget/wants/clothes', (req, res) => {
+  res.json(clothesBudgetData);
+});
+
+app.get('/budget/save/savings', (req, res) => {
+  res.json(savingsFundBudgetData);
+})
+
+// POST: Create an endpoint that will add a new expense to the allocated bucket in the budget plan
 const port = process.env.PORT || 5000;
 
 app.listen(port, () =>

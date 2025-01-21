@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { ClothesType } from '../types/ClothesTypes';
+import { BudgetCategoryResponse } from '../types/BudgetCategoryTypes';
 
-const Clothes: React.FC = () => {
-  const [data, setData] = useState<ClothesType>();
+const Netflix: React.FC = () => {
+  const [data, setData] = useState<BudgetCategoryResponse>();
   {
     /* this array is used for data once the data has been recieved from the endpoint*/
   }
@@ -18,7 +18,7 @@ const Clothes: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get('http://localhost:5000/budget/clothes')
+      .get('http://localhost:5000/budget/wants/Netflix')
       .then((response) => {
         setData(response.data);
         setLoading(false);
@@ -36,16 +36,15 @@ const Clothes: React.FC = () => {
   if (error) {
     return <div>Error: {error}</div>;
   }
-
-  console.log(data)
-
+  
   return (
     <div>
-      <h1>Clothes on it</h1>
+      <h1>Netflix</h1>
+        <p>{data?.category}</p>
         <p>{data?.bucketName}</p>
         <p>{data?.budget}</p>
     </div>
   );
 };
 
-export default Clothes;
+export default Netflix;
