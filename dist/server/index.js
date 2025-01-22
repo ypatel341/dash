@@ -5,6 +5,7 @@ var __importDefault =
     return mod && mod.__esModule ? mod : { default: mod };
   };
 Object.defineProperty(exports, '__esModule', { value: true });
+exports.app = void 0;
 const express_1 = __importDefault(require('express'));
 const knex_1 = __importDefault(require('knex'));
 const body_parser_1 = __importDefault(require('body-parser'));
@@ -13,6 +14,7 @@ const budgetData_1 = require('./temp_data/budgetData');
 require('dotenv').config();
 // Initialize express app
 const app = (0, express_1.default)();
+exports.app = app;
 // Middleware
 app.use(body_parser_1.default.json());
 app.use((0, cors_1.default)());
@@ -92,6 +94,8 @@ app.get('/budget/save/savings', (req, res) => {
 });
 // POST: Create an endpoint that will add a new expense to the allocated bucket in the budget plan
 const port = process.env.PORT || 5000;
-app.listen(port, () =>
-  console.log(`Server running on port ${port}, http://localhost:${port}`),
-);
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(port, () =>
+    console.log(`Server running on port ${port}, http://localhost:${port}`),
+  );
+}

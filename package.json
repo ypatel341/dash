@@ -31,12 +31,24 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "build": "tsc && prettier",
+    "build": "tsc",
     "start": "react-scripts start",
     "start-backend": "node dist/server/index.js",
     "start-all": "concurrently \"npm run start\" \"npm run start-backend\"",
     "prettier": "prettier --write .",
-    "test": "jest"
+    "test": "jest",
+    "cy:run": "cypress run",
+    "cy:open": "cypress open",
+    "test:int": "start-server-and-test start-all http://localhost:3000 cy:open",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "npm run test",
+      "npm run cy:run",
+      "prettier --write",
+      "git add"
+    ]
   },
   "eslintConfig": {
     "extends": [
@@ -58,15 +70,21 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
     "@types/body-parser": "^1.19.5",
     "@types/cors": "^2.8.17",
+    "@types/cypress": "^1.1.6",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
     "@types/supertest": "^6.0.2",
     "concurrently": "^9.1.2",
+    "husky": "^9.1.7",
     "jest": "^29.7.0",
+    "lint-staged": "^15.4.1",
     "prettier": "^3.4.2",
     "react-scripts": "^5.0.1",
+    "start-server-and-test": "^2.0.10",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
     "typescript": "^4.5.4"
