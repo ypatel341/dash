@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { app } from '../index';
-import { rentBudgetData, electricBudgetData } from '../temp_data/budgetData';
+import { rentBudgetData, electricBudgetData, internetBudgetData } from '../temp_data/budgetData';
 
 describe('GET /budget/needs/rent', () => {
   it('should retrieve rent budget data', async () => {
@@ -11,10 +11,17 @@ describe('GET /budget/needs/rent', () => {
 });
 
 describe('GET /budget/needs/electric', () => {
-    it('should retrieve rent electric data', async () => {
-      const response = await request(app).get('/budget/needs/electric');
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual(electricBudgetData);
-    });
+  it('should retrieve rent electric data', async () => {
+    const response = await request(app).get('/budget/needs/electric');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(electricBudgetData);
   });
-  
+});
+
+describe('GET /budget/needs/internet', () => {
+  it('should retrieve rent internet data', async () => {
+    const response = await request(app).get('/budget/needs/internet');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(internetBudgetData);
+  });
+});
