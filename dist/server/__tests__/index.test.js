@@ -51,3 +51,23 @@ describe('GET /budget/needs/rent', () => {
       expect(response.body).toEqual(budgetData_1.rentBudgetData);
     }));
 });
+describe('GET /budget/needs/electric', () => {
+  it('should retrieve rent electric data', () =>
+    __awaiter(void 0, void 0, void 0, function* () {
+      const response = yield (0, supertest_1.default)(index_1.app).get(
+        '/budget/needs/electric',
+      );
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(budgetData_1.electricBudgetData);
+    }));
+});
+describe('GET /budget/needs/internet', () => {
+  it('should retrieve rent internet data', () =>
+    __awaiter(void 0, void 0, void 0, function* () {
+      const response = yield (0, supertest_1.default)(index_1.app).get(
+        '/budget/needs/internet',
+      );
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(budgetData_1.internetBudgetData);
+    }));
+});

@@ -1,6 +1,14 @@
 import request from 'supertest';
-import { app } from '../index';
-import { rentBudgetData, electricBudgetData, internetBudgetData } from '../temp_data/budgetData';
+import { app, db } from '../index';
+import {
+  rentBudgetData,
+  electricBudgetData,
+  internetBudgetData,
+} from '../temp_data/budgetData';
+
+afterAll(async () => {
+    await db.destroy(); // Close the database connection
+  });
 
 describe('GET /budget/needs/rent', () => {
   it('should retrieve rent budget data', async () => {

@@ -43,21 +43,36 @@ const db = knex({
 });
 
 // GET: Fetch all users from the database
-app.get('/users', (req, res) => {
-  db.select('*')
-    .from('users')
-    .then((data) => {
-      console.log(data);
-      res.json(data);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+app.get('/users', async (req, res) => {
+  try {
+    const users = await db.select('*').from('users');
+    console.log(users);
+    res.json(users);
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
+const getAllBudgetData = async () => {
+  try {
+    const data = await db.select('*').from('budget_monthly_allocation');
+    return data;
+  } catch (err) {
+    console.error('Error fetching budget data:', err);
+    throw err;
+  }
+};
+
 // GET: Create an endpoint that will retrieve a budget plan for a specific allocation
-app.get('/budget/needs/rent', (req, res) => {
-  res.json(rentBudgetData);
+app.get('/budget/needs/rent', async (req, res) => {
+  try {
+    const budgetData = await getAllBudgetData();
+    console.log(budgetData);
+    res.json(rentBudgetData);
+  } catch (err) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 app.get('/budget/needs/electric', (req, res) => {
@@ -133,4 +148,4 @@ if (process.env.NODE_ENV !== 'test') {
   );
 }
 
-export { app };
+export { app, db };
