@@ -1,5 +1,4 @@
 import express from 'express';
-import knex from 'knex';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import {
@@ -21,8 +20,10 @@ import {
   vacationBudgetData,
   yogiActivitiesBudgetData,
 } from './temp_data/budgetData';
+import db from './utils/db';
+import { getAllBudgetData } from './utils/utils';
 
-require('dotenv').config();
+import { BudgetType } from './utils/utils';
 
 // Initialize express app
 const app = express();
@@ -31,44 +32,18 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-// Initialize knex for database connectio
-const db = knex({
-  client: 'pg',
-  connection: {
-    host: process.env.DATABASE_HOST,
-    user: process.env.DATABASE_USERNAME,
-    password: process.env.DATABASE_PASSWORD,
-    database: process.env.DATABASE,
-  },
-});
-
-// GET: Fetch all users from the database
-app.get('/users', async (req, res) => {
+// GET: Create an endpoint that will retrieve a budget plan for a specific allocation
+app.get('/budget/info/all', async (req, res) => {
   try {
-    const users = await db.select('*').from('users');
-    console.log(users);
-    res.json(users);
+    const data: BudgetType[] = await getAllBudgetData();
+    res.json(data);
   } catch (err) {
-    console.error('Error fetching users:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-const getAllBudgetData = async () => {
-  try {
-    const data = await db.select('*').from('budget_monthly_allocation');
-    return data;
-  } catch (err) {
-    console.error('Error fetching budget data:', err);
-    throw err;
-  }
-};
-
-// GET: Create an endpoint that will retrieve a budget plan for a specific allocation
 app.get('/budget/needs/rent', async (req, res) => {
   try {
-    const budgetData = await getAllBudgetData();
-    console.log(budgetData);
     res.json(rentBudgetData);
   } catch (err) {
     res.status(500).json({ error: 'Internal Server Error' });

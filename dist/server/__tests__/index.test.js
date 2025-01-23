@@ -41,6 +41,11 @@ Object.defineProperty(exports, '__esModule', { value: true });
 const supertest_1 = __importDefault(require('supertest'));
 const index_1 = require('../index');
 const budgetData_1 = require('../temp_data/budgetData');
+afterAll(() =>
+  __awaiter(void 0, void 0, void 0, function* () {
+    yield index_1.db.destroy(); // Close the database connection
+  }),
+);
 describe('GET /budget/needs/rent', () => {
   it('should retrieve rent budget data', () =>
     __awaiter(void 0, void 0, void 0, function* () {

@@ -38,59 +38,35 @@ var __importDefault =
     return mod && mod.__esModule ? mod : { default: mod };
   };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.app = void 0;
+exports.db = exports.app = void 0;
 const express_1 = __importDefault(require('express'));
-const knex_1 = __importDefault(require('knex'));
 const body_parser_1 = __importDefault(require('body-parser'));
 const cors_1 = __importDefault(require('cors'));
 const budgetData_1 = require('./temp_data/budgetData');
-require('dotenv').config();
+const db_1 = __importDefault(require('./utils/db'));
+exports.db = db_1.default;
+const utils_1 = require('./utils/utils');
 // Initialize express app
 const app = (0, express_1.default)();
 exports.app = app;
 // Middleware
 app.use(body_parser_1.default.json());
 app.use((0, cors_1.default)());
-// Initialize knex for database connectio
-const db = (0, knex_1.default)({
-  client: 'pg',
-  connection: {
-    host: process.env.DATABASE_HOST,
-    user: process.env.DATABASE_USERNAME,
-    password: process.env.DATABASE_PASSWORD,
-    database: process.env.DATABASE,
-  },
-});
-// GET: Fetch all users from the database
-app.get('/users', (req, res) =>
+// GET: Create an endpoint that will retrieve a budget plan for a specific allocation
+app.get('/budget/info/all', (req, res) =>
   __awaiter(void 0, void 0, void 0, function* () {
     try {
-      const users = yield db.select('*').from('users');
-      console.log(users);
-      res.json(users);
+      const data = yield (0, utils_1.getAllBudgetData)();
+      res.json(data);
     } catch (err) {
-      console.error('Error fetching users:', err);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }),
 );
-const getAllBudgetData = () =>
-  __awaiter(void 0, void 0, void 0, function* () {
-    try {
-      const data = yield db.select('*').from('budget_monthly_allocation');
-      console.log(data);
-      return data;
-    } catch (err) {
-      console.error('Error fetching budget data:', err);
-      throw err;
-    }
-  });
-// GET: Create an endpoint that will retrieve a budget plan for a specific allocation
 app.get('/budget/needs/rent', (req, res) =>
   __awaiter(void 0, void 0, void 0, function* () {
     try {
-      const budgetData = yield getAllBudgetData();
-      res.json(budgetData);
+      res.json(budgetData_1.rentBudgetData);
     } catch (err) {
       res.status(500).json({ error: 'Internal Server Error' });
     }
