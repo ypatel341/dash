@@ -42,7 +42,7 @@ exports.db = exports.app = void 0;
 const express_1 = __importDefault(require('express'));
 const body_parser_1 = __importDefault(require('body-parser'));
 const cors_1 = __importDefault(require('cors'));
-const budgetData_1 = require('./temp_data/budgetData');
+const budgetData_1 = require('./test_data/budgetData');
 const db_1 = __importDefault(require('./utils/db'));
 exports.db = db_1.default;
 const utils_1 = require('./utils/utils');
@@ -121,6 +121,21 @@ app.get('/budget/save/savings', (req, res) => {
   res.json(budgetData_1.savingsFundBudgetData);
 });
 // POST: Create an endpoint that will add a new expense to the allocated bucket in the budget plan
+app.post('/budget/expense', (req, res) =>
+  __awaiter(void 0, void 0, void 0, function* () {
+    const { person, bucketname, vendor, amount, description } = req.body;
+    console.log(person, bucketname, vendor, amount, description);
+    const expense = {
+      person,
+      bucketname,
+      vendor,
+      amount,
+      description,
+    };
+    const response = yield (0, utils_1.insertExpense)(expense);
+    res.json(response);
+  }),
+);
 const port = process.env.PORT || 5000;
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () =>

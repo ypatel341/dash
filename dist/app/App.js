@@ -13,6 +13,12 @@ const BudgetHomePage_1 = __importDefault(
 );
 const HomePage_1 = __importDefault(require('./home-page/HomePage'));
 const TasksHomePage_1 = __importDefault(require('./tasks-page/TasksHomePage'));
+const EnterExpensePage_1 = require('./budgeting-page/budgetComponents/EnterExpensePage');
+const MoneyInMonthPage_1 = require('./budgeting-page/budgetComponents/MoneyInMonthPage');
+const NetWorthPage_1 = require('./budgeting-page/budgetComponents/NetWorthPage');
+const Outlets_1 = __importDefault(
+  require('./budgeting-page/shared-budget-components/Outlets'),
+);
 require('./App.css');
 function App() {
   return (0, jsx_runtime_1.jsx)(
@@ -99,16 +105,70 @@ function App() {
                     },
                     void 0,
                   ),
-                  (0, jsx_runtime_1.jsx)(
+                  (0, jsx_runtime_1.jsxs)(
                     react_router_dom_1.Route,
-                    {
-                      path: '/budget',
-                      element: (0, jsx_runtime_1.jsx)(
-                        BudgetHomePage_1.default,
-                        {},
-                        void 0,
-                      ),
-                    },
+                    Object.assign(
+                      {
+                        path: '/budget',
+                        element: (0, jsx_runtime_1.jsx)(
+                          Outlets_1.default,
+                          {},
+                          void 0,
+                        ),
+                      },
+                      {
+                        children: [
+                          (0, jsx_runtime_1.jsx)(
+                            react_router_dom_1.Route,
+                            {
+                              index: true,
+                              element: (0, jsx_runtime_1.jsx)(
+                                BudgetHomePage_1.default,
+                                {},
+                                void 0,
+                              ),
+                            },
+                            void 0,
+                          ),
+                          (0, jsx_runtime_1.jsx)(
+                            react_router_dom_1.Route,
+                            {
+                              path: 'net-worth',
+                              element: (0, jsx_runtime_1.jsx)(
+                                NetWorthPage_1.NetWorthPage,
+                                {},
+                                void 0,
+                              ),
+                            },
+                            void 0,
+                          ),
+                          (0, jsx_runtime_1.jsx)(
+                            react_router_dom_1.Route,
+                            {
+                              path: 'money-in-month',
+                              element: (0, jsx_runtime_1.jsx)(
+                                MoneyInMonthPage_1.MoneyInMonthPage,
+                                {},
+                                void 0,
+                              ),
+                            },
+                            void 0,
+                          ),
+                          (0, jsx_runtime_1.jsx)(
+                            react_router_dom_1.Route,
+                            {
+                              path: 'enter-expense',
+                              element: (0, jsx_runtime_1.jsx)(
+                                EnterExpensePage_1.EnterExpensePage,
+                                {},
+                                void 0,
+                              ),
+                            },
+                            void 0,
+                          ),
+                        ],
+                      },
+                    ),
                     void 0,
                   ),
                   (0, jsx_runtime_1.jsx)(

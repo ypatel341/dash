@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
-import Header from './shared-budget-components/Header';
+import { Grid, Container } from '@mui/material';
 
 import { BudgetData } from './types/BudgetCategoryTypes';
 import BudgetCategoryComponent from './budgetComponents/BudgetCategoryComponent';
+import BudgetSubHeader from './budgetComponents/BudgetSubHeader';
 
 const BudgetHomePage: React.FC = () => {
   const [data, setData] = useState<BudgetData[]>();
@@ -37,15 +37,28 @@ const BudgetHomePage: React.FC = () => {
   }
 
   return (
-    <div>
-      <Header />
-
-      <h1>Budget Home page</h1>
-
-      {data.map((item) => (
-        <BudgetCategoryComponent data={item} />
-      ))}
-    </div>
+    <Container>
+      <h1>Budget Home Page</h1>
+      <Grid container spacing={3} sx={{ mb: 2 }}>
+        <Grid item xs={12} sm={4} md={4}>
+          <BudgetSubHeader title="Net Worth" />{' '}
+          {/* TODO: consider making these an enum */}
+        </Grid>
+        <Grid item xs={12} sm={4} md={4}>
+          <BudgetSubHeader title="Money-in Month" />
+        </Grid>
+        <Grid item xs={12} sm={4} md={4}>
+          <BudgetSubHeader title="Enter Expense" />
+        </Grid>
+      </Grid>
+      <Grid container spacing={3}>
+        {data.map((item) => (
+          <Grid item xs={12} sm={6} md={3} key={item.id}>
+            <BudgetCategoryComponent data={item} />
+          </Grid>
+        ))}
+      </Grid>
+    </Container>
   );
 };
 

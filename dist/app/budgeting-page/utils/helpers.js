@@ -1,6 +1,6 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.transformBucketName = void 0;
+exports.transformCategorytName = exports.transformBucketName = void 0;
 const transformBucketName = (bucketname) => {
   const transformations = {
     rent: 'Rent',
@@ -24,3 +24,12 @@ const transformBucketName = (bucketname) => {
   return transformations[bucketname] || `Error transforming: ${bucketname}`;
 };
 exports.transformBucketName = transformBucketName;
+const transformCategorytName = (category) => {
+  const transformations = {
+    needs: 'Needs',
+    wants: 'Wants',
+    savings: 'Savings',
+  };
+  return transformations[category] || `Error transforming: ${category}`;
+};
+exports.transformCategorytName = transformCategorytName;

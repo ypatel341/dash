@@ -1,9 +1,3 @@
-export type BudgetCategoryResponse = {
-  category: string;
-  bucketname: string;
-  budget: number;
-};
-
 export type BudgetData = {
   id: string;
   category: string;
@@ -14,4 +8,12 @@ export type BudgetData = {
 
 export type BudgetComponentProps = {
   data: BudgetData;
+};
+
+export type SubHeaderTitles = 'Net Worth' | 'Money-in Month' | 'Enter Expense';
+
+export const SubHeaderRoutes: { [key in SubHeaderTitles]: string } = {
+  'Net Worth': '/net-worth',
+  'Money-in Month': '/money-in-month',
+  'Enter Expense': '/enter-expense',
 };

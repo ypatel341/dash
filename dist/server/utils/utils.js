@@ -38,7 +38,7 @@ var __importDefault =
     return mod && mod.__esModule ? mod : { default: mod };
   };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.getAllBudgetData = void 0;
+exports.insertExpense = exports.getAllBudgetData = void 0;
 const db_1 = __importDefault(require('./db'));
 const getAllBudgetData = () =>
   __awaiter(void 0, void 0, void 0, function* () {
@@ -53,3 +53,16 @@ const getAllBudgetData = () =>
     }
   });
 exports.getAllBudgetData = getAllBudgetData;
+const insertExpense = (expense) =>
+  __awaiter(void 0, void 0, void 0, function* () {
+    try {
+      const result = yield (0, db_1.default)('budget_monthly_expenses')
+        .insert(expense)
+        .returning('id');
+      return result[0];
+    } catch (err) {
+      console.error('Error inserting expense:', err);
+      throw err;
+    }
+  });
+exports.insertExpense = insertExpense;

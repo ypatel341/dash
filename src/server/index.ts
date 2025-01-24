@@ -19,11 +19,11 @@ import {
   therapyBudgetData,
   vacationBudgetData,
   yogiActivitiesBudgetData,
-} from './temp_data/budgetData';
+} from './test_data/budgetData';
 import db from './utils/db';
-import { getAllBudgetData } from './utils/utils';
+import { getAllBudgetData, insertExpense } from './utils/utils';
 
-import { BudgetType } from './utils/utils';
+import { InsertExpsenseType, BudgetType } from './utils/types';
 
 // Initialize express app
 const app = express();
@@ -115,6 +115,24 @@ app.get('/budget/save/savings', (req, res) => {
 });
 
 // POST: Create an endpoint that will add a new expense to the allocated bucket in the budget plan
+app.post('/budget/expense', async (req, res) => {
+  const { person, bucketname, vendor, amount, description } = req.body;
+
+  console.log(person, bucketname, vendor, amount, description);
+
+  const expense: InsertExpsenseType = {
+    person,
+    bucketname,
+    vendor,
+    amount,
+    description,
+  };
+
+  const response = await insertExpense(expense);
+
+  res.json(response);
+});
+
 const port = process.env.PORT || 5000;
 
 if (process.env.NODE_ENV !== 'test') {

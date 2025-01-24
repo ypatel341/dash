@@ -3,6 +3,11 @@ import Button from '@mui/material/Button';
 import BudgetHomePage from './budgeting-page/BudgetHomePage';
 import HomePage from './home-page/HomePage';
 import TasksHomePage from './tasks-page/TasksHomePage';
+import { EnterExpensePage } from './budgeting-page/budgetComponents/EnterExpensePage';
+import { MoneyInMonthPage } from './budgeting-page/budgetComponents/MoneyInMonthPage';
+import { NetWorthPage } from './budgeting-page/budgetComponents/NetWorthPage';
+
+import BudgetOutlet from './budgeting-page/shared-budget-components/Outlets';
 
 import './App.css';
 
@@ -45,7 +50,12 @@ function App() {
               </header>
             }
           />
-          <Route path="/budget" element={<BudgetHomePage />} />
+          <Route path="/budget" element={<BudgetOutlet />}>
+            <Route index element={<BudgetHomePage />} />
+            <Route path="net-worth" element={<NetWorthPage />} />
+            <Route path="money-in-month" element={<MoneyInMonthPage />} />
+            <Route path="enter-expense" element={<EnterExpensePage />} />
+          </Route>
           <Route path="/home" element={<HomePage />} />
           <Route path="/tasks" element={<TasksHomePage />} />
         </Routes>
