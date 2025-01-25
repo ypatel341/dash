@@ -30,7 +30,7 @@ export const EnterExpensePage: React.FC = () => {
     setDate(event.target.value);
   }
   
-  const handleButtonClick = () => {
+  const handleButtonClick = async () => {
     // Add Validation logic here
     // validateExpense();
     console.log('Entered Expense:', expense, date, type);
@@ -51,7 +51,7 @@ export const EnterExpensePage: React.FC = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:5000//budget/expense', data);
+      const response = await axios.post('http://localhost:5000/budget/expense', data);
       console.log('Response:', response);
     } catch (error) {
       console.error('Error posting expense:', error);
