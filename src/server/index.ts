@@ -118,6 +118,7 @@ app.get('/budget/save/savings', (req, res) => {
 app.post('/budget/expense', async (req, res) => {
   const { person, bucketname, vendor, amount, description } = req.body;
 
+  // TODO: Have some backend validation to throw errors if the types dont match
   console.log(person, bucketname, vendor, amount, description);
 
   const expense: InsertExpsenseType = {
