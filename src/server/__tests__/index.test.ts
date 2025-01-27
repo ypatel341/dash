@@ -47,7 +47,7 @@ describe('POST /budget/expense', () => {
     await db('budget_monthly_expenses').where({ id: idToDelete }).del();
   });
 
-  it('should inseert an expense', async () => {
+  it('should insert an expense', async () => {
     const response = await request(app)
       .post('/budget/expense')
       .send(insertData);
@@ -55,5 +55,22 @@ describe('POST /budget/expense', () => {
     idToDelete = response.body.id;
 
     expect(response.status).toBe(200);
+  });
+
+  it('should return an error if the expense is invalid', async () => {
+    const response = await request(app)
+      .post('/budget/expense')
+      .send({});
+
+    expect(response.status).toBe(400);
+  });
+
+  it('should return an error if the amount value is over 10,000', async () => {
+    const response = await request(app)
+      .post('/budget/expense')
+      .send({ ...insertData, amount: 10001 });
+      
+    expect(response.body.error).toBe('Invalid requestbody Error: Amount must be greater than 0 or less than 10000');
+    expect(response.status).toBe(400);
   });
 });

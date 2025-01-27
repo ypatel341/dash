@@ -1,3 +1,4 @@
+// Types
 export type BudgetData = {
   id: string;
   category: string;
@@ -12,8 +13,68 @@ export type BudgetComponentProps = {
 
 export type SubHeaderTitles = 'Net Worth' | 'Money-in Month' | 'Enter Expense';
 
-export const SubHeaderRoutes: { [key in SubHeaderTitles]: string } = {
-  'Net Worth': '/net-worth',
-  'Money-in Month': '/money-in-month',
-  'Enter Expense': '/enter-expense',
+// Update these types to match the data you are working with from the API, the data will be in the BudgetCategoryComponents.tsx file
+export type ExpenseType =
+  | 'rent'
+  | 'electric'
+  | 'internet'
+  | 'parcel'
+  | 'groceries'
+  | 'gas'
+  | 'therapy'
+  | 'house_supplies'
+  | 'netflix'
+  | 'spotify'
+  | 'date_night'
+  | 'vacation'
+  | 'going_out_yogi'
+  | 'gifts'
+  | 'yogi_activities'
+  | 'clothes'
+  | 'savings_chase_2112';
+
+export type ExpensePerson = 'Yogi' | 'Riddhi' | 'Both';
+
+export type ExpenseData = {
+  person: ExpensePerson;
+  bucketname: ExpenseType;
+  vendor: string;
+  amount: number;
+  description?: string;
+  date?: string;
 };
+
+export type ToastSeverityOptions = 'success' | 'error';
+export type ToastMessageOptions = {
+  message: string;
+  severity: ToastSeverityOptions;
+};
+
+// Constants
+export const SubHeaderRoutes: { [key in SubHeaderTitles]: string } = {
+  'Net Worth': '/budget/net-worth',
+  'Money-in Month': '/budget/money-in-month',
+  'Enter Expense': '/budget/enter-expense',
+};
+
+export const expenseTypeOptions: ExpenseType[] = [
+  'rent',
+  'electric',
+  'internet',
+  'parcel',
+  'groceries',
+  'gas',
+  'therapy',
+  'house_supplies',
+  'netflix',
+  'spotify',
+  'date_night',
+  'vacation',
+  'going_out_yogi',
+  'gifts',
+  'yogi_activities',
+  'clothes',
+  'savings_chase_2112',
+];
+
+export const expensePersonOptions: ExpensePerson[] = ['Yogi', 'Riddhi', 'Both'];

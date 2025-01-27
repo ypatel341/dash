@@ -21,9 +21,13 @@ import {
   yogiActivitiesBudgetData,
 } from './test_data/budgetData';
 import db from './utils/db';
-import { getAllBudgetData, insertExpense } from './utils/utils';
+import {
+  validateExpense,
+} from './utils/utils';
+import logger from './utils/logger';
 
 import { InsertExpsenseType, BudgetType } from './utils/types';
+import { getAllBudgetData, insertExpense } from './utils/db-operation-helpers';
 
 // Initialize express app
 const app = express();
@@ -116,21 +120,14 @@ app.get('/budget/save/savings', (req, res) => {
 
 // POST: Create an endpoint that will add a new expense to the allocated bucket in the budget plan
 app.post('/budget/expense', async (req, res) => {
-  const { person, bucketname, vendor, amount, description } = req.body;
-
-  console.log(person, bucketname, vendor, amount, description);
-
-  const expense: InsertExpsenseType = {
-    person,
-    bucketname,
-    vendor,
-    amount,
-    description,
-  };
-
-  const response = await insertExpense(expense);
-
-  res.json(response);
+  try {
+    const expense: InsertExpsenseType = await validateExpense(req.body);
+    const response = await insertExpense(expense);
+    res.json(response);
+  }catch(error){
+    logger.error(`Error validating expense: ${error}`);
+    res.status(400).json({ error: `Invalid requestbody ${error}` });
+  }
 });
 
 const port = process.env.PORT || 5000;

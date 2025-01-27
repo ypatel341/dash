@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import BudgetHomePage from './budgeting-page/BudgetHomePage';
 import HomePage from './home-page/HomePage';
 import TasksHomePage from './tasks-page/TasksHomePage';
-import { EnterExpensePage } from './budgeting-page/budgetComponents/EnterExpensePage';
+import { EnterExpensePage } from './budgeting-page/budgetComponents/ExpenseComponents/EnterExpensePage';
 import { MoneyInMonthPage } from './budgeting-page/budgetComponents/MoneyInMonthPage';
 import { NetWorthPage } from './budgeting-page/budgetComponents/NetWorthPage';
 

@@ -1,3 +1,13 @@
+// Request Body -> using interfaces
+export interface ExpenseRequestBody {
+  person: string;
+  bucketname: string;
+  vendor: string;
+  amount: number;
+  description?: string;
+  date?: string;
+}
+
 export type BudgetType = {
   id: string;
   category: string;
@@ -11,5 +21,6 @@ export type InsertExpsenseType = {
   bucketname: string;
   vendor: string;
   amount: number;
-  description: string;
+  description?: string;
+  expense_date?: string;
 };

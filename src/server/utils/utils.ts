@@ -1,27 +1,32 @@
-import db from './db';
-import { InsertExpsenseType, BudgetType } from './types';
+import { ExpenseAmountMinAndMaxError } from './consts';
+import { InsertExpsenseType, ExpenseRequestBody } from './types';
 
-export const getAllBudgetData = async (): Promise<BudgetType[]> => {
-  try {
-    const data = await db.select('*').from('budget_monthly_allocation');
-    return data;
-  } catch (err) {
-    console.error('Error fetching budget data:', err);
-    throw err;
+export const validateExpense = async (
+  reqBody: ExpenseRequestBody,
+): Promise<InsertExpsenseType> => {
+  const { person, bucketname, vendor, amount, description, date } = reqBody;
+
+  if (!amount || amount <= 0 || amount > 10000) {
+    throw new Error(ExpenseAmountMinAndMaxError);
   }
-};
 
-export const insertExpense = async (
-  expense: InsertExpsenseType,
-): Promise<number> => {
-  try {
-    const result = await db('budget_monthly_expenses')
-      .insert(expense)
-      .returning('id');
-
-    return result[0];
-  } catch (err) {
-    console.error('Error inserting expense:', err);
-    throw err;
+  if (!person || !bucketname || !vendor) {
+    throw new Error(
+      `Missing required fields person: ${person}, bucketname: ${bucketname}, vendor: ${vendor}`,
+    );
   }
+
+  const expense: InsertExpsenseType = {
+    person,
+    bucketname,
+    vendor,
+    amount,
+    description,
+  };
+
+  if (date) {
+    expense.expense_date = date;
+  }
+
+  return expense;
 };

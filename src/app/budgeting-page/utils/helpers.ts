@@ -1,3 +1,5 @@
+import { ExpenseData } from '../types/BudgetCategoryTypes';
+
 export const transformBucketName = (bucketname: string): string => {
   const transformations: { [key: string]: string } = {
     rent: 'Rent',
@@ -30,4 +32,18 @@ export const transformCategorytName = (category: string): string => {
   };
 
   return transformations[category] || `Error transforming: ${category}`;
+};
+
+export const validateExpense = (data: ExpenseData): string | null => {
+  const { person, bucketname, vendor, amount } = data;
+
+  if (!person || !bucketname || !vendor || !amount) {
+    return 'All fields are required';
+  }
+
+  if (isNaN(amount)) {
+    return 'Amount must be a number';
+  }
+
+  return null;
 };
