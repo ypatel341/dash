@@ -41,7 +41,13 @@ export type ExpenseData = {
   vendor: string;
   amount: number;
   description: string;
-  date?: string; 
+  date?: string;
+};
+
+export type ToastSeverityOptions = 'success' | 'error';
+export type ToastMessageOptions = {
+  message: string;
+  severity: ToastSeverityOptions;
 };
 
 // Constants
