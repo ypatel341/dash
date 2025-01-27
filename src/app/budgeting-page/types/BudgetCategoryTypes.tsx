@@ -40,7 +40,7 @@ export type ExpenseData = {
   bucketname: ExpenseType;
   vendor: string;
   amount: number;
-  description: string;
+  description?: string;
   date?: string;
 };
 
@@ -52,9 +52,9 @@ export type ToastMessageOptions = {
 
 // Constants
 export const SubHeaderRoutes: { [key in SubHeaderTitles]: string } = {
-  'Net Worth': '/net-worth',
-  'Money-in Month': '/money-in-month',
-  'Enter Expense': '/enter-expense',
+  'Net Worth': '/budget/net-worth',
+  'Money-in Month': '/budget/money-in-month',
+  'Enter Expense': '/budget/enter-expense',
 };
 
 export const expenseTypeOptions: ExpenseType[] = [

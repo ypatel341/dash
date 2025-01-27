@@ -16,7 +16,7 @@ import {
 } from '../../types/BudgetCategoryTypes';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs, { Dayjs } from 'dayjs';
+import { Dayjs } from 'dayjs';
 import { transformBucketName } from '../../utils/helpers';
 
 type PersonFieldProps = {
@@ -96,7 +96,7 @@ export const VendorField: React.FC<VendorFieldProps> = ({
 );
 
 type DescriptionFieldProps = {
-  description: string;
+  description?: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 

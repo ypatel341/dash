@@ -1,4 +1,9 @@
 const en = {
+  budgetSubHeader:{
+    networth: 'Net Worth',
+    moneyInMonth: 'Money-in Month',
+    enterExpense: 'Enter Expense',
+  },
   common: {
     enter: 'Enter',
   },

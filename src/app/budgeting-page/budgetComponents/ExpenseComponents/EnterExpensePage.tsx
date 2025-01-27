@@ -151,10 +151,7 @@ export const EnterExpensePage: React.FC = () => {
           color="primary"
           onClick={handleButtonClick}
           disabled={
-            !formData.amount ||
-            !formData.bucketname ||
-            !formData.description ||
-            !formData.vendor
+            !formData.amount || !formData.bucketname || !formData.vendor
           }
           data-cy="submit-button"
         >

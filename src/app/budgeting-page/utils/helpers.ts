@@ -35,9 +35,9 @@ export const transformCategorytName = (category: string): string => {
 };
 
 export const validateExpense = (data: ExpenseData): string | null => {
-  const { person, bucketname, vendor, amount, description } = data;
+  const { person, bucketname, vendor, amount } = data;
 
-  if (!person || !bucketname || !vendor || !amount || !description) {
+  if (!person || !bucketname || !vendor || !amount) {
     return 'All fields are required';
   }
 
