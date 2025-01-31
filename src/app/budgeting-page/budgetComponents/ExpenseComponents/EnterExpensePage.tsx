@@ -26,7 +26,7 @@ export const EnterExpensePage: React.FC = () => {
     person: 'Both' as ExpensePerson,
     bucketname: 'rent' as ExpenseType,
     vendor: '',
-    amount: 0,
+    amount: null,
     description: '',
   });
   const [toastMessage, setToastMessage] = useState<string>('');
@@ -111,39 +111,34 @@ export const EnterExpensePage: React.FC = () => {
             <PersonField
               person={formData.person}
               onChange={handleSelectChange('person')}
-              data-cy="person-field"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <AmountField
-              amount={formData.amount.toString()}
+              amount={formData.amount?.toString() || ''}
               onChange={handleInputChange('amount')}
-              data-cy="amount-field"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <VendorField
               vendor={formData.vendor}
               onChange={handleInputChange('vendor')}
-              data-cy="vendor-field"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TypeField
               type={formData.bucketname}
               onChange={handleSelectChange('bucketname')}
-              data-cy="type-field"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <DescriptionField
               description={formData.description}
               onChange={handleInputChange('description')}
-              data-cy="description-field"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <DateField date={date} onChange={handleSetDate} />
+            <DateField data-cy="date-field" date={date} onChange={handleSetDate} />
           </Grid>
         </Grid>
         <Button

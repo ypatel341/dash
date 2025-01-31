@@ -18,6 +18,7 @@ const ToastMessage: React.FC<ToastMessageProps> = ({
       severity={severity}
       action={
         <IconButton
+          data-cy="toast-message"
           aria-label="close"
           color="inherit"
           size="small"

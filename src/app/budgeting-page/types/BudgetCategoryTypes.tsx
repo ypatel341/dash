@@ -39,7 +39,7 @@ export type ExpenseData = {
   person: ExpensePerson;
   bucketname: ExpenseType;
   vendor: string;
-  amount: number;
+  amount: number | null;
   description?: string;
   date?: string;
 };
