@@ -22,5 +22,5 @@ export type InsertExpsenseType = {
   vendor: string;
   amount: number;
   description?: string;
-  expense_date?: string;
+  expensedate?: string;
 };

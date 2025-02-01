@@ -138,7 +138,11 @@ export const EnterExpensePage: React.FC = () => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <DateField data-cy="date-field" date={date} onChange={handleSetDate} />
+            <DateField
+              data-cy="date-field"
+              date={date}
+              onChange={handleSetDate}
+            />
           </Grid>
         </Grid>
         <Button
@@ -148,7 +152,7 @@ export const EnterExpensePage: React.FC = () => {
           disabled={
             !formData.amount || !formData.bucketname || !formData.vendor
           }
-          data-cy="submit-button"
+          id="submit-button"
         >
           {en.common.enter}
         </Button>
@@ -157,7 +161,6 @@ export const EnterExpensePage: React.FC = () => {
             message={toastMessage}
             severity={toastSeverity}
             onClose={handleCloseAlert}
-            data-cy="toast-message"
           />
         )}
       </Box>

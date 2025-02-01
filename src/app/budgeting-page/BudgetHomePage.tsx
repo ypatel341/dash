@@ -41,7 +41,7 @@ const BudgetHomePage: React.FC = () => {
       <h1>Budget Home Page</h1>
       <Grid container spacing={3} sx={{ mb: 2 }}>
         <Grid item xs={12} sm={4} md={4}>
-          <BudgetSubHeader title={"Net Worth"} />{' '}
+          <BudgetSubHeader title={'Net Worth'} />{' '}
           {/* TODO: consider making these an enum */}
         </Grid>
         <Grid item xs={12} sm={4} md={4}>

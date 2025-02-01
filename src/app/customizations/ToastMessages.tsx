@@ -15,10 +15,10 @@ const ToastMessage: React.FC<ToastMessageProps> = ({
 }) => {
   return (
     <Alert
+      id="toast-message"
       severity={severity}
       action={
         <IconButton
-          data-cy="toast-message"
           aria-label="close"
           color="inherit"
           size="small"

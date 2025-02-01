@@ -1,5 +1,5 @@
 const en = {
-  budgetSubHeader:{
+  budgetSubHeader: {
     networth: 'Net Worth',
     moneyInMonth: 'Money-in Month',
     enterExpense: 'Enter Expense',

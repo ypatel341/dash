@@ -30,7 +30,7 @@ export const PersonField: React.FC<PersonFieldProps> = ({
 }) => (
   <FormControl variant="outlined" fullWidth sx={{ mb: 2 }}>
     <InputLabel>Person</InputLabel>
-    <Select id='person-field' value={person} onChange={onChange} label="Person">
+    <Select id="person-field" value={person} onChange={onChange} label="Person">
       {expensePersonOptions.map((option) => (
         <MenuItem key={option} value={option}>
           {option.charAt(0).toUpperCase() + option.slice(1)}
@@ -50,10 +50,10 @@ export const AmountField: React.FC<AmountFieldProps> = ({
   onChange,
 }) => (
   <TextField
-    id='amount-field'
+    id="amount-field"
     label="Amount"
     variant="outlined"
-    placeholder='0.00'
+    placeholder="0.00"
     value={amount}
     onChange={onChange}
     type="number"
@@ -89,7 +89,7 @@ export const VendorField: React.FC<VendorFieldProps> = ({
   onChange,
 }) => (
   <TextField
-    id='vendor-field'
+    id="vendor-field"
     label="Vendor"
     variant="outlined"
     value={vendor}
@@ -108,7 +108,7 @@ export const DescriptionField: React.FC<DescriptionFieldProps> = ({
   onChange,
 }) => (
   <TextField
-    data-cy="description-field"
+    id="description-field"
     label="Description"
     variant="outlined"
     value={description}
@@ -124,7 +124,12 @@ type DateFieldProps = {
 export const DateField: React.FC<DateFieldProps> = ({ date, onChange }) => (
   <LocalizationProvider dateAdapter={AdapterDayjs}>
     <Box>
-      <DatePicker data-cy="date-field" label="Date" value={date} onChange={onChange} />
+      <DatePicker
+        data-cy="date-field"
+        label="Date"
+        value={date}
+        onChange={onChange}
+      />
     </Box>
   </LocalizationProvider>
 );

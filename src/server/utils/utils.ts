@@ -25,7 +25,7 @@ export const validateExpense = async (
   };
 
   if (date) {
-    expense.expense_date = date;
+    expense.expensedate = date;
   }
 
   return expense;
