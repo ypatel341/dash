@@ -23,7 +23,6 @@ export const getAllBudgetData = async (): Promise<BudgetType[]> => {
 export const insertExpense = async (
   expense: InsertExpsenseType,
 ): Promise<InsertResponseId> => {
-  // move this out of the try catch
   let insertObj: InsertExpsenseType = {
     person: expense.person,
     bucketname: expense.bucketname,

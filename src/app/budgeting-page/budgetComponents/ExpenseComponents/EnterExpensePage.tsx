@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Container, Box, SelectChangeEvent, Grid } from '@mui/material';
 import {
   ExpensePerson,
   ExpenseType,
   ExpenseData,
+  MonthlyExpense,
   ToastSeverityOptions,
   ToastMessageOptions,
 } from '../../types/BudgetCategoryTypes';
@@ -34,6 +35,21 @@ export const EnterExpensePage: React.FC = () => {
     useState<ToastSeverityOptions>('success');
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [date, setDate] = useState<Dayjs>(dayjs(new Date()));
+  const [data, setData] = useState<MonthlyExpense[]>();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>('');
+
+  useEffect(() => {
+    axios.get('http://localhost:5000/budget/info/allmonthexpense')
+    .then((response) => {
+      setData(response.data);
+      setLoading(false);
+  })
+  .catch((error) => {
+    setError(error.message);
+    setLoading(false);
+  });
+  }, []);
 
   const handleInputChange =
     (field: keyof ExpenseData) =>
