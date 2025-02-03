@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { ExpenseData } from '../types/BudgetCategoryTypes';
 
 export const transformBucketName = (bucketname: string): string => {
@@ -47,3 +48,7 @@ export const validateExpense = (data: ExpenseData): string | null => {
 
   return null;
 };
+
+export const formatTimestamptzToMMDDYYYY = (date: string): string => {
+  return dayjs(date).format('MM/DD/YYYY');
+}
