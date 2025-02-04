@@ -11,7 +11,10 @@ import {
 import axios from 'axios';
 import ToastMessage from '../../../customizations/ToastMessages';
 import dayjs, { Dayjs } from 'dayjs';
-import { formatTimestamptzToMMDDYYYY, validateExpense } from '../../utils/helpers';
+import {
+  formatTimestamptzToMMDDYYYY,
+  validateExpense,
+} from '../../utils/helpers';
 import {
   AmountField,
   DateField,
@@ -45,7 +48,9 @@ export const EnterExpensePage: React.FC = () => {
   const fetchExpenses = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5000/budget/info/allmonthexpense');
+      const response = await axios.get(
+        'http://localhost:5000/budget/info/allmonthexpense',
+      );
       const formattedData = response.data.map((expense: MonthlyExpense) => ({
         ...expense,
         expensedate: formatTimestamptzToMMDDYYYY(expense.expensedate),
@@ -57,7 +62,7 @@ export const EnterExpensePage: React.FC = () => {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchExpenses();
   }, []);
@@ -93,7 +98,7 @@ export const EnterExpensePage: React.FC = () => {
 
     try {
       await postExpense();
-      fetchExpenses(); 
+      fetchExpenses();
     } catch (error) {
       const toastMessageInfo: ToastMessageOptions = {
         message: en.expense.errorMessage,
@@ -115,7 +120,7 @@ export const EnterExpensePage: React.FC = () => {
       message: en.expense.successMessage,
       severity: 'success',
     };
-    
+
     handleToastMessage(toastMessageSeverity);
   };
 

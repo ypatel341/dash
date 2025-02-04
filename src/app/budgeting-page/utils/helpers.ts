@@ -51,4 +51,4 @@ export const validateExpense = (data: ExpenseData): string | null => {
 
 export const formatTimestamptzToMMDDYYYY = (date: string): string => {
   return dayjs(date).format('MM/DD/YYYY');
-}
+};

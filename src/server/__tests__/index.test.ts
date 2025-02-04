@@ -1,8 +1,18 @@
 import request from 'supertest';
 import { app, server, db } from '../index';
 import { budgetAllDataInfo, insertData } from '../test_data/budgetData';
-import { insertExpense } from '../utils/db-operation-helpers';
-import { InsertExpsenseType, InsertResponseId } from '../utils/types';
+import {
+  getAllBudgetData,
+  getAllMonthlyExpense,
+  insertExpense,
+} from '../utils/db-operation-helpers';
+import {
+  BudgetType,
+  InsertExpsenseType,
+  InsertResponseId,
+  MonthlyExpense,
+} from '../utils/types';
+import { calculateBucketExpenses } from '../utils/utils';
 
 afterAll(async () => {
   await db.destroy();
@@ -79,7 +89,17 @@ describe('GET /budget/info/allmonthexpense', () => {
 
   it('should retrieve all monthly expenses', async () => {
     const response = await request(app).get('/budget/info/allmonthexpense');
+    const responsefromDB = await getAllMonthlyExpense();
+
     expect(response.status).toBe(200);
-    expect(response.body).toHaveLength(2);
+    expect(response.body).toHaveLength(responsefromDB.length);
+  });
+});
+
+describe('GET /budget/info/allbucketexpense', () => {
+  it('should retrieve all bucket expenses', async () => {
+    const rawMonthlyData: MonthlyExpense[] = await getAllMonthlyExpense();
+    const allBudgetData: BudgetType[] = await getAllBudgetData();
+    await calculateBucketExpenses(rawMonthlyData, allBudgetData);
   });
 });

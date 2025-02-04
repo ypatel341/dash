@@ -1,105 +1,105 @@
 // NEEDS
 export const rentBudgetData = {
   category: 'needs',
-  bucketName: 'rent',
+  bucketname: 'rent',
   budget: 3200,
 };
 
 export const electricBudgetData = {
   category: 'needs',
-  bucketName: 'electric',
+  bucketname: 'electric',
   budget: 140,
 };
 
 export const internetBudgetData = {
   category: 'needs',
-  bucketName: 'internet',
+  bucketname: 'internet',
   budget: 70,
 };
 
 export const parcelBudgetData = {
   category: 'needs',
-  bucketName: 'parcel',
+  bucketname: 'parcel',
   budget: 5,
 };
 
 export const groceriesBudgetData = {
   category: 'needs',
-  bucketName: 'groceries',
+  bucketname: 'groceries',
   budget: 580,
 };
 
 export const gasBudgetData = {
   category: 'needs',
-  bucketName: 'gas',
+  bucketname: 'gas',
   budget: 150,
 };
 
 export const therapyBudgetData = {
   category: 'needs',
-  bucketName: 'therapy',
+  bucketname: 'therapy',
   budget: 125,
 };
 
 export const homeSuppliesBudgetData = {
   category: 'needs',
-  bucketName: 'home supplies',
+  bucketname: 'home supplies',
   budget: 150,
 };
 
 // WANTS
 export const netflixBudgetData = {
   category: 'wants',
-  bucketName: 'netflix',
+  bucketname: 'netflix',
   budget: 17, // rounded up to the nearest dollar
 };
 
 export const spotifyBudgetData = {
   category: 'wants',
-  bucketName: 'spotify',
+  bucketname: 'spotify',
   budget: 13, // rounded up to the nearest dollar
 };
 
 export const dateNightBudgetData = {
   category: 'wants',
-  bucketName: 'date night',
+  bucketname: 'date night',
   budget: 120,
 };
 
 export const vacationBudgetData = {
   category: 'wants',
-  bucketName: 'vacation',
+  bucketname: 'vacation',
   budget: 1000,
 };
 
 export const goingOutBudgetData = {
   category: 'wants',
-  bucketName: 'going out',
+  bucketname: 'going out',
   budget: 200,
 };
 
 export const giftsBudgetData = {
   category: 'wants',
-  bucketName: 'gifts',
+  bucketname: 'gifts',
   budget: 100,
 };
 
 export const yogiActivitiesBudgetData = {
   category: 'wants',
-  bucketName: 'yogi activities',
+  bucketname: 'yogi activities',
   budget: 200,
 };
 
 export const clothesBudgetData = {
   category: 'wants',
-  bucketName: 'clothes',
+  bucketname: 'clothes',
   budget: 200,
 };
 
 // SAVINGS
 export const savingsFundBudgetData = {
   category: 'savings',
-  bucketName: 'savings fund',
+  bucketname: 'savings fund',
   budget: 5500,
 };
 

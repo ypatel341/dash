@@ -87,4 +87,4 @@ export type MonthlyExpense = {
   amount: number;
   description: string;
   expensedate: string;
-}
+};

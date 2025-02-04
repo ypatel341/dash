@@ -5,36 +5,42 @@ A fun little acronym project I'm starting to help me take back control of my lif
 Should you stumble upon this repository, please excuse any spelling, grammatical errors and just have a little fun. **Strap in**
 
 ## Product View
+
 There will be 3 main pillars Budget, To-do (calendar), Home
 
 ### Budget
-Straightforward, the goal for this module to calculate everything related to a budget that I will create with my wife. We come up with the budget ourselves, set the parameters, buckets, and funding allocation for each bucket. The goal is then to track every single expense we make, and ensure that they are within the budget parameters we defined. It will let us know on the budget home page if we get close to our allocation; it will also be able to generate reports for us on a monthly basis. There is a `household` field, this field is currently designed to help me track expenses between where I currently live and supporting my mom. These reports will then be able be exportable into some datasheet and buckets will be adjsutable accordingly. 
+
+Straightforward, the goal for this module to calculate everything related to a budget that I will create with my wife. We come up with the budget ourselves, set the parameters, buckets, and funding allocation for each bucket. The goal is then to track every single expense we make, and ensure that they are within the budget parameters we defined. It will let us know on the budget home page if we get close to our allocation; it will also be able to generate reports for us on a monthly basis. There is a `household` field, this field is currently designed to help me track expenses between where I currently live and supporting my mom. These reports will then be able be exportable into some datasheet and buckets will be adjsutable accordingly.
 
 ### TO-DO (Calender)
-As of 2/3/25, this part of the pillar is less defined. I am currently tracking all of my daily tasks on a peice of paper in the morning and writing my data down on a calendar to set up some level of reminders. I can continue to use an application such as Notion, Google calendar and other productivity tools. However, I feel as though these tools are designed specifically for coorporate usage. They are not meant for life tasks, and the categories that come against it. Besides, I'm a cocky software engineer, I can make a tool that works for *ME*. I can also categorize the tasks I do, run a report at the end of the year, see where I have spent the most time doing stuff. 
+
+As of 2/3/25, this part of the pillar is less defined. I am currently tracking all of my daily tasks on a peice of paper in the morning and writing my data down on a calendar to set up some level of reminders. I can continue to use an application such as Notion, Google calendar and other productivity tools. However, I feel as though these tools are designed specifically for coorporate usage. They are not meant for life tasks, and the categories that come against it. Besides, I'm a cocky software engineer, I can make a tool that works for _ME_. I can also categorize the tasks I do, run a report at the end of the year, see where I have spent the most time doing stuff.
 
 ### Home
+
 Another place of ambiguity, but I have some ideas. Currently we wake up and look at messages sent to us from Big Tech giants. These messages are not currated for the lives of humans, they are deisgned to help the capital system grow and keep on turning. I want to look at messages from myself to myself with specifically selected news outlets, with more positivity, the beauty of life and reminders of how we can help each other and the world. I want this home page to be the first thing I look at. Help me realize that with a little bit of effort and not being as distracted. I can create something that I look at every single morning to remind myself what I have the opportunity to do, the budget to spend and a positive message from some of my favorite people in history such as Marcus Aurelius.
 
 ### Future and beyond
+
 Several opportunties lie ahead once I get these 3 things up and going. I think my personal productivity will skyrocket. There's probably going to be several data mining opportunties I'll have. some ideas I'll jot down for later.
 
-1) Pinocchio AI -> My customized AI bot. with enough of my journaled data and thoughts, Pinocchio will help me smell the truth from sources
-2) Medical and Diet Log -> Customized logging dashboard of my blood test/work YoY and the foods I eat to predict how my next blood work will go
-3) Exercise log -> Workout plans and dashboard to help me get really cut, I'm halfway there :wink:. Lets get that full mile in.
-4) Gardener -> I plan on having a garden one day. The sprinkler system will be connected to DASH, dont have enough info on what this looks like yet.
-
+1. Pinocchio AI -> My customized AI bot. with enough of my journaled data and thoughts, Pinocchio will help me smell the truth from sources
+2. Medical and Diet Log -> Customized logging dashboard of my blood test/work YoY and the foods I eat to predict how my next blood work will go
+3. Exercise log -> Workout plans and dashboard to help me get really cut, I'm halfway there :wink:. Lets get that full mile in.
+4. Gardener -> I plan on having a garden one day. The sprinkler system will be connected to DASH, dont have enough info on what this looks like yet.
 
 # Technial SPECs
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 Desined to be a monolithic App with the front-end running on port 3000 and the backend running on 5000
 Database is a Postgres DB (currently a production DB is being hosted on heroku)
 
 ## Future Proof
-1) Create github tasks to self manage tasks and accomplish them
-2) Dockerize the whole application and database so that it is cloud K8s ready
-3) Take it to the cloud and build an immaculately beautiful CICD Pipline
-4) Work through any networking capabilities when taking it on the cloud. 
+
+1. Create github tasks to self manage tasks and accomplish them
+2. Dockerize the whole application and database so that it is cloud K8s ready
+3. Take it to the cloud and build an immaculately beautiful CICD Pipline
+4. Work through any networking capabilities when taking it on the cloud.
 
 ## Available Scripts
 
@@ -77,7 +83,7 @@ This launches Cypress testing suite. These are integration tests to run regressi
 Please run all the test here first before commiting to the main branch to ensure that no functionality has been broken.\
 Write tests of your own for each of the functionalities before commiting in as well.
 
-Eventually this will be integrated in a CI/CD pipeline so that there is no need for manually having to test this out. 
+Eventually this will be integrated in a CI/CD pipeline so that there is no need for manually having to test this out.
 
 ## Learn More
 

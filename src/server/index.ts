@@ -2,14 +2,14 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import db from './utils/db';
-import { validateExpense } from './utils/utils';
+import { validateExpense, calculateBucketExpenses } from './utils/utils';
 import logger from './utils/logger';
 
 import { InsertExpsenseType, BudgetType, MonthlyExpense } from './utils/types';
 import {
   getAllBudgetData,
-  insertExpense,
   getAllMonthlyExpense,
+  insertExpense,
 } from './utils/db-operation-helpers';
 
 // Initialize express app
@@ -43,17 +43,18 @@ app.get('/budget/info/allmonthexpense', async (req, res) => {
 });
 
 // GET: An endpoint for seeing how much money is left in all buckets
-// Going to do this on the frontend for now
-// app.get('budget/info/allbucketexpense', async (req, res) => {
-//   try {
-//     const rawMonthlyData: MonthlyExpense[] = await getAllMonthlyExpense();
-//     const data = await calculateBucketExpenses(rawMonthlyData);
-//     res.json(data);
-//   } catch (error) {
-//     logger.error(`Error fetching monthly expense data: ${error}`);
-//     res.status(500).json({ error: `Internal Server Error ${error}` });
-//   }
-// });
+app.get('budget/info/allbucketexpense', async (req, res) => {
+  try {
+    const rawMonthlyData: MonthlyExpense[] = await getAllMonthlyExpense();
+    const allBudgetData: BudgetType[] = await getAllBudgetData();
+
+    const data = await calculateBucketExpenses(rawMonthlyData, allBudgetData);
+    res.json(data);
+  } catch (error) {
+    logger.error(`Error fetching monthly expense data: ${error}`);
+    res.status(500).json({ error: `Internal Server Error ${error}` });
+  }
+});
 
 // POST: Create an endpoint that will add a new expense to the allocated bucket in the budget plan
 app.post('/budget/expense', async (req, res) => {

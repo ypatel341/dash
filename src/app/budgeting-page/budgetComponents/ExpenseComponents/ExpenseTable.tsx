@@ -1,5 +1,13 @@
 import React from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from '@mui/material';
 import { MonthlyExpense } from '../../types/BudgetCategoryTypes';
 
 interface ExpenseTableProps {
@@ -26,7 +34,8 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ data }) => {
               <TableCell>{row.amount}</TableCell>
               <TableCell>{row.bucketname}</TableCell>
               <TableCell>{row.description}</TableCell>
-              <TableCell>{row.expensedate}</TableCell> {/* Convert the timestamptz to just MM/DD/YYYY */}
+              <TableCell>{row.expensedate}</TableCell>{' '}
+              {/* Convert the timestamptz to just MM/DD/YYYY */}
               <TableCell>{row.person}</TableCell>
               <TableCell>{row.vendor}</TableCell>
             </TableRow>
