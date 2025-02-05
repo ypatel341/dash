@@ -16,7 +16,7 @@ interface ExpenseTableProps {
 
 const ExpenseTable: React.FC<ExpenseTableProps> = ({ data }) => {
   return (
-    <TableContainer component={Paper} style={{ maxHeight: 400 }}>
+    <TableContainer id='expense-table' component={Paper} style={{ maxHeight: 400 }}>
       <Table stickyHeader>
         <TableHead>
           <TableRow>
@@ -31,13 +31,13 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ data }) => {
         <TableBody>
           {data?.slice(0, 100).map((row, index) => (
             <TableRow key={index}>
-              <TableCell>{row.amount}</TableCell>
-              <TableCell>{row.bucketname}</TableCell>
-              <TableCell>{row.description}</TableCell>
-              <TableCell>{row.expensedate}</TableCell>{' '}
-              {/* Convert the timestamptz to just MM/DD/YYYY */}
+              <TableCell>{row.expensedate}</TableCell>
               <TableCell>{row.person}</TableCell>
               <TableCell>{row.vendor}</TableCell>
+              <TableCell>{row.bucketname}</TableCell>{' '}
+              {/* Convert the timestamptz to just MM/DD/YYYY */}
+              <TableCell>{row.amount}</TableCell>
+              <TableCell>{row.description}</TableCell>
             </TableRow>
           ))}
         </TableBody>

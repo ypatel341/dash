@@ -5,6 +5,7 @@ export type BudgetData = {
   bucketname: string;
   amount: number;
   household: string;
+  currentamount: number;
 };
 
 export type BudgetComponentProps = {
