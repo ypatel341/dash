@@ -5,6 +5,7 @@ export type BudgetData = {
   bucketname: string;
   amount: number;
   household: string;
+  currentamount: number;
 };
 
 export type BudgetComponentProps = {
@@ -78,3 +79,13 @@ export const expenseTypeOptions: ExpenseType[] = [
 ];
 
 export const expensePersonOptions: ExpensePerson[] = ['Yogi', 'Riddhi', 'Both'];
+
+export type MonthlyExpense = {
+  id: string;
+  person: string;
+  bucketname: string;
+  vendor: string;
+  amount: number;
+  description: string;
+  expensedate: string;
+};

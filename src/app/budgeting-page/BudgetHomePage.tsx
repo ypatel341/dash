@@ -13,9 +13,30 @@ const BudgetHomePage: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get('http://localhost:5000/budget/info/all')
+      .get('http://localhost:5000/budget/info/allbucketexpense')
       .then((response) => {
-        setData(response.data);
+        const {data} = response;
+
+        // update rent bucket to have current amount at 3000
+        const testData = data.map((item: BudgetData) => {
+          if (item.bucketname === 'rent') {
+            return {
+              ...item,
+              currentamount: 3000,
+            };
+          }
+
+          if(item.bucketname === 'yogi_activities') {
+            return {
+              ...item,
+              currentamount: 500,
+            }
+          }
+          return item;
+        });
+
+
+        setData(testData);
         setLoading(false);
       })
       .catch((error) => {

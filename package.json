@@ -39,7 +39,7 @@
     "start-backend-prod": "NODE_ENV=production tsc && node dist/server/index.js",
     "start-all-prod": "NODE_ENV=production concurrently \"npm run start\" \"npm run start-backend\"",
     "prettier": "prettier --write .",
-    "test": "jest --detectOpenHandles",
+    "test": "NODE_ENV=development jest --detectOpenHandles",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
     "test:int": "start-server-and-test start-all http://localhost:3000 cy:open",

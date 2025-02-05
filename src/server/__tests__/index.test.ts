@@ -1,13 +1,30 @@
 import request from 'supertest';
 import { app, server, db } from '../index';
+import { budgetAllDataInfo, insertData } from '../test_data/budgetData';
 import {
-  budgetAllDataInfo,
-  insertData,
-} from '../test_data/budgetData';
+  getAllBudgetData,
+  getAllMonthlyExpense,
+  insertExpense,
+} from '../utils/db-operation-helpers';
+import {
+  BudgetType,
+  InsertExpsenseType,
+  InsertResponseId,
+  MonthlyExpense,
+} from '../utils/types';
+import { calculateBucketExpenses } from '../utils/utils';
 
 afterAll(async () => {
-  await db.destroy(); // Close the database connection
-  server.close(); // Close the server connection
+  await db.destroy();
+  server.close();
+});
+
+describe('GET /budget/info/all', () => {
+  it('should retrieve all budget data', async () => {
+    const response = await request(app).get('/budget/info/all');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(budgetAllDataInfo);
+  });
 });
 
 describe('POST /budget/expense', () => {
@@ -17,13 +34,6 @@ describe('POST /budget/expense', () => {
     if (idToDelete) {
       await db('budget_monthly_expenses').where({ id: idToDelete }).del();
     }
-    await db.destroy();
-  });
-
-  it('should retrieve all budget data', async () => {
-    const response = await request(app).get('/budget/info/all');
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(budgetAllDataInfo);
   });
 
   it('should insert an expense', async () => {
@@ -51,5 +61,45 @@ describe('POST /budget/expense', () => {
       'Invalid requestbody Error: Amount must be greater than 0 or less than 10000',
     );
     expect(response.status).toBe(400);
+  });
+});
+
+describe('GET /budget/info/allmonthexpense', () => {
+  let idToDelete: string;
+  let idToDelete2: string;
+
+  beforeAll(async () => {
+    const insertedData2 = { ...insertData, description: 'February Rent' };
+
+    const response1: InsertResponseId = await insertExpense(
+      insertData as InsertExpsenseType,
+    );
+    const response2: InsertResponseId = await insertExpense(
+      insertedData2 as InsertExpsenseType,
+    );
+
+    idToDelete = response1.id;
+    idToDelete2 = response2.id;
+  });
+
+  afterAll(async () => {
+    await db('budget_monthly_expenses').where({ id: idToDelete }).del();
+    await db('budget_monthly_expenses').where({ id: idToDelete2 }).del();
+  });
+
+  it('should retrieve all monthly expenses', async () => {
+    const response = await request(app).get('/budget/info/allmonthexpense');
+    const responsefromDB = await getAllMonthlyExpense();
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveLength(responsefromDB.length);
+  });
+});
+
+describe('GET /budget/info/allbucketexpense', () => {
+  it('should retrieve all bucket expenses', async () => {
+    const rawMonthlyData: MonthlyExpense[] = await getAllMonthlyExpense();
+    const allBudgetData: BudgetType[] = await getAllBudgetData();
+    await calculateBucketExpenses(rawMonthlyData, allBudgetData);
   });
 });

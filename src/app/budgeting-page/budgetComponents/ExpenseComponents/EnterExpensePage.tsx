@@ -1,16 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Container, Box, SelectChangeEvent, Grid } from '@mui/material';
 import {
   ExpensePerson,
   ExpenseType,
   ExpenseData,
+  MonthlyExpense,
   ToastSeverityOptions,
   ToastMessageOptions,
 } from '../../types/BudgetCategoryTypes';
 import axios from 'axios';
 import ToastMessage from '../../../customizations/ToastMessages';
 import dayjs, { Dayjs } from 'dayjs';
-import { validateExpense } from '../../utils/helpers';
+import {
+  formatTimestamptzToMMDDYYYY,
+  validateExpense,
+} from '../../utils/helpers';
 import {
   AmountField,
   DateField,
@@ -20,8 +24,10 @@ import {
   VendorField,
 } from './ExpenseSubComponents';
 import en from '../../../i18n/en';
+import ExpenseTable from './ExpenseTable';
 
 export const EnterExpensePage: React.FC = () => {
+  // Setting states
   const [formData, setFormData] = useState<ExpenseData>({
     person: 'Both' as ExpensePerson,
     bucketname: 'rent' as ExpenseType,
@@ -34,6 +40,32 @@ export const EnterExpensePage: React.FC = () => {
     useState<ToastSeverityOptions>('success');
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [date, setDate] = useState<Dayjs>(dayjs(new Date()));
+  const [data, setData] = useState<MonthlyExpense[]>();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>('');
+
+  // Fetching data
+  const fetchExpenses = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        'http://localhost:5000/budget/info/allmonthexpense',
+      );
+      const formattedData = response.data.map((expense: MonthlyExpense) => ({
+        ...expense,
+        expensedate: formatTimestamptzToMMDDYYYY(expense.expensedate),
+      }));
+      setData(formattedData);
+      setLoading(false);
+    } catch (error: any) {
+      setError(error.message);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
 
   const handleInputChange =
     (field: keyof ExpenseData) =>
@@ -66,6 +98,7 @@ export const EnterExpensePage: React.FC = () => {
 
     try {
       await postExpense();
+      fetchExpenses();
     } catch (error) {
       const toastMessageInfo: ToastMessageOptions = {
         message: en.expense.errorMessage,
@@ -163,6 +196,9 @@ export const EnterExpensePage: React.FC = () => {
             onClose={handleCloseAlert}
           />
         )}
+        {!loading && !error && <ExpenseTable data={data} />}
+        {loading && <div>Loading...</div>}
+        {error && <div>Error: {error}</div>}
       </Box>
     </Container>
   );

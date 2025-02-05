@@ -11,9 +11,13 @@ export interface ExpenseRequestBody {
 export type BudgetType = {
   id: string;
   category: string;
-  bucketName: string;
+  bucketname: string;
   amount: number;
   household: string;
+};
+
+export type BudgetTypeWithCurrentAmount = BudgetType & {
+  currentamount: number;
 };
 
 export type InsertExpsenseType = {
@@ -24,3 +28,19 @@ export type InsertExpsenseType = {
   description?: string;
   expensedate?: string;
 };
+
+export type MonthlyExpense = {
+  id: string;
+  person: string;
+  bucketname: string;
+  vendor: string;
+  amount: number;
+  description: string;
+  expensedate: string;
+};
+
+export type InsertResponseId = {
+  id: string;
+};
+
+export type BucketExpenseMap = Map<string, number>;
