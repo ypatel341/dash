@@ -3,8 +3,8 @@ import axios from 'axios';
 import { Grid, Container } from '@mui/material';
 
 import { BudgetData } from './types/BudgetCategoryTypes';
-import BudgetCategoryComponent from './budgetComponents/BudgetCategoryComponent';
-import BudgetSubHeader from './budgetComponents/BudgetSubHeader';
+import BudgetCategoryComponent from './budget-components/BudgetCategoryComponent';
+import BudgetSubHeader from './budget-components/BudgetSubHeader';
 
 const BudgetHomePage: React.FC = () => {
   const [data, setData] = useState<BudgetData[]>();
@@ -63,7 +63,6 @@ const BudgetHomePage: React.FC = () => {
       <Grid container spacing={3} sx={{ mb: 2 }}>
         <Grid item xs={12} sm={4} md={4}>
           <BudgetSubHeader title={'Net Worth'} />{' '}
-          {/* TODO: consider making these an enum */}
         </Grid>
         <Grid item xs={12} sm={4} md={4}>
           <BudgetSubHeader title="Money-in Month" />
