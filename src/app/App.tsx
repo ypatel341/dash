@@ -10,6 +10,7 @@ import { NetWorthPage } from './budgeting-page/budget-components/NetWorthPage';
 import BudgetOutlet from './budgeting-page/shared-budget-components/Outlets';
 
 import './App.css';
+import ExpenseDetailsHomePage from './budgeting-page/budget-components/ExpenseDetailsComponents/ExpenseDetailsHomePage';
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
             <Route path="net-worth" element={<NetWorthPage />} />
             <Route path="money-in-month" element={<MoneyInMonthPage />} />
             <Route path="enter-expense" element={<EnterExpensePage />} />
+            <Route path="details/:bucketname" element={<ExpenseDetailsHomePage />} />
           </Route>
           <Route path="/home" element={<HomePage />} />
           <Route path="/tasks" element={<TasksHomePage />} />

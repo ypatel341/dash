@@ -8,12 +8,12 @@ type budgetSubHeaderProps = {
 };
 
 const BudgetSubHeader: React.FC<budgetSubHeaderProps> = ({ title }) => {
-  const nvaigate = useNavigate();
+  const navigate = useNavigate();
 
   const navigateTo = () => {
     const route = SubHeaderRoutes[title];
     if (route) {
-      nvaigate(route);
+      navigate(route);
     } else {
       {
         /*TODO: IMPLEMENT AN ERROR PAGE HERE */
