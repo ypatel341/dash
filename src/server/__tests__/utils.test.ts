@@ -1,4 +1,4 @@
-import { calculateBucketExpenses, validateExpense } from '../utils/utils';
+import { calculateBucketExpenses, validateExpense, validateInputBucket } from '../utils/utils';
 import {
   BudgetType,
   MonthlyExpense,
@@ -15,6 +15,11 @@ import {
   allBudgetDataTest2,
 } from '../test_data/utilsTestData';
 import { ExpenseAmountMinAndMaxError } from '../utils/consts';
+import { getAllBudgetData } from '../utils/db-operation-helpers';
+
+jest.mock('../utils/db-operation-helpers', () => ({
+  getAllBudgetData: jest.fn(),
+}));
 
 describe('calculateBucketExpenses', () => {
   it('should calculate the current amount spent for each bucket', async () => {
@@ -107,3 +112,30 @@ describe('validateExpense', () => {
     );
   });
 });
+
+describe('validateInputBucket', () => {
+  it('should return true if bucketname is valid', async () => {
+    const bucketname = 'groceries';
+    const activeBucketNames = [
+      { bucketname: 'groceries' },
+      { bucketname: 'rent' },
+    ];
+    (getAllBudgetData as jest.Mock).mockResolvedValue(activeBucketNames);
+
+    const result = await validateInputBucket(bucketname);
+    expect(result).toBe(true);
+  });
+
+  it('should return false if bucketname is invalid', async () => {
+    const bucketname = 'entertainment';
+    const activeBucketNames = [
+      { bucketname: 'groceries' },
+      { bucketname: 'rent' },
+    ];
+    (getAllBudgetData as jest.Mock).mockResolvedValue(activeBucketNames);
+
+    const result = await validateInputBucket(bucketname);
+    expect(result).toBe(false);
+  });
+});
+

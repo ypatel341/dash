@@ -38,7 +38,7 @@ export const gasBudgetData = {
 export const therapyBudgetData = {
   category: 'needs',
   bucketname: 'therapy',
-  budget: 125,
+  budget: 250,
 };
 
 export const homeSuppliesBudgetData = {
@@ -150,13 +150,6 @@ export const budgetAllDataInfo = [
     household: 'domus',
   },
   {
-    id: '76c046bb-f192-4148-9eda-d714c0c067f9',
-    category: 'needs',
-    bucketname: 'therapy',
-    amount: 125,
-    household: 'domus',
-  },
-  {
     id: 'bfb595cc-f8a2-4914-bd45-034526f205b1',
     category: 'needs',
     bucketname: 'house_supplies',
@@ -175,13 +168,6 @@ export const budgetAllDataInfo = [
     category: 'wants',
     bucketname: 'spotify',
     amount: 13,
-    household: 'domus',
-  },
-  {
-    id: 'c2239be8-3793-42da-9d9e-ea980ccca2a1',
-    category: 'wants',
-    bucketname: 'date_night',
-    amount: 120,
     household: 'domus',
   },
   {
@@ -231,6 +217,20 @@ export const budgetAllDataInfo = [
     category: 'needs',
     bucketname: 'internet',
     amount: 70,
+    household: 'domus',
+  },
+  {
+    id: 'c2239be8-3793-42da-9d9e-ea980ccca2a1',
+    category: 'wants',
+    bucketname: 'date_night',
+    amount: 480,
+    household: 'domus',
+  },
+  {
+    id: '76c046bb-f192-4148-9eda-d714c0c067f9',
+    category: 'needs',
+    bucketname: 'therapy',
+    amount: 250,
     household: 'domus',
   },
 ];

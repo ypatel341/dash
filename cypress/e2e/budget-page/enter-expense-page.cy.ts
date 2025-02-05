@@ -22,8 +22,8 @@ describe('EnterExpensePage', () => {
       'contain',
       'The Expense was successfully saved',
     );
-    
-    // TODO: Cypress currently doesnt insert the value in the DB. 
+
+    // TODO: Cypress currently doesnt insert the value in the DB.
     // consider making a parallel testing DB and having cypress insert values into that DB
 
     // cy.get('[id="expense-table"]').should('contain', 'Vendor Name');

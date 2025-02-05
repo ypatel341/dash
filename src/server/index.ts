@@ -2,7 +2,11 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import db from './utils/db';
-import { validateExpense, calculateBucketExpenses } from './utils/utils';
+import {
+  validateExpense,
+  calculateBucketExpenses,
+  validateInputBucket,
+} from './utils/utils';
 import logger from './utils/logger';
 
 import { InsertExpsenseType, BudgetType, MonthlyExpense } from './utils/types';
@@ -51,6 +55,27 @@ app.get('/budget/info/allbucketexpense', async (req, res) => {
 
     const data = await calculateBucketExpenses(rawMonthlyData, allBudgetData);
     res.json(data);
+  } catch (error) {
+    logger.error(`Error fetching monthly expense data: ${error}`);
+    res.status(500).json({ error: `Internal Server Error ${error}` });
+  }
+});
+
+// GET: An endpoint for getting all expenses for a specific bucket in a month
+app.get('/budget/info/bucketexpense/:bucketname', async (req, res) => {
+  const { bucketname } = req.params;
+
+  if (!(await validateInputBucket(bucketname))) {
+    res.status(400).json({ error: `Invalid bucketname ${bucketname}` });
+    return;
+  }
+
+  try {
+    const data: MonthlyExpense[] = await getAllMonthlyExpense();
+    const bucketData = data.filter(
+      (expense) => expense.bucketname === bucketname,
+    );
+    res.json(bucketData);
   } catch (error) {
     logger.error(`Error fetching monthly expense data: ${error}`);
     res.status(500).json({ error: `Internal Server Error ${error}` });
