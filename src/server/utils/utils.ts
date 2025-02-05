@@ -1,4 +1,5 @@
 import { ExpenseAmountMinAndMaxError } from './consts';
+import { getAllBudgetData } from './db-operation-helpers';
 import logger from './logger';
 import {
   InsertExpsenseType,
@@ -64,4 +65,12 @@ export const calculateBucketExpenses = async (
   logger.info(`(fx: calculateBucketExpesense): ${budgetTypeWithCurrentAmount}`);
 
   return budgetTypeWithCurrentAmount;
+};
+
+export const validateInputBucket = async (
+  bucketname: string,
+): Promise<boolean> => {
+  const activeBucketNames = await getAllBudgetData();
+  const bucketNames = activeBucketNames.map((bucket) => bucket.bucketname);
+  return bucketNames.includes(bucketname);
 };

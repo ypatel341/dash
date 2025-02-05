@@ -15,7 +15,7 @@ const BudgetHomePage: React.FC = () => {
     axios
       .get('http://localhost:5000/budget/info/allbucketexpense')
       .then((response) => {
-        const {data} = response;
+        const { data } = response;
 
         //TODO: REMOVE -> update rent bucket to have current amount at 3000
         const testData = data.map((item: BudgetData) => {
@@ -26,15 +26,14 @@ const BudgetHomePage: React.FC = () => {
             };
           }
 
-          if(item.bucketname === 'yogi_activities') {
+          if (item.bucketname === 'yogi_activities') {
             return {
               ...item,
               currentamount: 500,
-            }
+            };
           }
           return item;
         });
-
 
         setData(testData);
         setLoading(false);

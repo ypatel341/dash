@@ -16,7 +16,11 @@ interface ExpenseTableProps {
 
 const ExpenseTable: React.FC<ExpenseTableProps> = ({ data }) => {
   return (
-    <TableContainer id='expense-table' component={Paper} style={{ maxHeight: 400 }}>
+    <TableContainer
+      id="expense-table"
+      component={Paper}
+      style={{ maxHeight: 400 }}
+    >
       <Table stickyHeader>
         <TableHead>
           <TableRow>

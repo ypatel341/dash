@@ -4,7 +4,7 @@ import { useLocation, useParams } from 'react-router-dom';
 import { BudgetTypeWithCurrentAmount } from '../../../../server/utils/types';
 
 /**
- * NOTES FOR SELF:  
+ * NOTES FOR SELF:
  * useLocation is used to access state, location, and history from the current route.
  * useParam is used to access the parameters from the current route (from the URL).
  * both are useful, ~but in ourcase since we have all of the data currently in state, lets go with useLocation~
@@ -12,15 +12,15 @@ import { BudgetTypeWithCurrentAmount } from '../../../../server/utils/types';
  */
 
 const BudgetHomePage: React.FC = () => {
-    const locationData = useLocation();
-    const data = locationData.state?.data as BudgetTypeWithCurrentAmount;
-    const { bucketname } = useParams<{bucketname: string}>();
+  const locationData = useLocation();
+  const data = locationData.state?.data as BudgetTypeWithCurrentAmount;
+  const { bucketname } = useParams<{ bucketname: string }>();
 
-    if(!data){
-        // TODO: if there is no data, do a fetch request to get the data
-        // TODO: set up an error page
-        return <div>Error: Data not found</div>;
-    }
+  if (!data) {
+    // TODO: if there is no data, do a fetch request to get the data
+    // TODO: set up an error page
+    return <div>Error: Data not found</div>;
+  }
 
   return (
     <Container>

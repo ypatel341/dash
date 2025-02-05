@@ -96,49 +96,49 @@ export const expectedCaclulatedBudgetExpenses: BudgetTypeWithCurrentAmount[] = [
 
 // test 2 data
 export const rawMonthlyDataTest2: MonthlyExpense[] = [
-    {
-      bucketname: 'rent',
-      amount: 1000,
-      description: 'rent',
-      expensedate: '2021-01-01',
-      id: '1',
-      person: 'person',
-      vendor: 'vendor',
-    },
-  ];
+  {
+    bucketname: 'rent',
+    amount: 1000,
+    description: 'rent',
+    expensedate: '2021-01-01',
+    id: '1',
+    person: 'person',
+    vendor: 'vendor',
+  },
+];
 
- export const allBudgetDataTest2: BudgetType[] = [
-    {
-      bucketname: 'rent',
-      amount: 2000,
-      category: 'housing',
-      household: 'household',
-      id: '1',
-    },
-    {
-      bucketname: 'groceries',
-      amount: 300,
-      category: 'food',
-      household: 'household',
-      id: '2',
-    },
-  ];
+export const allBudgetDataTest2: BudgetType[] = [
+  {
+    bucketname: 'rent',
+    amount: 2000,
+    category: 'housing',
+    household: 'household',
+    id: '1',
+  },
+  {
+    bucketname: 'groceries',
+    amount: 300,
+    category: 'food',
+    household: 'household',
+    id: '2',
+  },
+];
 
- export const expectedTest2: BudgetTypeWithCurrentAmount[] = [
-    {
-      bucketname: 'rent',
-      amount: 2000,
-      currentamount: 1000,
-      category: 'housing',
-      household: 'household',
-      id: '1',
-    },
-    {
-      bucketname: 'groceries',
-      amount: 300,
-      currentamount: 0,
-      category: 'food',
-      household: 'household',
-      id: '2',
-    },
-  ];
+export const expectedTest2: BudgetTypeWithCurrentAmount[] = [
+  {
+    bucketname: 'rent',
+    amount: 2000,
+    currentamount: 1000,
+    category: 'housing',
+    household: 'household',
+    id: '1',
+  },
+  {
+    bucketname: 'groceries',
+    amount: 300,
+    currentamount: 0,
+    category: 'food',
+    household: 'household',
+    id: '2',
+  },
+];

@@ -56,7 +56,10 @@ function App() {
             <Route path="net-worth" element={<NetWorthPage />} />
             <Route path="money-in-month" element={<MoneyInMonthPage />} />
             <Route path="enter-expense" element={<EnterExpensePage />} />
-            <Route path="details/:bucketname" element={<ExpenseDetailsHomePage />} />
+            <Route
+              path="details/:bucketname"
+              element={<ExpenseDetailsHomePage />}
+            />
           </Route>
           <Route path="/home" element={<HomePage />} />
           <Route path="/tasks" element={<TasksHomePage />} />
