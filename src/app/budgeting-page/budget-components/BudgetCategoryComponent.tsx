@@ -27,6 +27,7 @@ const BudgetCategoryComponent: React.FC<BudgetComponentProps> = ({ data }) => {
   return (
     <Card>
       <CardActionArea
+        id='budget-card'
         onClick={() => navigateTo()}
         style={{ backgroundColor: cardColor }}
       >

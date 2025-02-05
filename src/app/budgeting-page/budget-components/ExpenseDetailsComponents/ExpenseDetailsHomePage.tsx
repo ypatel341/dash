@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Container } from '@mui/material';
 import { useLocation, useParams } from 'react-router-dom';
-import { BudgetTypeWithCurrentAmount } from '../../../../server/utils/types';
+import axios from 'axios';
+import ExpenseTable from '../ExpenseComponents/ExpenseTable';
+import { MonthlyExpense, BudgetData } from '../../types/BudgetCategoryTypes';
 
 /**
  * NOTES FOR SELF:
@@ -13,22 +15,35 @@ import { BudgetTypeWithCurrentAmount } from '../../../../server/utils/types';
 
 const BudgetHomePage: React.FC = () => {
   const locationData = useLocation();
-  const data = locationData.state?.data as BudgetTypeWithCurrentAmount;
+  const data = locationData.state?.data as BudgetData;
   const { bucketname } = useParams<{ bucketname: string }>();
 
-  if (!data) {
-    // TODO: if there is no data, do a fetch request to get the data
-    // TODO: set up an error page
-    return <div>Error: Data not found</div>;
+  const [bucketData, setBucketData] = React.useState<MonthlyExpense[]>();
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [error, setError] = React.useState<string>('');
+
+  const fetchBucketData = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/budget/info/bucketexpense/${bucketname}`,
+      );
+      setBucketData(response.data);
+      setLoading(false);
+    }catch(error: any){
+      setError(error.message);
+      setLoading(false);
+    }
   }
+
+  useEffect(() => {
+    fetchBucketData();
+  }, []); 
 
   return (
     <Container>
       <h1>Bucket Details Page {bucketname}</h1>
-      <p>Category: {data.category}</p>
-      <p>Amount: {data.amount}</p>
-      <p>Household: {data.household}</p>
-      <p>Currently-Using: {data.currentamount}</p>
+      {!loading && !error && bucketData && <ExpenseTable data={bucketData} />}
     </Container>
   );
 };
