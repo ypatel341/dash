@@ -19,11 +19,10 @@ afterAll(async () => {
   server.close();
 });
 
-describe('GET /budget/info/all', () => {
+describe('getAllBudgetData', () => {
   it('should retrieve all budget data', async () => {
-    const response = await request(app).get('/budget/info/all');
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(budgetAllDataInfo);
+    const allBudgetData: BudgetType[] = await getAllBudgetData();
+    expect(allBudgetData).toEqual(budgetAllDataInfo);
   });
 });
 
