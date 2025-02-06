@@ -1,6 +1,5 @@
 import { calculateBucketExpenses, validateExpense, validateInputBucket } from '../utils/utils';
 import {
-  BudgetType,
   MonthlyExpense,
   BudgetTypeWithCurrentAmount,
   ExpenseRequestBody,

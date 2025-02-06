@@ -2,6 +2,8 @@
   "compilerOptions": {
     "target": "ES6",
     "module": "commonjs",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,

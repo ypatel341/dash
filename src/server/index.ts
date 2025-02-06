@@ -26,6 +26,7 @@ app.use(cors());
 // GET: An endpoint that will retrieve a budget plan for a specific allocation
 // TODO: THIS ENDPOINT MIGHT NOT BE NEEDED ANYMORE IN CASE allbucketexpense IS IMPLEMENTED
 app.get('/budget/info/all', async (req, res) => {
+  logger.log(req.body);
   try {
     const data: BudgetType[] = await getAllBudgetData();
     res.json(data);
@@ -37,6 +38,7 @@ app.get('/budget/info/all', async (req, res) => {
 
 // GET: An Endpoint to get all of the expenses for the current month
 app.get('/budget/info/allmonthexpense', async (req, res) => {
+  logger.log(req.body);
   try {
     const data: MonthlyExpense[] = await getAllMonthlyExpense();
 
@@ -49,6 +51,7 @@ app.get('/budget/info/allmonthexpense', async (req, res) => {
 
 // GET: An endpoint for seeing how much money is left in all buckets
 app.get('/budget/info/allbucketexpense', async (req, res) => {
+  logger.log(req.body);
   try {
     const rawMonthlyData: MonthlyExpense[] = await getAllMonthlyExpense();
     const allBudgetData: BudgetType[] = await getAllBudgetData();
