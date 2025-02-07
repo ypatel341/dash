@@ -16,6 +16,7 @@ import { MonthlyExpense, BudgetData } from '../../types/BudgetCategoryTypes';
 const BudgetHomePage: React.FC = () => {
   const locationData = useLocation();
   const data = locationData.state?.data as BudgetData;
+  console.log(data);
   const { bucketname } = useParams<{ bucketname: string }>();
 
   const [bucketData, setBucketData] = React.useState<MonthlyExpense[]>();
@@ -30,15 +31,15 @@ const BudgetHomePage: React.FC = () => {
       );
       setBucketData(response.data);
       setLoading(false);
-    }catch(error: any){
+    } catch (error: any) {
       setError(error.message);
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     fetchBucketData();
-  }, []); 
+  }, []);
 
   return (
     <Container>

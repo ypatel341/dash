@@ -17,25 +17,7 @@ const BudgetHomePage: React.FC = () => {
       .then((response) => {
         const { data } = response;
 
-        //TODO: REMOVE -> update rent bucket to have current amount at 3000
-        const testData = data.map((item: BudgetData) => {
-          if (item.bucketname === 'rent') {
-            return {
-              ...item,
-              currentamount: 3000,
-            };
-          }
-
-          if (item.bucketname === 'yogi_activities') {
-            return {
-              ...item,
-              currentamount: 500,
-            };
-          }
-          return item;
-        });
-
-        setData(testData);
+        setData(data);
         setLoading(false);
       })
       .catch((error) => {
