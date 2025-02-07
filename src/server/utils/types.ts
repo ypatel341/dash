@@ -20,7 +20,7 @@ export type BudgetTypeWithCurrentAmount = BudgetType & {
   currentamount: number;
 };
 
-export type InsertExpsenseType = {
+export type InsertExpenseType = {
   person: string;
   bucketname: string;
   vendor: string;

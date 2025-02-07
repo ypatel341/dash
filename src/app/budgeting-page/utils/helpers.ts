@@ -25,7 +25,7 @@ export const transformBucketName = (bucketname: string): string => {
   return transformations[bucketname] || `Error transforming: ${bucketname}`;
 };
 
-export const transformCategorytName = (category: string): string => {
+export const transformCategoryName = (category: string): string => {
   const transformations: { [key: string]: string } = {
     needs: 'Needs',
     wants: 'Wants',

@@ -1,6 +1,6 @@
 import {
   BudgetType,
-  InsertExpsenseType,
+  InsertExpenseType,
   InsertResponseId,
   MonthlyExpense,
 } from '../utils/types';
@@ -29,7 +29,7 @@ export const getBucketExpenses = async (
 };
 
 export const insertExpenseService = async (
-  expense: InsertExpsenseType,
+  expense: InsertExpenseType,
 ): Promise<InsertResponseId> => {
   return await insertExpense(expense);
 };

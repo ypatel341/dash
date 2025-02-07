@@ -2,7 +2,7 @@ import { ExpenseAmountMinAndMaxError } from './consts';
 import { getAllBudgetData } from './db-operation-helpers';
 import logger from './logger';
 import {
-  InsertExpsenseType,
+  InsertExpenseType,
   ExpenseRequestBody,
   BudgetType,
   MonthlyExpense,
@@ -12,7 +12,7 @@ import {
 
 export const validateExpense = async (
   reqBody: ExpenseRequestBody,
-): Promise<InsertExpsenseType> => {
+): Promise<InsertExpenseType> => {
   const { person, bucketname, vendor, amount, description, date } = reqBody;
 
   if (!amount || amount <= 0 || amount > 10000) {
@@ -25,7 +25,7 @@ export const validateExpense = async (
     );
   }
 
-  const expense: InsertExpsenseType = {
+  const expense: InsertExpenseType = {
     person,
     bucketname,
     vendor,
@@ -51,7 +51,7 @@ export const calculateBucketExpenses = async (
     bucketExpenseMap.set(expense.bucketname, currentAmount + expense.amount);
   });
 
-  logger.info(`(fx: calculateBucketExpesense): ${bucketExpenseMap}`);
+  logger.info(`(fx: calculateBucketExpense): ${bucketExpenseMap}`);
 
   const budgetTypeWithCurrentAmount: BudgetTypeWithCurrentAmount[] =
     allBudgetData.map((budget) => {
@@ -62,7 +62,7 @@ export const calculateBucketExpenses = async (
       };
     });
 
-  logger.info(`(fx: calculateBucketExpesense): ${budgetTypeWithCurrentAmount}`);
+  logger.info(`(fx: calculateBucketExpense): ${budgetTypeWithCurrentAmount}`);
 
   return budgetTypeWithCurrentAmount;
 };

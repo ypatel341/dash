@@ -67,7 +67,7 @@ export const allBudgetData: BudgetType[] = [
   },
 ];
 
-export const expectedCaclulatedBudgetExpenses: BudgetTypeWithCurrentAmount[] = [
+export const expectedCalculatedBudgetExpenses: BudgetTypeWithCurrentAmount[] = [
   {
     bucketname: 'rent',
     amount: 2000,
