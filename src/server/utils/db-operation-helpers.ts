@@ -2,7 +2,7 @@ import db from '../../config/db';
 import logger from './logger';
 import {
   BudgetType,
-  InsertExpsenseType,
+  InsertExpenseType,
   InsertResponseId,
   MonthlyExpense,
 } from './types';
@@ -21,9 +21,9 @@ export const getAllBudgetData = async (): Promise<BudgetType[]> => {
 };
 
 export const insertExpense = async (
-  expense: InsertExpsenseType,
+  expense: InsertExpenseType,
 ): Promise<InsertResponseId> => {
-  let insertObj: InsertExpsenseType = {
+  let insertObj: InsertExpenseType = {
     person: expense.person,
     bucketname: expense.bucketname,
     vendor: expense.vendor,

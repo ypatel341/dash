@@ -8,7 +8,7 @@ import {
 import {
   BudgetType,
   InsertResponseId,
-  InsertExpsenseType,
+  InsertExpenseType,
   MonthlyExpense,
 } from '../server/utils/types';
 import { calculateBucketExpenses } from '../server/utils/utils';
@@ -71,10 +71,10 @@ describe('GET /budget/info/allmonthexpense', () => {
     const insertedData2 = { ...insertData, description: 'February Rent' };
 
     const response1: InsertResponseId = await insertExpense(
-      insertData as InsertExpsenseType,
+      insertData as InsertExpenseType,
     );
     const response2: InsertResponseId = await insertExpense(
-      insertedData2 as InsertExpsenseType,
+      insertedData2 as InsertExpenseType,
     );
 
     idToDelete = response1.id;

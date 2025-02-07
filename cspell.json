@@ -1,0 +1,45 @@
+{
+    "version": "0.2",
+    "language": "en",
+    "words": [
+        "allbucketexpense",
+        "allmonthexpense",
+        "bucketname",
+        "currentamount",
+        "cypress",
+        "deletedat",
+        "Domus",
+        "dotenv",
+        "eslint",
+        "expensedate",
+        "express",
+        "jest",
+        "jsx",
+        "knex",
+        "networth",
+        "prettier",
+        "react",
+        "responsefrom",
+        "Riddhi",
+        "Timestamptz",
+        "tsx",
+        "typescript",
+        "winston"
+    ],
+    "ignorePaths": [
+        "node_modules/**",
+        "dist/**",
+        "build/**",
+        "coverage/**"
+    ],
+    "dictionaries": [
+        "typescript",
+        "node",
+        "softwareTerms",
+        "html",
+        "css",
+        "filetypes",
+        "npm",
+        "misc"
+    ]
+}

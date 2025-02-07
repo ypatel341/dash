@@ -9,7 +9,7 @@ import { MonthlyExpense, BudgetData } from '../../types/BudgetCategoryTypes';
  * NOTES FOR SELF:
  * useLocation is used to access state, location, and history from the current route.
  * useParam is used to access the parameters from the current route (from the URL).
- * both are useful, ~but in ourcase since we have all of the data currently in state, lets go with useLocation~
+ * both are useful, ~but in our case since we have all of the data currently in state, lets go with useLocation~
  * We will use both, this is for navigating to the page directly as opposed clicking in
  */
 

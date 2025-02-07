@@ -4,7 +4,7 @@ import {
   MonthlyExpense,
   BudgetTypeWithCurrentAmount,
   ExpenseRequestBody,
-  InsertExpsenseType,
+  InsertExpenseType,
 } from '../server/utils/types';
 import {
   calculateBucketExpenses,
@@ -14,7 +14,7 @@ import {
 import {
   rawMonthlyData,
   allBudgetData,
-  expectedCaclulatedBudgetExpenses,
+  expectedCalculatedBudgetExpenses,
   rawMonthlyDataTest2,
   allBudgetDataTest2,
   expectedTest2,
@@ -27,7 +27,7 @@ jest.mock('../server/utils/db-operation-helpers', () => ({
 describe('calculateBucketExpenses', () => {
   it('should calculate the current amount spent for each bucket', async () => {
     const result = await calculateBucketExpenses(rawMonthlyData, allBudgetData);
-    expect(result).toEqual(expectedCaclulatedBudgetExpenses);
+    expect(result).toEqual(expectedCalculatedBudgetExpenses);
   });
 
   it('should return zero current amount for buckets with no expenses', async () => {
@@ -78,7 +78,7 @@ describe('validateExpense', () => {
       date: '2021-01-01',
     };
 
-    const expected: InsertExpsenseType = {
+    const expected: InsertExpenseType = {
       person: 'John Doe',
       bucketname: 'groceries',
       vendor: 'Walmart',
