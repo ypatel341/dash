@@ -2,7 +2,7 @@ import {
   BudgetType,
   BudgetTypeWithCurrentAmount,
   MonthlyExpense,
-} from '../utils/types';
+} from '../server/utils/types';
 
 export const rawMonthlyData: MonthlyExpense[] = [
   {

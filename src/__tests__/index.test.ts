@@ -1,18 +1,18 @@
 import request from 'supertest';
-import { app, server, db } from '../index';
-import { budgetAllDataInfo, insertData } from '../test_data/budgetData';
+import { db, server, app } from '../server';
 import {
   getAllBudgetData,
-  getAllMonthlyExpense,
   insertExpense,
-} from '../utils/db-operation-helpers';
+  getAllMonthlyExpense,
+} from '../server/utils/db-operation-helpers';
 import {
   BudgetType,
-  InsertExpsenseType,
   InsertResponseId,
+  InsertExpsenseType,
   MonthlyExpense,
-} from '../utils/types';
-import { calculateBucketExpenses } from '../utils/utils';
+} from '../server/utils/types';
+import { calculateBucketExpenses } from '../server/utils/utils';
+import { budgetAllDataInfo, insertData } from '../test_data/budgetData';
 
 afterAll(async () => {
   await db.destroy();
@@ -57,7 +57,7 @@ describe('POST /budget/expense', () => {
       .send({ ...insertData, amount: 10001 });
 
     expect(response.body.error).toBe(
-      'Invalid requestbody Error: Amount must be greater than 0 or less than 10000',
+      'Invalid request body Error: Amount must be greater than 0 or less than 10000',
     );
     expect(response.status).toBe(400);
   });

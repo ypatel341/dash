@@ -1,22 +1,26 @@
-import { calculateBucketExpenses, validateExpense, validateInputBucket } from '../utils/utils';
+import { ExpenseAmountMinAndMaxError } from '../server/utils/consts';
+import { getAllBudgetData } from '../server/utils/db-operation-helpers';
 import {
   MonthlyExpense,
   BudgetTypeWithCurrentAmount,
   ExpenseRequestBody,
   InsertExpsenseType,
-} from '../utils/types';
+} from '../server/utils/types';
+import {
+  calculateBucketExpenses,
+  validateExpense,
+  validateInputBucket,
+} from '../server/utils/utils';
 import {
   rawMonthlyData,
   allBudgetData,
   expectedCaclulatedBudgetExpenses,
   rawMonthlyDataTest2,
-  expectedTest2,
   allBudgetDataTest2,
+  expectedTest2,
 } from '../test_data/utilsTestData';
-import { ExpenseAmountMinAndMaxError } from '../utils/consts';
-import { getAllBudgetData } from '../utils/db-operation-helpers';
 
-jest.mock('../utils/db-operation-helpers', () => ({
+jest.mock('../server/utils/db-operation-helpers', () => ({
   getAllBudgetData: jest.fn(),
 }));
 
@@ -27,7 +31,10 @@ describe('calculateBucketExpenses', () => {
   });
 
   it('should return zero current amount for buckets with no expenses', async () => {
-    const result = await calculateBucketExpenses(rawMonthlyDataTest2, allBudgetDataTest2);
+    const result = await calculateBucketExpenses(
+      rawMonthlyDataTest2,
+      allBudgetDataTest2,
+    );
     expect(result).toEqual(expectedTest2);
   });
 
@@ -52,7 +59,10 @@ describe('calculateBucketExpenses', () => {
       },
     ];
 
-    const result = await calculateBucketExpenses(emptyRawMonthlyData, allBudgetDataTest2);
+    const result = await calculateBucketExpenses(
+      emptyRawMonthlyData,
+      allBudgetDataTest2,
+    );
     expect(result).toEqual(expected);
   });
 });
@@ -137,4 +147,3 @@ describe('validateInputBucket', () => {
     expect(result).toBe(false);
   });
 });
-
