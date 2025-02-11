@@ -4,6 +4,7 @@ import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import ExpenseTable from '../ExpenseComponents/ExpenseTable';
 import { MonthlyExpense, BudgetData } from '../../types/BudgetCategoryTypes';
+import { formatTimestamptzToMMDDYYYY } from '../../utils/helpers';
 
 /**
  * NOTES FOR SELF:
@@ -29,7 +30,13 @@ const BudgetHomePage: React.FC = () => {
       const response = await axios.get(
         `http://localhost:5000/budget/info/bucketexpense/${bucketname}`,
       );
-      setBucketData(response.data);
+
+      const formattedData = response.data.map((expense: MonthlyExpense) => ({
+        ...expense,
+        expensedate: formatTimestamptzToMMDDYYYY(expense.expensedate),
+      }));
+
+      setBucketData(formattedData);
       setLoading(false);
     } catch (error: any) {
       setError(error.message);

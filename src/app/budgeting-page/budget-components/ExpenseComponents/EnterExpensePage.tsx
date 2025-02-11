@@ -51,10 +51,12 @@ export const EnterExpensePage: React.FC = () => {
       const response = await axios.get(
         'http://localhost:5000/budget/info/allmonthexpense',
       );
+
       const formattedData = response.data.map((expense: MonthlyExpense) => ({
         ...expense,
         expensedate: formatTimestamptzToMMDDYYYY(expense.expensedate),
       }));
+
       setData(formattedData);
       setLoading(false);
     } catch (error: any) {

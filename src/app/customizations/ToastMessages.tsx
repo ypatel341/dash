@@ -1,35 +1,44 @@
 import React from 'react';
-import { Alert, IconButton } from '@mui/material';
+import { Alert, IconButton, Snackbar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 type ToastMessageProps = {
   message: string;
   severity: 'success' | 'error';
   onClose: () => void;
+  duration?: number;
 };
 
 const ToastMessage: React.FC<ToastMessageProps> = ({
   message,
   severity,
   onClose,
+  duration = 3000,
 }) => {
   return (
-    <Alert
-      id="toast-message"
-      severity={severity}
-      action={
-        <IconButton
-          aria-label="close"
-          color="inherit"
-          size="small"
-          onClick={onClose}
-        >
-          <CloseIcon fontSize="inherit" />
-        </IconButton>
-      }
+    <Snackbar
+      open={true}
+      autoHideDuration={duration}
+      onClose={onClose}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
     >
-      {message}
-    </Alert>
+      <Alert
+        id="toast-message"
+        severity={severity}
+        action={
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            size="small"
+            onClick={onClose}
+          >
+            <CloseIcon fontSize="inherit" />
+          </IconButton>
+        }
+      >
+        {message}
+      </Alert>
+    </Snackbar>
   );
 };
 

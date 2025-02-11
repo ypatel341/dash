@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { MouseEvent, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -9,12 +9,36 @@ import {
   Paper,
 } from '@mui/material';
 import { MonthlyExpense } from '../../types/BudgetCategoryTypes';
+import DeleteOrUpdateExpense from './DeleteOrUpdateExpense';
 
 interface ExpenseTableProps {
   data?: MonthlyExpense[];
 }
 
 const ExpenseTable: React.FC<ExpenseTableProps> = ({ data }) => {
+  const [contextMenu, setContextMenu] = useState<{
+    mouseX: number;
+    mouseY: number;
+  } | null>(null);
+  const [row, setRow] = useState<MonthlyExpense | null>(null);
+
+  const handleRightClick = (event: MouseEvent, row: MonthlyExpense) => {
+    event.preventDefault();
+    setRow(row);
+    setContextMenu(
+      contextMenu === null
+        ? {
+            mouseX: event.clientX + 2,
+            mouseY: event.clientY - 6,
+          }
+        : null,
+    );
+  };
+
+  const handleClose = () => {
+    setContextMenu(null);
+  };
+
   return (
     <TableContainer
       id="expense-table"
@@ -34,7 +58,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ data }) => {
         </TableHead>
         <TableBody>
           {data?.slice(0, 100).map((row, index) => (
-            <TableRow key={index}>
+            <TableRow key={index} onContextMenu={(event) => handleRightClick(event, row)}>
               <TableCell>{row.expensedate}</TableCell>
               <TableCell>{row.person}</TableCell>
               <TableCell>{row.vendor}</TableCell>
@@ -46,6 +70,11 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ data }) => {
           ))}
         </TableBody>
       </Table>
+      <DeleteOrUpdateExpense
+        contextMenu={contextMenu}
+        handleClose={handleClose}
+        selectedRow={row}
+      />
     </TableContainer>
   );
 };
