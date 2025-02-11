@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import {
+  deleteExpenseService,
   getAllBucketExpenses,
   getAllMonthlyExpense,
   getBucketExpenses,
@@ -61,5 +62,16 @@ export const insertExpenseController = async (req: Request, res: Response) => {
   } catch (error) {
     logger.error(`Error validating expense: ${error}`);
     res.status(400).json({ error: `Invalid request body ${error}` });
+  }
+};
+
+export const deleteExpenseController = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const response = await deleteExpenseService(id);
+    res.json(response);
+  } catch (error) {
+    logger.error(`Error deleting expense: ${error}`);
+    res.status(500).json({ error: `Internal Server Error ${error}` });
   }
 };

@@ -5,6 +5,7 @@ import {
   MonthlyExpense,
 } from '../utils/types';
 import {
+  deleteExpense,
   getAllBudgetData,
   getAllMonthlyExpense as getAllMonthlyExpenseFromDB,
   insertExpense,
@@ -32,4 +33,8 @@ export const insertExpenseService = async (
   expense: InsertExpenseType,
 ): Promise<InsertResponseId> => {
   return await insertExpense(expense);
+};
+
+export const deleteExpenseService = async (id: string): Promise<void> => {
+  return await deleteExpense(id);
 };

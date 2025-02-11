@@ -73,3 +73,16 @@ export const getAllMonthlyExpense = async (): Promise<MonthlyExpense[]> => {
     throw error;
   }
 };
+
+export const deleteExpense = async (id: string): Promise<void> => {
+  try {
+    await db('budget_monthly_expenses')
+      .where({ id })
+      .update({ deletedat: db.fn.now() });
+
+    logger.info(`Deleted expense with id ${id}`);
+  } catch (error) {
+    logger.error(`${ErrorInsertingExpense} ${error}`);
+    throw error;
+  }
+};

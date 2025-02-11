@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  deleteExpenseController,
   getAllBucketExpensesController,
   getAllMonthlyExpenses,
   getBucketExpensesController,
@@ -15,5 +16,7 @@ router.get('/info/bucketexpense/:bucketname', getBucketExpensesController);
 
 // POSTS
 router.post('/expense', insertExpenseController);
+
+router.delete('/expense/:id', deleteExpenseController);
 
 export default router;
