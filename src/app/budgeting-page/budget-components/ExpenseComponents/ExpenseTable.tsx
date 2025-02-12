@@ -1,6 +1,17 @@
 import React, { useState, MouseEvent } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-import { MonthlyExpense, ToastMessageOptions } from '../../types/BudgetCategoryTypes';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from '@mui/material';
+import {
+  MonthlyExpense,
+  ToastMessageOptions,
+} from '../../types/BudgetCategoryTypes';
 import DeleteOrUpdateExpense from './DeleteOrUpdateExpense';
 
 interface ExpenseTableProps {
@@ -9,12 +20,18 @@ interface ExpenseTableProps {
   refetchData: () => void;
 }
 
-const ExpenseTable: React.FC<ExpenseTableProps> = ({ data, handleToastMessage, refetchData }) => {
+const ExpenseTable: React.FC<ExpenseTableProps> = ({
+  data,
+  handleToastMessage,
+  refetchData,
+}) => {
   const [contextMenu, setContextMenu] = useState<{
     mouseX: number;
     mouseY: number;
   } | null>(null);
-  const [selectedExpense, setSelectedExpense] = useState<MonthlyExpense | null>(null);
+  const [selectedExpense, setSelectedExpense] = useState<MonthlyExpense | null>(
+    null,
+  );
 
   const handleRightClick = (event: MouseEvent, expense: MonthlyExpense) => {
     event.preventDefault();
@@ -35,7 +52,11 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ data, handleToastMessage, r
   };
 
   return (
-    <TableContainer id="expense-table" component={Paper} style={{ maxHeight: 400 }}>
+    <TableContainer
+      id="expense-table"
+      component={Paper}
+      style={{ maxHeight: 400 }}
+    >
       <Table stickyHeader>
         <TableHead>
           <TableRow>
@@ -49,7 +70,10 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ data, handleToastMessage, r
         </TableHead>
         <TableBody>
           {data?.slice(0, 100).map((row, index) => (
-            <TableRow key={index} onContextMenu={(event) => handleRightClick(event, row)}>
+            <TableRow
+              key={index}
+              onContextMenu={(event) => handleRightClick(event, row)}
+            >
               <TableCell>{row.expensedate}</TableCell>
               <TableCell>{row.person}</TableCell>
               <TableCell>{row.vendor}</TableCell>

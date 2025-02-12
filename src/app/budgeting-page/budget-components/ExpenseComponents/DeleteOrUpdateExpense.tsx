@@ -1,6 +1,9 @@
 import { Divider, Menu, MenuItem, MenuList } from '@mui/material';
 import React from 'react';
-import { MonthlyExpense, ToastMessageOptions } from '../../types/BudgetCategoryTypes';
+import {
+  MonthlyExpense,
+  ToastMessageOptions,
+} from '../../types/BudgetCategoryTypes';
 import axios from 'axios';
 
 interface DeleteOrUpdateExpenseProps {
@@ -16,16 +19,18 @@ const DeleteOrUpdateExpense: React.FC<DeleteOrUpdateExpenseProps> = ({
   handleClose,
   selectedRow,
   handleToastMessage,
-  refetchData
+  refetchData,
 }) => {
   const updateExpense = () => {
     console.log('Update Expense');
   };
 
   const deleteExpense = async () => {
-    const response = await axios.delete(`http://localhost:5000/budget/expense/${selectedRow?.id}`);
-    
-    if(response.status !== 200) {
+    const response = await axios.delete(
+      `http://localhost:5000/budget/expense/${selectedRow?.id}`,
+    );
+
+    if (response.status !== 200) {
       handleToastMessage({
         message: `Failed to delete expense ${selectedRow?.id}`,
         severity: 'error',

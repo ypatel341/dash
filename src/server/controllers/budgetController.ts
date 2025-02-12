@@ -5,9 +5,11 @@ import {
   getAllMonthlyExpense,
   getBucketExpenses,
   insertExpenseService,
+  updateExpenseService,
 } from '../services/budgetService';
 import logger from '../utils/logger';
 import { validateExpense, validateInputBucket } from '../utils/utils';
+import { UpdateExpenseType } from '../utils/types';
 
 export const getAllMonthlyExpenses = async (req: Request, res: Response) => {
   logger.log(req.body);
@@ -72,6 +74,25 @@ export const deleteExpenseController = async (req: Request, res: Response) => {
     res.json(response);
   } catch (error) {
     logger.error(`Error deleting expense: ${error}`);
+    res.status(500).json({ error: `Internal Server Error ${error}` });
+  }
+};
+
+export const updateExpenseController = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const expense = validateExpense(req.body);
+
+  const updateExpense: UpdateExpenseType = {
+    id,
+    updatedat: new Date().toISOString(),
+    ...expense,
+  };
+
+  try {
+    const response = await updateExpenseService(updateExpense);
+    res.json(response);
+  } catch (error) {
+    logger.error(`Error updating expense: ${error}`);
     res.status(500).json({ error: `Internal Server Error ${error}` });
   }
 };

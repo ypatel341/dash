@@ -29,6 +29,17 @@ export type InsertExpenseType = {
   expensedate?: string;
 };
 
+export type UpdateExpenseType = {
+  id: string;
+  updatedat: string;
+  person?: string;
+  bucketname?: string;
+  vendor?: string;
+  amount?: number;
+  description?: string;
+  expensedate?: string;
+};
+
 export type MonthlyExpense = {
   id: string;
   person: string;

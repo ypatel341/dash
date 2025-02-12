@@ -3,20 +3,26 @@ import axios from 'axios';
 import { Container } from '@mui/material';
 import { useParams, useLocation } from 'react-router-dom';
 import ExpenseTable from '../ExpenseComponents/ExpenseTable';
-import { MonthlyExpense, BudgetData, ToastMessageOptions } from '../../types/BudgetCategoryTypes';
+import {
+  MonthlyExpense,
+  BudgetData,
+  ToastMessageOptions,
+} from '../../types/BudgetCategoryTypes';
 import { formatTimestamptzToMMDDYYYY } from '../../utils/helpers';
 import ToastMessage from '../../../customizations/ToastMessages';
 
 const ExpenseDetailsHomePage: React.FC = () => {
   const location = useLocation();
   const data = location.state?.data as BudgetData;
-  console.log(data)
+  console.log(data);
   const { bucketname } = useParams<{ bucketname: string }>();
 
   const [bucketData, setBucketData] = useState<MonthlyExpense[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
-  const [toastMessage, setToastMessage] = useState<ToastMessageOptions | null>(null);
+  const [toastMessage, setToastMessage] = useState<ToastMessageOptions | null>(
+    null,
+  );
 
   const handleToastMessage = (messageInfo: ToastMessageOptions) => {
     setToastMessage(messageInfo);
@@ -55,7 +61,11 @@ const ExpenseDetailsHomePage: React.FC = () => {
     <Container>
       <h1>Bucket Details Page {bucketname}</h1>
       {!loading && !error && bucketData && (
-        <ExpenseTable data={bucketData} handleToastMessage={handleToastMessage} refetchData={fetchBucketData} />
+        <ExpenseTable
+          data={bucketData}
+          handleToastMessage={handleToastMessage}
+          refetchData={fetchBucketData}
+        />
       )}
       {loading && <div>Loading...</div>}
       {error && <div>Error: {error}</div>}
