@@ -12,7 +12,7 @@ import { validateExpense, validateInputBucket } from '../utils/utils';
 import { UpdateExpenseType } from '../utils/types';
 
 export const getAllMonthlyExpenses = async (req: Request, res: Response) => {
-  logger.log(req.body);
+  logger.info(req.body);
   try {
     const data = await getAllMonthlyExpense();
     res.json(data);
@@ -26,7 +26,7 @@ export const getAllBucketExpensesController = async (
   req: Request,
   res: Response,
 ) => {
-  logger.log(req.body);
+  logger.info(req.body);
   try {
     const data = await getAllBucketExpenses();
     res.json(data);

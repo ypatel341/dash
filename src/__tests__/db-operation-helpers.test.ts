@@ -73,6 +73,16 @@ describe('handles delete and update expenses ', () => {
     expect(insertedExpenseAfterUpdate?.description).toBe('updated description');
   });
 
+  it('should return an error if the expense id is invalid', async () => {
+    await expect(
+      updateExpense({
+        id: 'invalid-id',
+        updatedat: new Date().toISOString(),
+        description: 'updated description',
+      }),
+    ).rejects.toThrow();
+  });
+
   // Hard deleting expense to clean up the database
   afterAll(async () => {
     await db('budget_monthly_expenses')
@@ -87,32 +97,3 @@ describe('handles delete and update expenses ', () => {
     server.close();
   });
 });
-
-// describe('update an expense', () => {
-//   let insertExpenseIdDelete: InsertResponseId;
-
-//   beforeAll(async () => {
-//     insertExpenseIdDelete = await insertExpense({
-//       ...insertData,
-//       expensedate: new Date().toISOString(),
-//     });
-//   });
-
-//   it('should update an expense', async () => {
-//     const allMonthlyExpenses = await getAllMonthlyExpense();
-//     const insertedExpense = allMonthlyExpenses.find(
-//       (expense) => expense.id === insertExpenseIdDelete.id,
-//     );
-
-//     console.log('insertedExpense', insertedExpense);
-
-//     expect(insertedExpense).toBeDefined();
-//   });
-
-// Hard deleting expense to clean up the database
-// afterAll(async () => {
-//   await db('budget_monthly_expenses').where({ id: insertExpenseIdDelete.id }).del();
-//   await db.destroy();
-//   server.close();
-// });
-// });
