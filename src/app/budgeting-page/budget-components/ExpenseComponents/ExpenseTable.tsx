@@ -1,30 +1,24 @@
-import React, { MouseEvent, useState } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-} from '@mui/material';
-import { MonthlyExpense } from '../../types/BudgetCategoryTypes';
+import React, { useState, MouseEvent } from 'react';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { MonthlyExpense, ToastMessageOptions } from '../../types/BudgetCategoryTypes';
 import DeleteOrUpdateExpense from './DeleteOrUpdateExpense';
 
 interface ExpenseTableProps {
   data?: MonthlyExpense[];
+  handleToastMessage: (messageInfo: ToastMessageOptions) => void;
+  refetchData: () => void;
 }
 
-const ExpenseTable: React.FC<ExpenseTableProps> = ({ data }) => {
+const ExpenseTable: React.FC<ExpenseTableProps> = ({ data, handleToastMessage, refetchData }) => {
   const [contextMenu, setContextMenu] = useState<{
     mouseX: number;
     mouseY: number;
   } | null>(null);
-  const [row, setRow] = useState<MonthlyExpense | null>(null);
+  const [selectedExpense, setSelectedExpense] = useState<MonthlyExpense | null>(null);
 
-  const handleRightClick = (event: MouseEvent, row: MonthlyExpense) => {
+  const handleRightClick = (event: MouseEvent, expense: MonthlyExpense) => {
     event.preventDefault();
-    setRow(row);
+    setSelectedExpense(expense);
     setContextMenu(
       contextMenu === null
         ? {
@@ -37,14 +31,11 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ data }) => {
 
   const handleClose = () => {
     setContextMenu(null);
+    setSelectedExpense(null);
   };
 
   return (
-    <TableContainer
-      id="expense-table"
-      component={Paper}
-      style={{ maxHeight: 400 }}
-    >
+    <TableContainer id="expense-table" component={Paper} style={{ maxHeight: 400 }}>
       <Table stickyHeader>
         <TableHead>
           <TableRow>
@@ -73,7 +64,9 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ data }) => {
       <DeleteOrUpdateExpense
         contextMenu={contextMenu}
         handleClose={handleClose}
-        selectedRow={row}
+        selectedRow={selectedExpense}
+        handleToastMessage={handleToastMessage}
+        refetchData={refetchData}
       />
     </TableContainer>
   );

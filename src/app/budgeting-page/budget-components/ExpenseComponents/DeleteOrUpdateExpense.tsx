@@ -1,24 +1,45 @@
 import { Divider, Menu, MenuItem, MenuList } from '@mui/material';
 import React from 'react';
-import { MonthlyExpense } from '../../types/BudgetCategoryTypes';
+import { MonthlyExpense, ToastMessageOptions } from '../../types/BudgetCategoryTypes';
+import axios from 'axios';
 
 interface DeleteOrUpdateExpenseProps {
   contextMenu: { mouseX: number; mouseY: number } | null;
   handleClose: () => void;
   selectedRow: MonthlyExpense | null;
+  handleToastMessage: (messageInfo: ToastMessageOptions) => void;
+  refetchData: () => void;
 }
 
 const DeleteOrUpdateExpense: React.FC<DeleteOrUpdateExpenseProps> = ({
   contextMenu,
   handleClose,
-  selectedRow
+  selectedRow,
+  handleToastMessage,
+  refetchData
 }) => {
   const updateExpense = () => {
     console.log('Update Expense');
   };
 
-  const deleteExpense = () => {
-    console.log(`Delete Expense ${selectedRow?.id}`);
+  const deleteExpense = async () => {
+    const response = await axios.delete(`http://localhost:5000/budget/expense/${selectedRow?.id}`);
+    
+    if(response.status !== 200) {
+      handleToastMessage({
+        message: `Failed to delete expense ${selectedRow?.id}`,
+        severity: 'error',
+      });
+      return;
+    }
+
+    handleToastMessage({
+      message: `Expense ${selectedRow?.id} deleted successfully`,
+      severity: 'success',
+    });
+    handleClose();
+
+    refetchData();
   };
 
   return (
@@ -40,9 +61,7 @@ const DeleteOrUpdateExpense: React.FC<DeleteOrUpdateExpenseProps> = ({
           },
         }}
       >
-        <MenuItem autoFocus={false} onClick={updateExpense}>
-          Update Expense
-        </MenuItem>
+        <MenuItem onClick={updateExpense}>Update Expense</MenuItem>
         <Divider />
         <MenuItem onClick={deleteExpense} sx={{ color: '#f44336' }}>
           Delete Expense

@@ -198,7 +198,7 @@ export const EnterExpensePage: React.FC = () => {
             onClose={handleCloseAlert}
           />
         )}
-        {!loading && !error && <ExpenseTable data={data} />}
+        {!loading && !error && <ExpenseTable data={data} handleToastMessage={handleToastMessage} refetchData={fetchExpenses}/>}
         {loading && <div>Loading...</div>}
         {error && <div>Error: {error}</div>}
       </Box>
