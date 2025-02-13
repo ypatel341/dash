@@ -125,9 +125,10 @@ export const EnterExpensePage: React.FC = () => {
       data.date = date.toISOString();
     }
 
-    await axios.post('http://localhost:5000/budget/expense', data);
+    const response = await axios.post('http://localhost:5000/budget/expense', data);
+    console.log('response', response);
     const toastMessageSeverity: ToastMessageOptions = {
-      message: en.expense.successMessage,
+      message: `en.expense.successMessage ${response.data.id}`,
       severity: 'success',
     };
 
