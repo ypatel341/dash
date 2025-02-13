@@ -1,6 +1,19 @@
 import React, { useState, MouseEvent } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, IconButton } from '@mui/material';
-import { MonthlyExpense, ToastMessageOptions } from '../../types/BudgetCategoryTypes';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  TextField,
+  IconButton,
+} from '@mui/material';
+import {
+  MonthlyExpense,
+  ToastMessageOptions,
+} from '../../types/BudgetCategoryTypes';
 import DeleteOrUpdateExpense from './DeleteOrUpdateExpense';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
@@ -12,12 +25,18 @@ interface ExpenseTableProps {
   refetchData: () => void;
 }
 
-const ExpenseTable: React.FC<ExpenseTableProps> = ({ data, handleToastMessage, refetchData }) => {
+const ExpenseTable: React.FC<ExpenseTableProps> = ({
+  data,
+  handleToastMessage,
+  refetchData,
+}) => {
   const [contextMenu, setContextMenu] = useState<{
     mouseX: number;
     mouseY: number;
   } | null>(null);
-  const [selectedExpense, setSelectedExpense] = useState<MonthlyExpense | null>(null);
+  const [selectedExpense, setSelectedExpense] = useState<MonthlyExpense | null>(
+    null,
+  );
   const [editMode, setEditMode] = useState<{ [key: string]: boolean }>({});
   const [editedData, setEditedData] = useState<MonthlyExpense | null>(null);
 
@@ -47,7 +66,10 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ data, handleToastMessage, r
 
   const handleSaveClick = async (id: string) => {
     try {
-      await axios.patch(`http://localhost:5000/budget/expense/${id}`, editedData);
+      await axios.patch(
+        `http://localhost:5000/budget/expense/${id}`,
+        editedData,
+      );
 
       handleToastMessage({
         message: `Expense ${id} updated successfully`,
@@ -69,7 +91,11 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ data, handleToastMessage, r
   };
 
   return (
-    <TableContainer id="expense-table" component={Paper} style={{ maxHeight: 400 }}>
+    <TableContainer
+      id="expense-table"
+      component={Paper}
+      style={{ maxHeight: 400 }}
+    >
       <Table stickyHeader>
         <TableHead>
           <TableRow>
@@ -84,13 +110,18 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ data, handleToastMessage, r
         </TableHead>
         <TableBody>
           {data?.slice(0, 100).map((row, index) => (
-            <TableRow key={index} onContextMenu={(event) => handleRightClick(event, row)}>
+            <TableRow
+              key={index}
+              onContextMenu={(event) => handleRightClick(event, row)}
+            >
               <TableCell>
                 {editMode[row.id] ? (
                   <TextField
                     disabled={true} // Should be a date picker in the future
                     value={editedData?.expensedate || ''}
-                    onChange={(e) => handleInputChange('expensedate', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange('expensedate', e.target.value)
+                    }
                   />
                 ) : (
                   row.expensedate
@@ -100,7 +131,9 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ data, handleToastMessage, r
                 {editMode[row.id] ? (
                   <TextField
                     value={editedData?.person || ''}
-                    onChange={(e) => handleInputChange('person', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange('person', e.target.value)
+                    }
                   />
                 ) : (
                   row.person
@@ -110,7 +143,9 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ data, handleToastMessage, r
                 {editMode[row.id] ? (
                   <TextField
                     value={editedData?.vendor || ''}
-                    onChange={(e) => handleInputChange('vendor', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange('vendor', e.target.value)
+                    }
                   />
                 ) : (
                   row.vendor
@@ -118,10 +153,12 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ data, handleToastMessage, r
               </TableCell>
               <TableCell>
                 {editMode[row.id] ? (
-                  <TextField 
+                  <TextField
                     disabled={true} // Should be a dropdown menu in the future
                     value={editedData?.bucketname || ''}
-                    onChange={(e) => handleInputChange('bucketname', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange('bucketname', e.target.value)
+                    }
                   />
                 ) : (
                   row.bucketname
@@ -131,7 +168,9 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ data, handleToastMessage, r
                 {editMode[row.id] ? (
                   <TextField
                     value={editedData?.amount || ''}
-                    onChange={(e) => handleInputChange('amount', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange('amount', e.target.value)
+                    }
                   />
                 ) : (
                   row.amount
@@ -141,7 +180,9 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ data, handleToastMessage, r
                 {editMode[row.id] ? (
                   <TextField
                     value={editedData?.description || ''}
-                    onChange={(e) => handleInputChange('description', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange('description', e.target.value)
+                    }
                   />
                 ) : (
                   row.description
