@@ -21,8 +21,9 @@ const DeleteOrUpdateExpense: React.FC<DeleteOrUpdateExpenseProps> = ({
   handleToastMessage,
   refetchData,
 }) => {
-  const updateExpense = () => {
-    console.log('Update Expense');
+  const updateExpense = async () => {
+    // TODO: Make a modal for edits, right now we want to do it inline
+    handleClose();
   };
 
   const deleteExpense = async () => {
@@ -33,7 +34,7 @@ const DeleteOrUpdateExpense: React.FC<DeleteOrUpdateExpenseProps> = ({
     if (response.status !== 200) {
       handleToastMessage({
         message: `Failed to delete expense ${selectedRow?.id}`,
-        severity: 'error',
+        severity: 'warning',
       });
       return;
     }

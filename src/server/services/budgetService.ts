@@ -44,5 +44,5 @@ export const deleteExpenseService = async (id: string): Promise<void> => {
 export const updateExpenseService = async (
   expense: UpdateExpenseType,
 ): Promise<void> => {
-  await updateExpense(expense);
+  return await updateExpense(expense);
 };

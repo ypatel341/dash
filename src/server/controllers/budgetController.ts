@@ -80,7 +80,7 @@ export const deleteExpenseController = async (req: Request, res: Response) => {
 
 export const updateExpenseController = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const expense = validateExpense(req.body);
+  const expense = await validateExpense(req.body);
 
   const updateExpense: UpdateExpenseType = {
     id,

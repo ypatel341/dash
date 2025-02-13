@@ -45,7 +45,7 @@ export type ExpenseData = {
   date?: string;
 };
 
-export type ToastSeverityOptions = 'success' | 'error';
+export type ToastSeverityOptions = 'success' | 'error' | 'info' | 'warning';
 export type ToastMessageOptions = {
   message: string;
   severity: ToastSeverityOptions;

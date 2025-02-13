@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Container } from '@mui/material';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams,
+  //  useLocation 
+  } from 'react-router-dom';
 import ExpenseTable from '../ExpenseComponents/ExpenseTable';
 import {
   MonthlyExpense,
-  BudgetData,
+  // BudgetData,
   ToastMessageOptions,
 } from '../../types/BudgetCategoryTypes';
 import { formatTimestamptzToMMDDYYYY } from '../../utils/helpers';
 import ToastMessage from '../../../customizations/ToastMessages';
 
 const ExpenseDetailsHomePage: React.FC = () => {
-  const location = useLocation();
-  const data = location.state?.data as BudgetData;
-  console.log(data);
+  // const location = useLocation();
+  // const data = location.state?.data as BudgetData;
+  // console.log(data);
   const { bucketname } = useParams<{ bucketname: string }>();
 
   const [bucketData, setBucketData] = useState<MonthlyExpense[]>([]);

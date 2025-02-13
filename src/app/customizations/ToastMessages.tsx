@@ -1,10 +1,11 @@
 import React from 'react';
 import { Alert, IconButton, Snackbar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { ToastSeverityOptions } from '../budgeting-page/types/BudgetCategoryTypes';
 
 type ToastMessageProps = {
   message: string;
-  severity: 'success' | 'error';
+  severity: ToastSeverityOptions;
   onClose: () => void;
   duration?: number;
 };
