@@ -3,11 +3,14 @@ import {
   InsertExpenseType,
   InsertResponseId,
   MonthlyExpense,
+  UpdateExpenseType,
 } from '../utils/types';
 import {
+  deleteExpense,
   getAllBudgetData,
   getAllMonthlyExpense as getAllMonthlyExpenseFromDB,
   insertExpense,
+  updateExpense,
 } from '../utils/db-operation-helpers';
 import { calculateBucketExpenses } from '../utils/utils';
 
@@ -32,4 +35,14 @@ export const insertExpenseService = async (
   expense: InsertExpenseType,
 ): Promise<InsertResponseId> => {
   return await insertExpense(expense);
+};
+
+export const deleteExpenseService = async (id: string): Promise<void> => {
+  return await deleteExpense(id);
+};
+
+export const updateExpenseService = async (
+  expense: UpdateExpenseType,
+): Promise<void> => {
+  return await updateExpense(expense);
 };

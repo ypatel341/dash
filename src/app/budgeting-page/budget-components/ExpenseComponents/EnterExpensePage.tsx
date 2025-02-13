@@ -51,10 +51,12 @@ export const EnterExpensePage: React.FC = () => {
       const response = await axios.get(
         'http://localhost:5000/budget/info/allmonthexpense',
       );
+
       const formattedData = response.data.map((expense: MonthlyExpense) => ({
         ...expense,
         expensedate: formatTimestamptzToMMDDYYYY(expense.expensedate),
       }));
+
       setData(formattedData);
       setLoading(false);
     } catch (error: any) {
@@ -84,7 +86,7 @@ export const EnterExpensePage: React.FC = () => {
     }
   };
 
-  const handleButtonClick = async () => {
+  const handleSubmitButtonClick = async () => {
     const validationError = validateExpense(formData);
     if (validationError) {
       const toastMessageInfo: ToastMessageOptions = {
@@ -98,6 +100,14 @@ export const EnterExpensePage: React.FC = () => {
 
     try {
       await postExpense();
+      // set state back to initial
+      setFormData({
+        person: 'Both' as ExpensePerson,
+        bucketname: 'rent' as ExpenseType,
+        vendor: '',
+        amount: null,
+        description: '',
+      });
       fetchExpenses();
     } catch (error) {
       const toastMessageInfo: ToastMessageOptions = {
@@ -115,9 +125,10 @@ export const EnterExpensePage: React.FC = () => {
       data.date = date.toISOString();
     }
 
-    await axios.post('http://localhost:5000/budget/expense', data);
+    const response = await axios.post('http://localhost:5000/budget/expense', data);
+    console.log('response', response);
     const toastMessageSeverity: ToastMessageOptions = {
-      message: en.expense.successMessage,
+      message: `en.expense.successMessage ${response.data.id}`,
       severity: 'success',
     };
 
@@ -181,7 +192,7 @@ export const EnterExpensePage: React.FC = () => {
         <Button
           variant="contained"
           color="primary"
-          onClick={handleButtonClick}
+          onClick={handleSubmitButtonClick}
           disabled={
             !formData.amount || !formData.bucketname || !formData.vendor
           }
@@ -196,7 +207,13 @@ export const EnterExpensePage: React.FC = () => {
             onClose={handleCloseAlert}
           />
         )}
-        {!loading && !error && <ExpenseTable data={data} />}
+        {!loading && !error && (
+          <ExpenseTable
+            data={data}
+            handleToastMessage={handleToastMessage}
+            refetchData={fetchExpenses}
+          />
+        )}
         {loading && <div>Loading...</div>}
         {error && <div>Error: {error}</div>}
       </Box>

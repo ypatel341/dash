@@ -5,6 +5,7 @@ import {
   InsertExpenseType,
   InsertResponseId,
   MonthlyExpense,
+  UpdateExpenseType,
 } from './types';
 import { ErrorFetchingBudgetData, ErrorInsertingExpense } from './consts';
 
@@ -70,6 +71,34 @@ export const getAllMonthlyExpense = async (): Promise<MonthlyExpense[]> => {
     return result;
   } catch (error) {
     logger.error(`${ErrorFetchingBudgetData} ${error}`);
+    throw error;
+  }
+};
+
+export const deleteExpense = async (id: string): Promise<void> => {
+  try {
+    await db('budget_monthly_expenses')
+      .where({ id })
+      .update({ deletedat: db.fn.now() });
+
+    logger.info(`Deleted expense with id ${id}`);
+  } catch (error) {
+    logger.error(`${ErrorInsertingExpense} ${error}`);
+    throw error;
+  }
+};
+
+export const updateExpense = async (
+  updateExpense: UpdateExpenseType,
+): Promise<void> => {
+  const { id } = updateExpense;
+
+  try {
+    await db('budget_monthly_expenses').where({ id: id }).update(updateExpense);
+
+    logger.info(`Updated expense with id ${updateExpense.id}`);
+  } catch (error) {
+    logger.error(`${ErrorInsertingExpense} ${error}`);
     throw error;
   }
 };
