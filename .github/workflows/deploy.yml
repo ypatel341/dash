@@ -3,34 +3,46 @@ name: Deploy to Heroku
 on:
   push:
     branches:
-      - main
+      - main  # Ensure this runs only on main branch commits
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      # Checkout the repository
-      - uses: actions/checkout@v2
-      
-      # Set up Node.js (adjust version as needed)
-      - name: Setup Node.js
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
           cache: 'npm'
-      
-      # Install Node dependencies here
-      - name: Install dependencies
-        run: npm install
-      
-      # Running the unit tests
-      - name: Run tests
-        run: npm test
-      
-      # Deploy to Heroku
+
+      - name: Install Dependencies
+        run: npm ci 
+
+      - name: Build Project
+        run: npm run build  
+
+      - name: Install Heroku CLI
+        run: curl https://cli-assets.heroku.com/install.sh | sh
+
+      - name: Authenticate with Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku auth:token
+
       - name: Deploy to Heroku
-        uses: akhileshns/heroku-deploy@v3.12.12
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: "dash-production-app"
-          heroku_email: "ypatel341@gmail.com"
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+        run: |
+          heroku git:remote -a $HEROKU_APP_NAME
+          git push heroku main
+
+      - name: Run Database Migrations (Optional)
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku run npm run migrate --app ${{ secrets.HEROKU_APP_NAME }}
+
