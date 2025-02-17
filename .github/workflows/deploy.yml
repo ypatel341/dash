@@ -1,5 +1,4 @@
-name: Deploy
-
+name: Deploy to Heroku
 on:
   push:
     branches:
@@ -8,20 +7,53 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v2
+        
+      # Step 2: Set up Node.js with specific version
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
 
+      # Step 3: Install Heroku CLI
       - name: Install Heroku CLI
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
           heroku --version
 
+      # Step 4: Debugging: Check npm and node versions
+      - name: Debugging: Check npm and Node versions
+        run: |
+          echo "Node version: $(node -v)"
+          echo "npm version: $(npm -v)"
+          npm list --depth=0
+
+      # Step 5: Upgrade npm to latest version
+      - name: Upgrade npm to latest version
+        run: npm install -g npm@latest
+
+      # Step 6: Clear npm cache (if needed)
+      - name: Clear npm cache
+        run: npm cache clean --force
+
+      # Step 7: Install dependencies
+      - name: Install dependencies
+        run: npm ci 
+
+      # Step 8: Deploy to Heroku
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
           branch: "main"
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
+
+      # Step 9: Debugging: Check logs after deployment (optional)
+      - name: Debugging: Check Heroku logs
+        run: |
+          heroku logs --tail --app ${{secrets.HEROKU_APP_NAME}}
