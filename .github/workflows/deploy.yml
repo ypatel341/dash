@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Install Heroku CLI
       - name: Install Heroku CLI
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
           heroku --version
+          apt-get install nodejs-legacy
 
       # Step 2: Checkout code from the repository
       - uses: actions/checkout@v2
