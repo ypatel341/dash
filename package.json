@@ -1,6 +1,9 @@
 {
   "name": "dash",
   "version": "0.1.0",
+  "engines": {
+    "node": "20.x"
+  },
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.14.0",
