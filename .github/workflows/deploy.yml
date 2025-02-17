@@ -21,20 +21,11 @@ jobs:
           echo "Checking npm cache..."
           npm cache verify
 
-      - name: Clean npm Cache
-        run: npm cache clean --force
-
-      - name: Remove existing dependencies
-        run: rm -rf node_modules package-lock.json
-
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
           cache: 'npm'
-
-      - name: Clear npm cache
-        run: npm cache clean --force
 
       - name: Install Dependencies
         run: npm install
