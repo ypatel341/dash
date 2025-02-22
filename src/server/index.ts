@@ -1,14 +1,20 @@
 import express from 'express';
 import path from 'path';
 import db from '../config/db';
+import cors from 'cors';
 import logger from "./utils/logger";
 import budgetRoutes from './routes/budgetRoutes';
 
 const app = express();
 
+// Enable CORS for all routes
+app.use(cors());
+
+// Enable JSON body parsing
 app.use(express.json());
 
-app.use('/api', budgetRoutes);
+// Enable URL-encoded body parsing
+app.use('/budget', budgetRoutes);
 
 // Serve static files from the dist folder
 app.use(express.static(path.join(__dirname, '../../dist')));
