@@ -3,16 +3,15 @@ import axios from 'axios';
 import { Container } from '@mui/material';
 import {
   useParams,
-  //  useLocation
 } from 'react-router-dom';
 import ExpenseTable from '../ExpenseComponents/ExpenseTable';
 import {
   MonthlyExpense,
-  // BudgetData,
   ToastMessageOptions,
 } from '../../types/BudgetCategoryTypes';
 import { formatTimestamptzToMMDDYYYY } from '../../utils/helpers';
 import ToastMessage from '../../../customizations/ToastMessages';
+import en from '../../../i18n/en';
 
 const ExpenseDetailsHomePage: React.FC = () => {
   // const location = useLocation();
@@ -29,7 +28,7 @@ const ExpenseDetailsHomePage: React.FC = () => {
 
   const handleToastMessage = (messageInfo: ToastMessageOptions) => {
     setToastMessage(messageInfo);
-    setTimeout(() => setToastMessage(null), 3000); // Hide the toast message after 3 seconds
+    setTimeout(() => setToastMessage(null), 3000);
   };
 
   const fetchBucketData = async () => {
@@ -46,8 +45,8 @@ const ExpenseDetailsHomePage: React.FC = () => {
 
       setBucketData(formattedData);
       setLoading(false);
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      error instanceof Error ? setError(error.message) : setError(en.errors.unknownError)
       setLoading(false);
       handleToastMessage({
         message: 'Failed to fetch bucket data',

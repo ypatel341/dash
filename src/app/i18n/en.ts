@@ -11,6 +11,9 @@ const en = {
     successMessage: 'The Expense was successfully saved',
     errorMessage: 'There was an error saving the Expense',
   },
+  errors: {
+    unknownError: 'An unknown error occurred'
+  }
 };
 
 export default en;
