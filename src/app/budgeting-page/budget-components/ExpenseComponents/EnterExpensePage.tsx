@@ -59,8 +59,8 @@ export const EnterExpensePage: React.FC = () => {
 
       setData(formattedData);
       setLoading(false);
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      error instanceof Error ? setError(error.message) : setError(en.errors.unknownError);
       setLoading(false);
     }
   };
@@ -76,7 +76,7 @@ export const EnterExpensePage: React.FC = () => {
     };
 
   const handleSelectChange =
-    (field: keyof ExpenseData) => (event: SelectChangeEvent<any>) => {
+    (field: keyof ExpenseData) => (event: SelectChangeEvent<string>) => {
       setFormData({ ...formData, [field]: event.target.value });
     };
 
