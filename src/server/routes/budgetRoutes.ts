@@ -4,6 +4,7 @@ import {
   getAllBucketExpensesController,
   getAllMonthlyExpenses,
   getBucketExpensesController,
+  getByMonthExpenseController,
   insertExpenseController,
   updateExpenseController,
 } from '../controllers/budgetController';
@@ -14,6 +15,7 @@ const router = Router();
 router.get('/info/allmonthexpense', getAllMonthlyExpenses);
 router.get('/info/allbucketexpense', getAllBucketExpensesController);
 router.get('/info/bucketexpense/:bucketname', getBucketExpensesController);
+router.get('/info/getbymonthexpense/:month', getByMonthExpenseController);
 
 // POSTS
 router.post('/expense', insertExpenseController);

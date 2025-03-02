@@ -3,6 +3,7 @@ import {
   deleteExpenseService,
   getAllBucketExpenses,
   getAllMonthlyExpense,
+  getAllMonthlyExpensesByMonth,
   getBucketExpenses,
   insertExpenseService,
   updateExpenseService,
@@ -96,3 +97,19 @@ export const updateExpenseController = async (req: Request, res: Response) => {
     res.status(500).json({ error: `Internal Server Error ${error}` });
   }
 };
+
+export const getByMonthExpenseController = async (req: Request, res: Response) => {
+  const { month } = req.params;
+  
+  if(!month){
+    res.status(400).json({ error: 'Missing month parameter'})
+  }
+
+  try{
+    const response = await getAllMonthlyExpensesByMonth(month);
+    res.json(response)
+  }catch(error){
+    logger.error(`Error getting monthly expense by month ${error}`);
+    res.status(500).json({ error: `Internal Server Error ${error}`})
+  }
+}
