@@ -4,11 +4,14 @@ import db from '../config/db';
 import cors from 'cors';
 import logger from "./utils/logger";
 import budgetRoutes from './routes/budgetRoutes';
+import compression from 'compression';
 
 const app = express();
 
 // Enable CORS for all routes
 app.use(cors());
+
+app.use(compression());
 
 // Enable JSON body parsing
 app.use(express.json());
