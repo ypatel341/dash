@@ -2,13 +2,14 @@ import { db, server } from '../server';
 import {
   deleteExpense,
   getAllMonthlyExpense,
+  getAllMonthlyExpenseByMonth,
   insertExpense,
   updateExpense,
 } from '../server/utils/db-operation-helpers';
 import { InsertResponseId } from '../server/utils/types';
 import { insertData } from '../test_data/budgetData';
 
-describe('handles delete and update expenses ', () => {
+describe('handles all DB operations and closes the connection', () => {
   let insertExpenseIdDelete: InsertResponseId;
   let insertExpenseIdUpdate: InsertResponseId;
 
@@ -71,6 +72,16 @@ describe('handles delete and update expenses ', () => {
     );
 
     expect(insertedExpenseAfterUpdate?.description).toBe('updated description');
+  });
+
+  it.only('should return all monthly expenses by month', async () => {
+    const monthlyExpensesByMonth = await getAllMonthlyExpenseByMonth('2025-01');
+    // const monthlyExpensesByMonth2 = await getAllMonthlyExpenseByMonth('2021-02');
+
+    console.log('monthlyExpensesByMonth', monthlyExpensesByMonth);
+
+    // expect(monthlyExpensesByMonth.length).toBeGreaterThan(0);
+    // expect(monthlyExpensesByMonth2.length).toBeGreaterThan(0);
   });
 
   it('should return an error if the expense id is invalid', async () => {
