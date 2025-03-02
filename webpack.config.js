@@ -42,13 +42,13 @@ module.exports = {
         template: './public/index.html',
     }),
   ],
-//   devServer: {
-//     contentBase: path.join(__dirname, 'dist'),
-//     compress: true,
-//     port: 9000,
-//     proxy: {
-//       '/api': 'http://localhost:5000',
-//     },
-//   },
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    },
+    usedExports: true,
+    minimize: true,
+    minimizer: [new TerserPlugin()],
+  },
   mode: 'production',
 };
