@@ -75,38 +75,20 @@ export const getAllMonthlyExpense = async (): Promise<MonthlyExpense[]> => {
   }
 };
 
-export const getAllMonthlyExpenseByMonth = async(yearMonthDay: string): Promise<MonthlyExpense[]> => {
+export const getAllMonthlyExpenseByMonth = async(yearMonth: string): Promise<MonthlyExpense[]> => {
   try {
+    const yearMonthDay = `${yearMonth}-01`;
 
-      // const startDate = `${month}-01`;
-
-      // // Create a date object for the first day of the next month
-      // const nextMonth = new Date(startDate);
-      // nextMonth.setMonth(nextMonth.getMonth() + 1);
-  
-      // // Get the last day of the given month by subtracting one day from the first day of the next month
-      // const endDate = new Date(nextMonth);
-      // endDate.setDate(endDate.getDate() - 1);
-  
-      // // Format the end date as YYYY-MM-DD
-      // const endDateString = endDate.toISOString().split('T')[0];
-    
-    // DB format is YYYY-MM-DD
-    const startDate = `2025-02-01`;
-    const endDate = `2025-02-28`;
-
-    logger.info(`Fetching expenses for start: ${startDate} and end: ${endDate}`);
+    logger.info(`Fetching expenses for the month: ${yearMonthDay}`);
 
     const result: MonthlyExpense[] = await db('budget_monthly_expenses')
       .select('*')
-      .where('expensedate', '>=', db.raw('?', [startDate]))
-      .where('expensedate', '<', db.raw('?::date + INTERVAL \'1 month\'', [endDate]))
+      .where('expensedate', '>=', db.raw('?', [yearMonthDay]))
+      .where('expensedate', '<', db.raw('?::date + INTERVAL \'1 month\'', [yearMonthDay]))
       .whereNull('deletedat')
       .orderBy('expensedate', 'desc');
 
-    console.log('result', result);
-
-    logger.info(`Fetched ${result.length} monthly expenses for month: ${yearMonthDay}`);
+    logger.info(`Fetched ${result.length} monthly expenses for month: ${yearMonth}`);
 
     return result;
   } catch (error) {
