@@ -7,7 +7,7 @@ import {
   MonthlyExpense,
   ToastMessageOptions,
 } from '../../types/BudgetCategoryTypes';
-import { formatTimestamptzToMMDDYYYY } from '../../utils/helpers';
+import { formatMonthlyExpensesExpenseDate } from '../../utils/helpers';
 import ToastMessage from '../../../customizations/ToastMessages';
 import en from '../../../i18n/en';
 
@@ -36,10 +36,8 @@ const ExpenseDetailsHomePage: React.FC = () => {
         `http://localhost:5000/budget/info/bucketexpense/${bucketname}`,
       );
 
-      const formattedData = response.data.map((expense: MonthlyExpense) => ({
-        ...expense,
-        expensedate: formatTimestamptzToMMDDYYYY(expense.expensedate),
-      }));
+      const { data } = response;
+      const formattedData = await formatMonthlyExpensesExpenseDate(data)
 
       setBucketData(formattedData);
       setLoading(false);

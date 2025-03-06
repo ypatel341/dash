@@ -12,8 +12,8 @@ const BudgetCategoryComponent: React.FC<BudgetComponentProps> = ({ data }) => {
 
   let cardColor = '#4CAF50';
   if (
-    currentamount >= eightyPercentOfAllocatedAmount &&
-    currentamount < amount ||
+    (currentamount >= eightyPercentOfAllocatedAmount &&
+      currentamount < amount) ||
     currentamount === amount
   ) {
     cardColor = '#FFEB3B';

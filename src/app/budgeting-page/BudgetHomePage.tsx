@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Grid, Container } from '@mui/material';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { Grid, Container, Button } from '@mui/material';
 import { BudgetData } from './types/BudgetCategoryTypes';
 import BudgetCategoryComponent from './budget-components/BudgetCategoryComponent';
 import BudgetSubHeader from './budget-components/BudgetSubHeader';
 import dayjs, { Dayjs } from 'dayjs';
 import { formatMonthlyExpensesToBucketExpenses } from './utils/helpers';
+import ExpenseMonthDateSelector from './shared-budget-components/ExpenseMonthDateSelector';
+import en from '../i18n/en';
 
 const BudgetHomePage: React.FC = () => {
   const [budgetData, setBudgetData] = useState<BudgetData[]>();
@@ -17,19 +16,24 @@ const BudgetHomePage: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   useEffect(() => {
-    axios
-      .get('http://localhost:5000/budget/info/allbucketexpense')
-      .then((response) => {
-        const { data } = response;
-
-        setBudgetData(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setError(error.message);
-        setLoading(false);
-      });
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        'http://localhost:5000/budget/info/allbucketexpense',
+      );
+      const { data } = response;
+
+      setBudgetData(data);
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -43,14 +47,20 @@ const BudgetHomePage: React.FC = () => {
     return <div>Error: Data not found</div>;
   }
 
-  const queryNewData = async (date: Dayjs, existingBudgetData: BudgetData[]) => {
+  const getFormattedMonthlyExpenseData = async (
+    date: Dayjs,
+    existingBudgetData: BudgetData[],
+  ) => {
     const formattedDate = dayjs(date).format('YYYY-MM');
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/budget/info/getbymonthexpense/${formattedDate}`);
+      const response = await axios.get(
+        `http://localhost:5000/budget/info/getbymonthexpense/${formattedDate}`,
+      );
       const { data } = response;
 
-      const formattedData: BudgetData[] = await formatMonthlyExpensesToBucketExpenses(data, existingBudgetData);
+      const formattedData: BudgetData[] =
+        await formatMonthlyExpensesToBucketExpenses(data, existingBudgetData);
 
       setBudgetData(formattedData);
     } catch (error: any) {
@@ -60,9 +70,14 @@ const BudgetHomePage: React.FC = () => {
     }
   };
 
+  const resetData = async () => {
+    fetchData();
+    setSelectedDate(new Date());
+  };
+
   return (
     <Container>
-      <h1>Budget Home Page</h1>
+      <h1>{en.budgetHomePage.header}</h1>
       <Grid container spacing={3} sx={{ mb: 2 }}>
         <Grid item xs={12} sm={4} md={4}>
           <BudgetSubHeader title={'Net Worth'} />{' '}
@@ -74,22 +89,31 @@ const BudgetHomePage: React.FC = () => {
           <BudgetSubHeader title="Enter Expense" />
         </Grid>
       </Grid>
-      <Grid>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker 
-            views={['year', 'month']}
-            label="Year and Month"
-            minDate={dayjs('2024-01-01')}
-            maxDate={dayjs('2025-04-01')}
+      <Grid container spacing={3} sx={{ mb: 2 }}>
+        <Grid item xs={12} sm={6} md={3}></Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <ExpenseMonthDateSelector
+            label={en.common.datePicker}
+            minDate={dayjs(en.common.budgetStartDate)}
+            maxDate={dayjs(en.common.budgetEndDate)}
             value={dayjs(selectedDate)}
             onChange={(newValue) => {
               newValue && setSelectedDate(newValue.toDate());
             }}
             onAccept={(newValue) => {
-              newValue && queryNewData(newValue, budgetData);
+              newValue && getFormattedMonthlyExpenseData(newValue, budgetData);
             }}
           />
-        </LocalizationProvider>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => resetData()}
+          >
+            {en.budgetHomePage.resetMonth}
+          </Button>
+        </Grid>
       </Grid>
       <Grid container spacing={3}>
         {budgetData.map((item) => (
