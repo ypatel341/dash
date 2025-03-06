@@ -25,11 +25,14 @@ export const getAllBucketExpenses = async () => {
   return await calculateBucketExpenses(rawMonthlyData, allBudgetData);
 };
 
-export const getAllMonthlyExpensesByMonth = async (month: string): Promise<MonthlyExpense[]> => {
+export const getAllMonthlyExpensesByMonth = async (
+  month: string,
+): Promise<MonthlyExpense[]> => {
   // Handle input of year here
-  const rawMonthlyData: MonthlyExpense[] = await getAllMonthlyExpenseByMonth(month);
+  const rawMonthlyData: MonthlyExpense[] =
+    await getAllMonthlyExpenseByMonth(month);
   return rawMonthlyData;
-}
+};
 
 export const getBucketExpenses = async (
   bucketname: string,

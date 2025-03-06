@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import db from '../config/db';
 import cors from 'cors';
-import logger from "./utils/logger";
+import logger from './utils/logger';
 import budgetRoutes from './routes/budgetRoutes';
 
 const app = express();
@@ -20,7 +20,7 @@ app.use('/budget', budgetRoutes);
 app.use(express.static(path.join(__dirname, '../../dist')));
 
 // Fallback for single-page apps:
-app.get('*', (req: any, res: { sendFile: (arg0: any) => void; }) => {
+app.get('*', (req: any, res: { sendFile: (arg0: any) => void }) => {
   logger.info(`req ${req}`);
   res.sendFile(path.join(__dirname, '../../dist', 'index.html'));
 });

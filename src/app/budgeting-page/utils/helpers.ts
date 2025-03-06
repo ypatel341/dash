@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { ExpenseData } from '../types/BudgetCategoryTypes';
+import { BudgetData, ExpenseData, MonthlyExpense } from '../types/BudgetCategoryTypes';
 
 export const transformBucketName = (bucketname: string): string => {
   const transformations: { [key: string]: string } = {
@@ -52,3 +52,29 @@ export const validateExpense = (data: ExpenseData): string | null => {
 export const formatTimestamptzToMMDDYYYY = (date: string): string => {
   return dayjs(date).format('MM/DD/YYYY');
 };
+
+export const formatMonthlyExpensesToBucketExpenses = async (monthlyExpenses: MonthlyExpense[], existingBudgetData: BudgetData[]): Promise<BudgetData[]> => {
+  const bucketMap = new Map<string, number>();
+
+  // Accumulate amounts for each bucket
+  monthlyExpenses.forEach((expense) => {
+    const { bucketname, amount } = expense;
+
+    if (bucketMap.has(bucketname)) {
+      bucketMap.set(bucketname, bucketMap.get(bucketname)! + amount);
+    } else {
+      bucketMap.set(bucketname, amount);
+    }
+  });
+
+  // Update existing budget data with accumulated amounts
+  existingBudgetData.forEach((bucket) => {
+    const { bucketname } = bucket;
+
+    if (bucketMap.has(bucketname)) {
+      bucket.currentamount = bucketMap.get(bucketname)!;
+    }
+  });
+
+  return existingBudgetData;
+}

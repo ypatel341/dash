@@ -101,13 +101,13 @@ describe('handles all DB operations and closes the connection', () => {
     // This test can be cleaned up by updating the beforeAll and afterAll to insert and delete multiple expenses
     // This is just a quick test to make sure that the function is working
     const yearMonth = await getCurrentYearMonth();
-    
+
     const allMonthlyExpenses = await getAllMonthlyExpenseByMonth(yearMonth);
     const latestExpense = allMonthlyExpenses[0];
 
     expect(allMonthlyExpenses.length).toBeGreaterThan(0);
     expect(latestExpense.description).toBe('TEST Groceries');
-  }); 
+  });
 
   // Hard deleting expense to clean up the database
   afterAll(async () => {

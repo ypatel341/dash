@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Container } from '@mui/material';
-import {
-  useParams,
-} from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import ExpenseTable from '../ExpenseComponents/ExpenseTable';
 import {
   MonthlyExpense,
@@ -46,7 +44,9 @@ const ExpenseDetailsHomePage: React.FC = () => {
       setBucketData(formattedData);
       setLoading(false);
     } catch (error: unknown) {
-      error instanceof Error ? setError(error.message) : setError(en.errors.unknownError)
+      error instanceof Error
+        ? setError(error.message)
+        : setError(en.errors.unknownError);
       setLoading(false);
       handleToastMessage({
         message: 'Failed to fetch bucket data',

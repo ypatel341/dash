@@ -60,7 +60,9 @@ export const EnterExpensePage: React.FC = () => {
       setData(formattedData);
       setLoading(false);
     } catch (error: unknown) {
-      error instanceof Error ? setError(error.message) : setError(en.errors.unknownError);
+      error instanceof Error
+        ? setError(error.message)
+        : setError(en.errors.unknownError);
       setLoading(false);
     }
   };
@@ -125,7 +127,10 @@ export const EnterExpensePage: React.FC = () => {
       data.date = date.toISOString();
     }
 
-    const response = await axios.post('http://localhost:5000/budget/expense', data);
+    const response = await axios.post(
+      'http://localhost:5000/budget/expense',
+      data,
+    );
     const toastMessageSeverity: ToastMessageOptions = {
       message: `en.expense.successMessage ${response.data.id}`,
       severity: 'success',

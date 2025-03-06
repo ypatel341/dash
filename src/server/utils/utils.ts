@@ -76,9 +76,9 @@ export const validateInputBucket = async (
 };
 
 // Test Helpers
-export const getCurrentYearMonth = async(): Promise<string> => {
+export const getCurrentYearMonth = async (): Promise<string> => {
   const date = new Date();
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based, so add 1
   return `${year}-${month}`;
-}
+};

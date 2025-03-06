@@ -75,7 +75,9 @@ export const getAllMonthlyExpense = async (): Promise<MonthlyExpense[]> => {
   }
 };
 
-export const getAllMonthlyExpenseByMonth = async(yearMonth: string): Promise<MonthlyExpense[]> => {
+export const getAllMonthlyExpenseByMonth = async (
+  yearMonth: string,
+): Promise<MonthlyExpense[]> => {
   try {
     const yearMonthDay = `${yearMonth}-01`;
 
@@ -84,18 +86,24 @@ export const getAllMonthlyExpenseByMonth = async(yearMonth: string): Promise<Mon
     const result: MonthlyExpense[] = await db('budget_monthly_expenses')
       .select('*')
       .where('expensedate', '>=', db.raw('?', [yearMonthDay]))
-      .where('expensedate', '<', db.raw('?::date + INTERVAL \'1 month\'', [yearMonthDay]))
+      .where(
+        'expensedate',
+        '<',
+        db.raw("?::date + INTERVAL '1 month'", [yearMonthDay]),
+      )
       .whereNull('deletedat')
       .orderBy('expensedate', 'desc');
 
-    logger.info(`Fetched ${result.length} monthly expenses for month: ${yearMonth}`);
+    logger.info(
+      `Fetched ${result.length} monthly expenses for month: ${yearMonth}`,
+    );
 
     return result;
   } catch (error) {
     logger.error(`${ErrorFetchingBudgetData}: ${error}`);
     throw error;
   }
-}
+};
 
 export const deleteExpense = async (id: string): Promise<void> => {
   try {
