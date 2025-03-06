@@ -34,21 +34,21 @@ module.exports = {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
         exclude: /node_modules/,
-      }
+      },
     ],
   },
   plugins: [
     new HtmlWebpackPlugin({
-        template: './public/index.html',
+      template: './public/index.html',
     }),
   ],
-//   devServer: {
-//     contentBase: path.join(__dirname, 'dist'),
-//     compress: true,
-//     port: 9000,
-//     proxy: {
-//       '/api': 'http://localhost:5000',
-//     },
-//   },
+  //   devServer: {
+  //     contentBase: path.join(__dirname, 'dist'),
+  //     compress: true,
+  //     port: 9000,
+  //     proxy: {
+  //       '/api': 'http://localhost:5000',
+  //     },
+  //   },
   mode: 'production',
 };

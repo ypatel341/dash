@@ -8,6 +8,7 @@ import {
 import {
   deleteExpense,
   getAllBudgetData,
+  getAllMonthlyExpenseByMonth,
   getAllMonthlyExpense as getAllMonthlyExpenseFromDB,
   insertExpense,
   updateExpense,
@@ -22,6 +23,15 @@ export const getAllBucketExpenses = async () => {
   const rawMonthlyData: MonthlyExpense[] = await getAllMonthlyExpense();
   const allBudgetData: BudgetType[] = await getAllBudgetData();
   return await calculateBucketExpenses(rawMonthlyData, allBudgetData);
+};
+
+export const getAllMonthlyExpensesByMonth = async (
+  month: string,
+): Promise<MonthlyExpense[]> => {
+  // Handle input of year here
+  const rawMonthlyData: MonthlyExpense[] =
+    await getAllMonthlyExpenseByMonth(month);
+  return rawMonthlyData;
 };
 
 export const getBucketExpenses = async (

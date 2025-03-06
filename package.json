@@ -43,7 +43,7 @@
     "start-backend-prod": "NODE_ENV=production tsc && node dist/server/index.js",
     "start-all-prod": "concurrently \"NODE_ENV=production npm run start\" \"NODE_ENV=production npm run start-backend-prod\"",
     "prettier": "prettier --write .",
-    "test": "NODE_ENV=development jest --detectOpenHandles",
+    "test": "NODE_ENV=development jest --detectOpenHandles --verbose",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
     "cleanup": "ts-prune && cspell '**/*.{js,jsx,ts,tsx,md,json}'",

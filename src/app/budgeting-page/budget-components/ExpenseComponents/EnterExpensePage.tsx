@@ -12,7 +12,7 @@ import axios from 'axios';
 import ToastMessage from '../../../customizations/ToastMessages';
 import dayjs, { Dayjs } from 'dayjs';
 import {
-  formatTimestamptzToMMDDYYYY,
+  formatMonthlyExpensesExpenseDate,
   validateExpense,
 } from '../../utils/helpers';
 import {
@@ -25,6 +25,7 @@ import {
 } from './ExpenseSubComponents';
 import en from '../../../i18n/en';
 import ExpenseTable from './ExpenseTable';
+import ExpenseMonthDateSelector from '../../shared-budget-components/ExpenseMonthDateSelector';
 
 export const EnterExpensePage: React.FC = () => {
   // Setting states
@@ -43,6 +44,7 @@ export const EnterExpensePage: React.FC = () => {
   const [data, setData] = useState<MonthlyExpense[]>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+  const [selectedYearMonth, setSelectedYearMonth] = useState<Date>(new Date());
 
   // Fetching data
   const fetchExpenses = async () => {
@@ -52,15 +54,15 @@ export const EnterExpensePage: React.FC = () => {
         'http://localhost:5000/budget/info/allmonthexpense',
       );
 
-      const formattedData = response.data.map((expense: MonthlyExpense) => ({
-        ...expense,
-        expensedate: formatTimestamptzToMMDDYYYY(expense.expensedate),
-      }));
+      const { data } = response
+      const formattedData = await formatMonthlyExpensesExpenseDate(data)
 
       setData(formattedData);
       setLoading(false);
     } catch (error: unknown) {
-      error instanceof Error ? setError(error.message) : setError(en.errors.unknownError);
+      error instanceof Error
+        ? setError(error.message)
+        : setError(en.errors.unknownError);
       setLoading(false);
     }
   };
@@ -125,8 +127,10 @@ export const EnterExpensePage: React.FC = () => {
       data.date = date.toISOString();
     }
 
-    const response = await axios.post('http://localhost:5000/budget/expense', data);
-    console.log('response', response);
+    const response = await axios.post(
+      'http://localhost:5000/budget/expense',
+      data,
+    );
     const toastMessageSeverity: ToastMessageOptions = {
       message: `en.expense.successMessage ${response.data.id}`,
       severity: 'success',
@@ -145,6 +149,26 @@ export const EnterExpensePage: React.FC = () => {
 
   const handleCloseAlert = () => {
     setShowAlert(false);
+  };
+
+  const getMonthlyExpenseData = async (date: Dayjs) => {
+    const formattedDate = dayjs(date).format('YYYY-MM');
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/budget/info/getbymonthexpense/${formattedDate}`,
+      );
+      const { data } = response;
+      const formattedData = await formatMonthlyExpensesExpenseDate(data);
+
+      setData(formattedData);
+    }
+    catch (error: any) {
+      setError(error.message);
+    }
+    finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -182,11 +206,25 @@ export const EnterExpensePage: React.FC = () => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <DateField
-              data-cy="date-field"
-              date={date}
-              onChange={handleSetDate}
-            />
+            <Box display="flex" justifyContent="space-between">
+              <DateField
+                data-cy="date-field"
+                date={date}
+                onChange={handleSetDate}
+              />
+              <ExpenseMonthDateSelector
+                label={en.common.datePicker}
+                minDate={dayjs(en.common.budgetStartDate)}
+                maxDate={dayjs(en.common.budgetEndDate)}
+                value={dayjs(selectedYearMonth)}
+                onChange={(newValue) => {
+                  newValue && setSelectedYearMonth(newValue.toDate());
+                }}
+                onAccept={(newValue) => {
+                  newValue && getMonthlyExpenseData(newValue);
+                }}
+              />
+            </Box>
           </Grid>
         </Grid>
         <Button
