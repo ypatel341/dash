@@ -59,4 +59,8 @@ module.exports = {
   //     },
   //   },
   mode: 'production',
+  // Excluding dbdump from the build
+  externals: {
+    dbdump: 'dbdump'
+  }
 };
