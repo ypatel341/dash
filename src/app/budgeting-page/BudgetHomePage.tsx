@@ -14,6 +14,8 @@ const BudgetHomePage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [totalAmount, setTotalAmount] = useState<number>(0);
+  const [totalCurrentAmount, setTotalCurrentAmount] = useState<number>(0);
 
   useEffect(() => {
     fetchData();
@@ -62,7 +64,20 @@ const BudgetHomePage: React.FC = () => {
       const formattedData: BudgetData[] =
         await formatMonthlyExpensesToBucketExpenses(data, existingBudgetData);
 
+      //TODO: under construction still
+      const totalCurrentAmount = formattedData.reduce(
+        (acc, item) => acc + item.currentamount,
+        0,
+      );
+
+      const totalAmount = formattedData.reduce(
+        (acc, item) => acc + item.amount,
+        0,
+      );
+      
       setBudgetData(formattedData);
+      setTotalAmount(totalAmount);
+      setTotalCurrentAmount(totalCurrentAmount);
     } catch (error: any) {
       setError(error.message);
     } finally {
@@ -122,6 +137,8 @@ const BudgetHomePage: React.FC = () => {
           </Grid>
         ))}
       </Grid>
+      <h3>Total Amount: {totalAmount}</h3>
+      <h3>Total Current Amount: {totalCurrentAmount}</h3>
     </Container>
   );
 };
