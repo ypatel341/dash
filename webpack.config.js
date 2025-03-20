@@ -28,13 +28,12 @@ module.exports = {
             options: {
               presets: [
                 '@babel/preset-env',
-                  // {
-                  //   targets: '> 0.25%, not dead',
-                  //   useBuiltIns: 'usage',
-                  //   corejs: 3,
-                  // },
+                // {
+                //   targets: '> 0.25%, not dead',
+                //   useBuiltIns: 'usage',
+                //   corejs: 3,
+                // },
                 '@babel/preset-react', // Transpile JSX if using React
-                
               ],
             },
           },
@@ -51,21 +50,21 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './public/index.html',
-      minify: { collapseWhitespace: true}
+      minify: { collapseWhitespace: true },
     }),
     // new BundleAnalyzerPlugin(),
   ],
   optimization: {
     splitChunks: {
-      chunks: 'all'
+      chunks: 'all',
     },
     usedExports: true,
     minimize: true,
     minimizer: [new TerserPlugin(), new CssMinimizerPlugin()],
   },
   performance: {
-    hints: "warning",
-    maxAssetSize: 250000
+    hints: 'warning',
+    maxAssetSize: 250000,
   },
   //   devServer: {
   //     contentBase: path.join(__dirname, 'dist'),

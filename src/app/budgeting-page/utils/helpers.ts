@@ -84,9 +84,11 @@ export const formatMonthlyExpensesToBucketExpenses = async (
   return updatedBudgetData;
 };
 
-export const formatMonthlyExpensesExpenseDate = async(expense: MonthlyExpense[]) => {
+export const formatMonthlyExpensesExpenseDate = async (
+  expense: MonthlyExpense[],
+) => {
   return expense.map((expense) => ({
     ...expense,
     expensedate: formatTimestamptzToMMDDYYYY(expense.expensedate),
   }));
-}
+};

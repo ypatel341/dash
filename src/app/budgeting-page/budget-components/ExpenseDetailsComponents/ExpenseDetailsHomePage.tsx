@@ -37,7 +37,7 @@ const ExpenseDetailsHomePage: React.FC = () => {
       );
 
       const { data } = response;
-      const formattedData = await formatMonthlyExpensesExpenseDate(data)
+      const formattedData = await formatMonthlyExpensesExpenseDate(data);
 
       setBucketData(formattedData);
       setLoading(false);
