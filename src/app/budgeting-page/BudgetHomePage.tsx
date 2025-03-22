@@ -10,29 +10,108 @@ import ExpenseMonthDateSelector from './shared-budget-components/ExpenseMonthDat
 import en from '../i18n/en';
 
 const BudgetHomePage: React.FC = () => {
-  const [budgetData, setBudgetData] = useState<BudgetData[]>();
+  const [budgetData, setBudgetData] = useState<BudgetData[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   useEffect(() => {
+    let isMounted = true; // Track if the component is mounted
+
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          'http://localhost:5000/budget/info/allbucketexpense',
+        );
+        if (isMounted) {
+          setBudgetData(response.data);
+        }
+      } catch (error: any) {
+        if (isMounted) {
+          setError(error.message);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
     fetchData();
+
+    return () => {
+      isMounted = false; // Cleanup function to prevent state updates on unmounted component
+    };
   }, []);
 
-  const fetchData = async () => {
+  const getFormattedMonthlyExpenseData = async (
+    date: Dayjs,
+    existingBudgetData: BudgetData[],
+  ) => {
+    let isMounted = true; // Track if the request is still relevant
+
+    const formattedDate = dayjs(date).format('YYYY-MM');
     setLoading(true);
     try {
       const response = await axios.get(
-        'http://localhost:5000/budget/info/allbucketexpense',
+        `http://localhost:5000/budget/info/getbymonthexpense/${formattedDate}`,
       );
-      const { data } = response;
 
-      setBudgetData(data);
+      if (isMounted) {
+        const formattedData: BudgetData[] =
+          await formatMonthlyExpensesToBucketExpenses(response.data, existingBudgetData);
+
+        setBudgetData(formattedData);
+      }
     } catch (error: any) {
-      setError(error.message);
+      if (isMounted) {
+        setError(error.message);
+      }
     } finally {
-      setLoading(false);
+      if (isMounted) {
+        setLoading(false);
+      }
     }
+
+    return () => {
+      isMounted = false;
+    };
+  };
+
+  const resetData = () => {
+    setSelectedDate(new Date());
+    setError('');
+    setBudgetData(null);
+    setLoading(true);
+    useEffect(() => {
+      let isMounted = true;
+  
+      const fetchData = async () => {
+        try {
+          const response = await axios.get(
+            'http://localhost:5000/budget/info/allbucketexpense',
+          );
+          if (isMounted) {
+            setBudgetData(response.data);
+          }
+        } catch (error: any) {
+          if (isMounted) {
+            setError(error.message);
+          }
+        } finally {
+          if (isMounted) {
+            setLoading(false);
+          }
+        }
+      };
+  
+      fetchData();
+  
+      return () => {
+        isMounted = false;
+      };
+    }, []);
   };
 
   if (loading) {
@@ -40,47 +119,19 @@ const BudgetHomePage: React.FC = () => {
   }
 
   if (error) {
-    return <div>Error: with retrieving data{error}</div>;
+    return <div>Error: {error}</div>;
   }
 
   if (!budgetData) {
     return <div>Error: Data not found</div>;
   }
 
-  const getFormattedMonthlyExpenseData = async (
-    date: Dayjs,
-    existingBudgetData: BudgetData[],
-  ) => {
-    const formattedDate = dayjs(date).format('YYYY-MM');
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/budget/info/getbymonthexpense/${formattedDate}`,
-      );
-      const { data } = response;
-
-      const formattedData: BudgetData[] =
-        await formatMonthlyExpensesToBucketExpenses(data, existingBudgetData);
-
-      setBudgetData(formattedData);
-    } catch (error: any) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const resetData = async () => {
-    fetchData();
-    setSelectedDate(new Date());
-  };
-
   return (
     <Container>
       <h1>{en.budgetHomePage.header}</h1>
       <Grid container spacing={3} sx={{ mb: 2 }}>
         <Grid item xs={12} sm={4} md={4}>
-          <BudgetSubHeader title={'Net Worth'} />{' '}
+          <BudgetSubHeader title={'Net Worth'} />
         </Grid>
         <Grid item xs={12} sm={4} md={4}>
           <BudgetSubHeader title="Money-in Month" />
