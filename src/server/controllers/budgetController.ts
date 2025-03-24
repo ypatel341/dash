@@ -7,6 +7,7 @@ import {
   getBucketExpenses,
   insertExpenseService,
   updateExpenseService,
+  dbHealthCheckService,
 } from '../services/budgetService';
 import logger from '../utils/logger';
 import { validateExpense, validateInputBucket } from '../utils/utils';
@@ -115,4 +116,20 @@ export const getByMonthExpenseController = async (
     logger.error(`Error getting monthly expense by month ${error}`);
     res.status(500).json({ error: `Internal Server Error ${error}` });
   }
+};
+
+export const healthCheckDbController = async (req: Request, res: Response) => {
+  logger.info(`DB health check start, ${req}`);
+  try {
+    const response = await dbHealthCheckService();
+    res.json(response);
+  } catch (error) {
+    logger.error(`Error checking DB health: ${error}`);
+    res.status(500).json({ error: `Internal Server Error ${error}` });
+  }
+};
+
+export const healthCheckController = async (req: Request, res: Response) => {
+  logger.info(`Health check, ${req}`);
+  res.status(200).json({ status: 'UP' });
 };
