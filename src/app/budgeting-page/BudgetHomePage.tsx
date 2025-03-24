@@ -60,7 +60,10 @@ const BudgetHomePage: React.FC = () => {
 
       if (isMounted) {
         const formattedData: BudgetData[] =
-          await formatMonthlyExpensesToBucketExpenses(response.data, existingBudgetData);
+          await formatMonthlyExpensesToBucketExpenses(
+            response.data,
+            existingBudgetData,
+          );
 
         setBudgetData(formattedData);
       }
@@ -86,7 +89,7 @@ const BudgetHomePage: React.FC = () => {
     setLoading(true);
     useEffect(() => {
       let isMounted = true;
-  
+
       const fetchData = async () => {
         try {
           const response = await axios.get(
@@ -105,9 +108,9 @@ const BudgetHomePage: React.FC = () => {
           }
         }
       };
-  
+
       fetchData();
-  
+
       return () => {
         isMounted = false;
       };
