@@ -16,6 +16,9 @@ module.exports = {
   // purge: ['./src/**/*.{js,jsx,ts,tsx}'],
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+   }
   },
   module: {
     rules: [
