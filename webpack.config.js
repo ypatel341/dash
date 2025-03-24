@@ -6,12 +6,12 @@ const TerserPlugin = require('terser-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  mode: 'production', // Enable production optimizations like minification and tree-shaking
-  entry: './src/index.tsx', // Change this if your entry point is different
+  mode: 'production',
+  entry: './src/index.tsx',
   output: {
-    filename: '[name].[contenthash].js', // Name for your bundled file
-    path: path.resolve(__dirname, 'dist'), // Output directory for the bundle
-    clean: true, // Clean the output directory before each build
+    filename: '[name].[contenthash].js',
+    path: path.resolve(__dirname, 'dist'),
+    clean: true,
   },
   // purge: ['./src/**/*.{js,jsx,ts,tsx}'],
   resolve: {
