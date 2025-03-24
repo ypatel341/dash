@@ -13,7 +13,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'), // Output directory for the bundle
     clean: true, // Clean the output directory before each build
   },
-  // purge: ['./src/**/*.{js,jsx,ts,tsx}'], // Specify the paths to all of the template files in your project
+  // purge: ['./src/**/*.{js,jsx,ts,tsx}'],
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
   },
@@ -66,12 +66,4 @@ module.exports = {
     hints: 'warning',
     maxAssetSize: 250000,
   },
-  //   devServer: {
-  //     contentBase: path.join(__dirname, 'dist'),
-  //     compress: true,
-  //     port: 9000,
-  //     proxy: {
-  //       '/api': 'http://localhost:5000',
-  //     },
-  //   },
 };
