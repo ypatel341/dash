@@ -10,6 +10,10 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install --legacy-peer-deps
 
+# #Debugging
+RUN npm list concurrently
+RUN npx concurrently --version
+
 # Copy the rest of the application code
 COPY . .
 
