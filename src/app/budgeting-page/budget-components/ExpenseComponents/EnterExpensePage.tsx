@@ -162,8 +162,10 @@ export const EnterExpensePage: React.FC = () => {
       const formattedData = await formatMonthlyExpensesExpenseDate(data);
 
       setData(formattedData);
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      error instanceof Error
+      ? setError(error.message)
+      : setError(en.errors.unknownError);
     } finally {
       setLoading(false);
     }

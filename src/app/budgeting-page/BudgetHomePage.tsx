@@ -28,8 +28,10 @@ const BudgetHomePage: React.FC = () => {
       const { data } = response;
 
       setBudgetData(data);
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      error instanceof Error
+        ? setError(error.message)
+        : setError(en.errors.unknownError);
     } finally {
       setLoading(false);
     }
@@ -63,8 +65,10 @@ const BudgetHomePage: React.FC = () => {
         await formatMonthlyExpensesToBucketExpenses(data, existingBudgetData);
 
       setBudgetData(formattedData);
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      error instanceof Error
+        ? setError(error.message)
+        : setError(en.errors.unknownError);
     } finally {
       setLoading(false);
     }
