@@ -1,1 +1,1 @@
-web: cd heroku-deploy && npm run start-all-prod
+web: npm run start-all-prod

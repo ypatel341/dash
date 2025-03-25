@@ -14,46 +14,21 @@ jobs:
           curl https://cli-assets.heroku.com/install.sh | sh
           heroku --version
 
-      # Step 2: Checkout code from the repository
       - uses: actions/checkout@v2
 
-      # Step 3: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           registry-url: https://registry.npmjs.org
 
-      # Step 4: Install dependencies
-      - name: Install dependencies
-        run: npm install
-
-      # Step 5: Build the frontend and backend
-      - name: Build frontend
-        run: npm run build-frontend
-
       - name: Build backend
         run: npm run build-backend
 
-      # Debugging: List build directory contents
-      - name: List build directory contents (for debugging)
-        run: ls -R dist/ build/
-
-      # Step 6: Prepare deployment folder
-      - name: Prepare Heroku deployment
-        run: |
-          mkdir heroku-deploy
-          cp -R dist heroku-deploy/
-          cp -R build heroku-deploy/
-          cp package.json package-lock.json Procfile heroku-deploy/
-          ls -R heroku-deploy/  # Debugging: Confirm everything is there
-
-      # Step 7: Deploy to Heroku using appdir
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
-          appdir: "heroku-deploy"  # Set app directory to the correct folder
-          
+          appdir: dist
