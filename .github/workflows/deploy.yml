@@ -31,8 +31,8 @@ jobs:
         run: npm install
 
       # Step 5: Build the frontend
-      - name: Build frontend
-        run: npm run build-frontend
+      # - name: Build frontend
+      #   run: npm run build-frontend
 
       # Step 6: Build the backend
       - name: Build backend
