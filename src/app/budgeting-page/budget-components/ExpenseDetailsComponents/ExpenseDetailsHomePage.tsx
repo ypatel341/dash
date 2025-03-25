@@ -54,7 +54,40 @@ const ExpenseDetailsHomePage: React.FC = () => {
   };
 
   useEffect(() => {
+    const controller = new AbortController();
+
+    const fetchBucketData = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/budget/info/bucketexpense/${bucketname}`,
+          { signal: controller.signal }, // Attach the signal
+        );
+
+        const { data } = response;
+        const formattedData = await formatMonthlyExpensesExpenseDate(data);
+
+        setBucketData(formattedData);
+      } catch (error: unknown) {
+        if (!axios.isCancel(error)) {
+          setError(
+            error instanceof Error ? error.message : en.errors.unknownError,
+          );
+          handleToastMessage({
+            message: 'Failed to fetch bucket data',
+            severity: 'error',
+          });
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchBucketData();
+
+    return () => {
+      controller.abort(); // Cleanup function to cancel the API request
+    };
   }, [bucketname]);
 
   return (

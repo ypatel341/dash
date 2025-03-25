@@ -17,6 +17,33 @@ const port = process.env.PORT || 5000;
 let app: express.Application;
 let server: any;
 
+// let memoryHistory: any[] = [];
+
+// setInterval(() => {
+//     const usage = process.memoryUsage();
+//     const rss = (usage.rss / 1024 / 1024).toFixed(2);
+//     const heapUsed = (usage.heapUsed / 1024 / 1024).toFixed(2);
+
+//     memoryHistory.push({ rss, heapUsed });
+//     console.log(`Memory Usage: RSS=${rss}MB HeapUsed=${heapUsed}MB`);
+
+//     // If memory history exceeds 10 logs, compare old vs new
+//     if (memoryHistory.length > 10) {
+//         const first = memoryHistory[0];
+//         const last = memoryHistory[memoryHistory.length - 1];
+
+//         console.log(`Memory Change: RSS=${(last.rss - first.rss).toFixed(2)}MB HeapUsed=${(last.heapUsed - first.heapUsed).toFixed(2)}MB`);
+
+//         // If RSS has grown by more than 50MB and keeps rising, it's a likely leak
+//         if (last.rss - first.rss > 50) {
+//             console.warn('⚠️ Potential Memory Leak Detected! RSS growing continuously.');
+//         }
+
+//         // Keep the last 10 logs
+//         memoryHistory = memoryHistory.slice(-10);
+//     }
+// }, 5000);
+
 // Disable clustering in test environment
 if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
   app = express();
@@ -53,7 +80,9 @@ if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
   }
 
   cluster.on('exit', (worker, code, signal) => {
-    logger.info(`Worker ${worker.process.pid} died code: ${code}, signal: ${signal}`);
+    logger.info(
+      `Worker ${worker.process.pid} died code: ${code}, signal: ${signal}`,
+    );
   });
 } else {
   app = express();

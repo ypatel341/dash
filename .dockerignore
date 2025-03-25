@@ -1,0 +1,8 @@
+node_modules
+dist
+dbdump
+*.log
+*.heapsnapshot
+Dockerfile
+.dockerignore
+.env
