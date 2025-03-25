@@ -2,7 +2,6 @@ const path = require('path');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   mode: 'production', // Enable production optimizations like minification and tree-shaking
@@ -41,8 +40,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './public/index.html',
       minify: { collapseWhitespace: true },
-    }),
-    new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
+    })
   ],
   optimization: {
     splitChunks: {
