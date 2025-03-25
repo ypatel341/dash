@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Response } from 'express';
 import path from 'path';
 import db from '../config/db';
 import cors from 'cors';
@@ -36,9 +36,9 @@ if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
   app.use(express.static(path.join(__dirname, '../../dist')));
 
   // Fallback for single-page apps:
-  app.get('*', (req: any, res: { sendFile: (arg0: any) => void }) => {
-    logger.info(`req ${req}`);
-    res.sendFile(path.join(__dirname, '../../dist', 'index.html'));
+  app.get('*', (req: any, res: Response) => {
+    logger.info(`req come here ${req}`);
+    res.sendStatus(503)
   });
 
   server = app.listen(port, () => {
@@ -67,15 +67,15 @@ if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
   app.use(express.json());
 
   // Enable URL-encoded body parsing
-  app.use('/budget', budgetRoutes);
+  app.use('/budgetendpoint', budgetRoutes);
 
   // Serve static files from the dist folder
   app.use(express.static(path.join(__dirname, '../../dist')));
 
   // Fallback for single-page apps:
-  app.get('*', (req: any, res: { sendFile: (arg0: any) => void }) => {
-    logger.info(`req ${req}`);
-    res.sendFile(path.join(__dirname, '../../dist', 'index.html'));
+  app.get('*', (req: any, res: Response) => {
+    logger.info(`req come here ${req}`);
+    res.sendStatus(503)
   });
 
   server = app.listen(port, () => {
