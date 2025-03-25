@@ -5,10 +5,11 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
+    # Step 1: Install Heroku CLI
       - name: Install Heroku CLI
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
@@ -17,10 +18,32 @@ jobs:
       # Step 2: Checkout code from the repository
       - uses: actions/checkout@v2
 
-      # Step 3: Deploy to Heroku
-      - uses: akhileshns/heroku-deploy@v3.12.12
+      # Step 3: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20' # Ensure the Node.js version matches your project requirements
+          cache: 'npm'
+
+      # Step 4: Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Step 5: Build the frontend
+      - name: Build frontend
+        run: npm run build-frontend
+
+      # Step 6: Build the backend
+      - name: Build backend
+        run: npm run build-backend
+      
+      # Step 7: Deploy to Heroku
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
         with:
           branch: 'main'
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
-          heroku_email: ${{secrets.HEROKU_EMAIL}}
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          clean: true # Ensures only necessary files are deployed
+    
