@@ -28,7 +28,7 @@ yarn-error.log*
 .env.production
 
 # for CICD pipeline
-package-lock.json
+# package-lock.json
 
 # dist folder
 /dist
