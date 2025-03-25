@@ -42,12 +42,7 @@ jobs:
       # Step 6: Prepare deployment folder
       - name: Prepare Heroku deployment
         run: |
-          mkdir heroku-deploy
-          cp -R dist heroku-deploy/
-          cp -R build heroku-deploy/
-          cp package.json package-lock.json heroku-deploy/
-          cp Procfile heroku-deploy/
-          ls -R heroku-deploy/ 
+          cp -R dist build package.json package-lock.json Procfile .
 
       # Step 7: Deploy to Heroku
       - name: Deploy to Heroku
@@ -57,5 +52,3 @@ jobs:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
-          clean: true
-          copy: "heroku-deploy"
