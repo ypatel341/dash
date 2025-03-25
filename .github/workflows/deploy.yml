@@ -42,13 +42,18 @@ jobs:
       # Step 6: Prepare deployment folder
       - name: Prepare Heroku deployment
         run: |
-          cp -R dist build package.json package-lock.json Procfile .
+          mkdir heroku-deploy
+          cp -R dist heroku-deploy/
+          cp -R build heroku-deploy/
+          cp package.json package-lock.json Procfile heroku-deploy/
+          ls -R heroku-deploy/  # Debugging: Confirm everything is there
 
-      # Step 7: Deploy to Heroku
+      # Step 7: Deploy to Heroku using appdir
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
-          branch: 'main'
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          appdir: "heroku-deploy"  # Set app directory to the correct folder
+          
