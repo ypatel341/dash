@@ -45,7 +45,3 @@ jobs:
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
           clean: true
           copy: "dist build package.json package-lock.json" # Deploy only necessary files
-
-      # Step 7: Start the application
-      - name: Start application
-        run: npm run start-all-prod
