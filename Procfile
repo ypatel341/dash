@@ -1,1 +1,1 @@
-web: npm run start-frontend-prod
+web: cd heroku-deploy && npm run start-all-prod
