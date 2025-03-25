@@ -1,1 +1,1 @@
-web: npm run start-backend-prod
+web: npm run start-all-prod

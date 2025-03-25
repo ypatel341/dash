@@ -37,7 +37,7 @@
     "build-frontend": "react-scripts build",
     "build-backend": "tsc",
     "start": "react-scripts start",
-    "start-backend": "tsc && NODE_ENV=development node dist/server/index.js",
+    "start-backend": "NODE_ENV=development node dist/server/index.js",
     "start-all": "NODE_ENV=development concurrently \"npm run start\" \"npm run start-backend\"",
     "start-frontend-prod": "npx serve -s build -l 3000",
     "start-backend-prod": "NODE_ENV=production node dist/server/index.js",
