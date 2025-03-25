@@ -35,6 +35,10 @@ jobs:
       - name: Build backend
         run: npm run build-backend
 
+        # Debugging: List build directory contents
+      - name: List build directory contents (for debugging)
+        run: ls -R dist/ build/
+
       # Step 6: Deploy to Heroku
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.12.12
@@ -44,3 +48,4 @@ jobs:
           heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
           clean: true
+          copy: "dist build package.json package-lock.json" # Deploy only necessary files
