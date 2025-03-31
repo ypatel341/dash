@@ -24,6 +24,13 @@ export const budgetAllDataInfo = [
     household: 'domus',
   },
   {
+    id: '7a24bf63-aaee-45a1-9bd1-072b8d346e63',
+    category: 'needs',
+    bucketname: 'internet',
+    amount: 70,
+    household: 'domus',
+  },
+  {
     id: 'eea022f6-e307-4eaa-9ccf-dcd7f19b3717',
     category: 'needs',
     bucketname: 'parcel',
@@ -105,13 +112,6 @@ export const budgetAllDataInfo = [
     category: 'savings',
     bucketname: 'savings_chase_2112',
     amount: 5500,
-    household: 'domus',
-  },
-  {
-    id: '7a24bf63-aaee-45a1-9bd1-072b8d346e63',
-    category: 'needs',
-    bucketname: 'internet',
-    amount: 70,
     household: 'domus',
   },
   {

@@ -3,6 +3,7 @@ import {
   BudgetData,
   ExpenseData,
   MonthlyExpense,
+  CurrentTotalAmount,
 } from '../types/BudgetCategoryTypes';
 
 export const transformBucketName = (bucketname: string): string => {
@@ -73,12 +74,12 @@ export const formatMonthlyExpensesToBucketExpenses = async (
     return map;
   }, new Map<string, number>());
 
-  // Update the existing budget data with the new totals
   const updatedBudgetData = existingBudgetData.map((bucket) => {
     const updatedAmount = bucketMap.get(bucket.bucketname);
-    return updatedAmount !== undefined
-      ? { ...bucket, currentamount: updatedAmount }
-      : bucket;
+    return {
+      ...bucket,
+      currentamount: updatedAmount !== undefined ? updatedAmount : 0,
+    };
   });
 
   return updatedBudgetData;
@@ -91,4 +92,31 @@ export const formatMonthlyExpensesExpenseDate = async (
     ...expense,
     expensedate: formatTimestamptzToMMDDYYYY(expense.expensedate),
   }));
+};
+
+export const calculateSurplus = async (budgetData: BudgetData[]) => {
+  const currentMonthlyUsage = budgetData.reduce(
+    (acc, item) => acc + item.currentamount,
+    0,
+  );
+  const monthlyTotalBudget = budgetData.reduce(
+    (acc, item) => acc + item.amount,
+    0,
+  );
+  const monthlySurplus = monthlyTotalBudget - currentMonthlyUsage;
+
+  const currentTotalAmount: CurrentTotalAmount = {
+    monthlyTotalBudget,
+    currentMonthlyUsage,
+    monthlySurplus,
+  };
+
+  return currentTotalAmount;
+};
+
+export const formatSubValue = (subValue: number | undefined): string => {
+  if (subValue) {
+    return `: ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(subValue)}`;
+  }
+  return '';
 };

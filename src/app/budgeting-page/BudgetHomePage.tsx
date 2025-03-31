@@ -5,7 +5,10 @@ import { BudgetData } from './types/BudgetCategoryTypes';
 import BudgetCategoryComponent from './budget-components/BudgetCategoryComponent';
 import BudgetSubHeader from './budget-components/BudgetSubHeader';
 import dayjs, { Dayjs } from 'dayjs';
-import { formatMonthlyExpensesToBucketExpenses } from './utils/helpers';
+import {
+  calculateSurplus,
+  formatMonthlyExpensesToBucketExpenses,
+} from './utils/helpers';
 import ExpenseMonthDateSelector from './shared-budget-components/ExpenseMonthDateSelector';
 import en from '../i18n/en';
 
@@ -14,6 +17,8 @@ const BudgetHomePage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [monthlyTotalAmount, setMonthlyAmount] = useState<number>(0);
+  const [currentMonthlyUsage, setMonthlyUsage] = useState<number>(0);
 
   useEffect(() => {
     fetchData();
@@ -25,11 +30,18 @@ const BudgetHomePage: React.FC = () => {
       const response = await axios.get(
         'http://localhost:5000/budget/info/allbucketexpense',
       );
-      const { data } = response;
 
+      const { data } = response;
+      const { monthlyTotalBudget, currentMonthlyUsage } =
+        await calculateSurplus(data);
+
+      setMonthlyAmount(monthlyTotalBudget);
+      setMonthlyUsage(currentMonthlyUsage);
       setBudgetData(data);
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      error instanceof Error
+        ? setError(error.message)
+        : setError(en.errors.unknownError);
     } finally {
       setLoading(false);
     }
@@ -62,9 +74,16 @@ const BudgetHomePage: React.FC = () => {
       const formattedData: BudgetData[] =
         await formatMonthlyExpensesToBucketExpenses(data, existingBudgetData);
 
+      const { monthlyTotalBudget, currentMonthlyUsage } =
+        await calculateSurplus(data);
+
+      setMonthlyUsage(currentMonthlyUsage);
+      setMonthlyAmount(monthlyTotalBudget);
       setBudgetData(formattedData);
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      error instanceof Error
+        ? setError(error.message)
+        : setError(en.errors.unknownError);
     } finally {
       setLoading(false);
     }
@@ -80,10 +99,16 @@ const BudgetHomePage: React.FC = () => {
       <h1>{en.budgetHomePage.header}</h1>
       <Grid container spacing={3} sx={{ mb: 2 }}>
         <Grid item xs={12} sm={4} md={4}>
-          <BudgetSubHeader title={'Net Worth'} />{' '}
+          <BudgetSubHeader
+            title={'Monthly Budget'}
+            subValue={monthlyTotalAmount}
+          />
         </Grid>
         <Grid item xs={12} sm={4} md={4}>
-          <BudgetSubHeader title="Money-in Month" />
+          <BudgetSubHeader
+            title="Monthly Usage"
+            subValue={currentMonthlyUsage}
+          />
         </Grid>
         <Grid item xs={12} sm={4} md={4}>
           <BudgetSubHeader title="Enter Expense" />
@@ -97,11 +122,12 @@ const BudgetHomePage: React.FC = () => {
             minDate={dayjs(en.common.budgetStartDate)}
             maxDate={dayjs(en.common.budgetEndDate)}
             value={dayjs(selectedDate)}
-            onChange={(newValue) => {
-              newValue && setSelectedDate(newValue.toDate());
+            onChange={(dateValue) => {
+              dateValue && setSelectedDate(dateValue.toDate());
             }}
-            onAccept={(newValue) => {
-              newValue && getFormattedMonthlyExpenseData(newValue, budgetData);
+            onAccept={(dateValue) => {
+              dateValue &&
+                getFormattedMonthlyExpenseData(dateValue, budgetData);
             }}
           />
         </Grid>
