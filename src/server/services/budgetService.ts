@@ -12,6 +12,7 @@ import {
   getAllMonthlyExpense as getAllMonthlyExpenseFromDB,
   insertExpense,
   updateExpense,
+  simpleSelect
 } from '../utils/db-operation-helpers';
 import { calculateBucketExpenses } from '../utils/utils';
 
@@ -56,3 +57,7 @@ export const updateExpenseService = async (
 ): Promise<void> => {
   return await updateExpense(expense);
 };
+
+export const dbHealthCheckService = async (): Promise<boolean> => {
+  return await simpleSelect();
+}

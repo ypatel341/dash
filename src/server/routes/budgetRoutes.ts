@@ -7,6 +7,8 @@ import {
   getByMonthExpenseController,
   insertExpenseController,
   updateExpenseController,
+  healthCheckController,
+  healthCheckDbController
 } from '../controllers/budgetController';
 
 const router = Router();
@@ -25,5 +27,9 @@ router.patch('/expense/:id', updateExpenseController);
 
 // DELETES
 router.delete('/expense/:id', deleteExpenseController);
+
+// Health Checks
+router.get('/health', healthCheckController);
+router.get('/healthCheckDb', healthCheckDbController);
 
 export default router;
