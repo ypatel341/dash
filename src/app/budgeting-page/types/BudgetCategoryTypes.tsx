@@ -12,7 +12,12 @@ export type BudgetComponentProps = {
   data: BudgetData;
 };
 
-export type SubHeaderTitles = 'Net Worth' | 'Money-in Month' | 'Enter Expense';
+export type SubHeaderTitles =
+  | 'Net Worth'
+  | 'Money-in Month'
+  | 'Enter Expense'
+  | 'Monthly Budget'
+  | 'Monthly Usage';
 
 // Update these types to match the data you are working with from the API, the data will be in the BudgetCategoryComponents.tsx file
 export type ExpenseType =
@@ -56,6 +61,8 @@ export const SubHeaderRoutes: { [key in SubHeaderTitles]: string } = {
   'Net Worth': '/budget/net-worth',
   'Money-in Month': '/budget/money-in-month',
   'Enter Expense': '/budget/enter-expense',
+  'Monthly Budget': '/budget/monthly-budget',
+  'Monthly Usage': '/budget/monthly-usage',
 };
 
 export const expenseTypeOptions: ExpenseType[] = [
@@ -88,4 +95,10 @@ export type MonthlyExpense = {
   amount: number;
   description: string;
   expensedate: string;
+};
+
+export type CurrentTotalAmount = {
+  monthlyTotalBudget: number;
+  currentMonthlyUsage: number;
+  monthlySurplus: number;
 };

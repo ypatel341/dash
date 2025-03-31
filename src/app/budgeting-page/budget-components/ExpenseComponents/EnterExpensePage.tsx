@@ -54,8 +54,8 @@ export const EnterExpensePage: React.FC = () => {
         'http://localhost:5000/budget/info/allmonthexpense',
       );
 
-      const { data } = response
-      const formattedData = await formatMonthlyExpensesExpenseDate(data)
+      const { data } = response;
+      const formattedData = await formatMonthlyExpensesExpenseDate(data);
 
       setData(formattedData);
       setLoading(false);
@@ -162,11 +162,9 @@ export const EnterExpensePage: React.FC = () => {
       const formattedData = await formatMonthlyExpensesExpenseDate(data);
 
       setData(formattedData);
-    }
-    catch (error: any) {
+    } catch (error: any) {
       setError(error.message);
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
