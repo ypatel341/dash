@@ -43,14 +43,22 @@ export const getBucketExpensesController = async (
   res: Response,
 ) => {
   const { bucketname } = req.params;
+  const { YYYYMM } = req.query;
 
   if (!(await validateInputBucket(bucketname))) {
     res.status(400).json({ error: `Invalid bucketname ${bucketname}` });
     return;
   }
 
+  if (YYYYMM && typeof YYYYMM !== 'string') {
+    res.status(400).json({ error: `Invalid month format. Expected YYYY-MM` });
+    return;
+  }
+
+  console.log('MONTH!', YYYYMM);
+
   try {
-    const bucketData = await getBucketExpenses(bucketname);
+    const bucketData = await getBucketExpenses(bucketname, YYYYMM);
     res.json(bucketData);
   } catch (error) {
     logger.error(`Error fetching monthly expense data: ${error}`);

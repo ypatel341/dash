@@ -57,7 +57,7 @@ function App() {
             <Route path="money-in-month" element={<MoneyInMonthPage />} />
             <Route path="enter-expense" element={<EnterExpensePage />} />
             <Route
-              path="details/:bucketname"
+              path="details/:YYYYMM/:bucketname"
               element={<ExpenseDetailsHomePage />}
             />
           </Route>

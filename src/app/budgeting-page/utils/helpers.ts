@@ -120,3 +120,7 @@ export const formatSubValue = (subValue: number | undefined): string => {
   }
   return '';
 };
+
+export const getMonthFromDate = (date: Date): string => {
+  return dayjs(date).format('YYYY-MM');
+}

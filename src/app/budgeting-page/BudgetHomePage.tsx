@@ -144,7 +144,7 @@ const BudgetHomePage: React.FC = () => {
       <Grid container spacing={3}>
         {budgetData.map((item) => (
           <Grid item xs={12} sm={6} md={3} key={item.id}>
-            <BudgetCategoryComponent data={item} />
+            <BudgetCategoryComponent data={item} month={selectedDate} />
           </Grid>
         ))}
       </Grid>

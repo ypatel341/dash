@@ -102,3 +102,14 @@ describe('GET /budget/info/allbucketexpense', () => {
     await calculateBucketExpenses(rawMonthlyData, allBudgetData);
   });
 });
+
+describe.only('GET /budget/info/bucketexpense', () => {
+  it.only('should return all expenses for the month provided', async () => {
+    const response = await request(app)
+      .get('/budget/info/bucketexpense/rent/?YYYYMM=2025-04');
+
+    expect(response.status).toBe(200);
+    console.log('response', response.body)
+    expect(response.body).toBeDefined();
+  })
+});
