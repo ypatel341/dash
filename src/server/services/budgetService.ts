@@ -37,7 +37,13 @@ export const getAllMonthlyExpensesByMonth = async (
 
 export const getBucketExpenses = async (
   bucketname: string,
+  YYYYMM?: string
 ): Promise<MonthlyExpense[]> => {
+  if (YYYYMM) {
+    const rawMonthlyData: MonthlyExpense[] =
+      await getAllMonthlyExpensesByMonth(YYYYMM);
+    return rawMonthlyData.filter((expense) => expense.bucketname === bucketname);
+  }
   const data: MonthlyExpense[] = await getAllMonthlyExpense();
   return data.filter((expense) => expense.bucketname === bucketname);
 };

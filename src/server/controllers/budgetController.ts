@@ -10,7 +10,7 @@ import {
   dbHealthCheckService,
 } from '../services/budgetService';
 import logger from '../utils/logger';
-import { validateExpense, validateInputBucket } from '../utils/utils';
+import { isValidDate, validateExpense, validateInputBucket } from '../utils/utils';
 import { UpdateExpenseType } from '../utils/types';
 
 export const getAllMonthlyExpenses = async (req: Request, res: Response) => {
@@ -43,14 +43,25 @@ export const getBucketExpensesController = async (
   res: Response,
 ) => {
   const { bucketname } = req.params;
+  const { YYYYMM } = req.query;
 
   if (!(await validateInputBucket(bucketname))) {
     res.status(400).json({ error: `Invalid bucketname ${bucketname}` });
     return;
   }
 
+  if (YYYYMM && typeof YYYYMM !== 'string') {
+    res.status(400).json({ error: `Invalid month format. Expected YYYY-MM` });
+    return;
+  }
+
+  if(isValidDate(YYYYMM)) {
+    res.status(400).json({ error: `Invalid month format. Expected YYYY-MM` });
+    return;
+  }
+
   try {
-    const bucketData = await getBucketExpenses(bucketname);
+    const bucketData = await getBucketExpenses(bucketname, YYYYMM);
     res.json(bucketData);
   } catch (error) {
     logger.error(`Error fetching monthly expense data: ${error}`);

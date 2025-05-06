@@ -106,7 +106,7 @@ describe('handles all DB operations and closes the connection', () => {
     const latestExpense = allMonthlyExpenses[0];
 
     expect(allMonthlyExpenses.length).toBeGreaterThan(0);
-    expect(latestExpense.description).toBe('TEST Groceries');
+    expect(latestExpense.description).toBe('updated description');
   });
 
   // Hard deleting expense to clean up the database

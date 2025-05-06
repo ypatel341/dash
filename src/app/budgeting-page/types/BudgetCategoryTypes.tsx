@@ -10,6 +10,7 @@ export type BudgetData = {
 
 export type BudgetComponentProps = {
   data: BudgetData;
+  month: Date; 
 };
 
 export type SubHeaderTitles =

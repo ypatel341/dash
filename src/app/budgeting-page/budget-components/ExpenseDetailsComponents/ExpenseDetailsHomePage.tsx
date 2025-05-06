@@ -15,7 +15,7 @@ const ExpenseDetailsHomePage: React.FC = () => {
   // const location = useLocation();
   // const data = location.state?.data as BudgetData;
   // console.log(data);
-  const { bucketname } = useParams<{ bucketname: string }>();
+  const { bucketname, YYYYMM } = useParams<{ bucketname: string, YYYYMM: string }>();
 
   const [bucketData, setBucketData] = useState<MonthlyExpense[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -28,17 +28,19 @@ const ExpenseDetailsHomePage: React.FC = () => {
     setToastMessage(messageInfo);
     setTimeout(() => setToastMessage(null), 3000);
   };
+  
+  const url = YYYYMM
+    ? `http://localhost:5000/budget/info/bucketexpense/${bucketname}?YYYYMM=${YYYYMM}`
+    : `http://localhost:5000/budget/info/bucketexpense/${bucketname}`;
 
   const fetchBucketData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `http://localhost:5000/budget/info/bucketexpense/${bucketname}`,
-      );
-
+      const response = await axios.get(url);
+  
       const { data } = response;
       const formattedData = await formatMonthlyExpensesExpenseDate(data);
-
+  
       setBucketData(formattedData);
       setLoading(false);
     } catch (error: unknown) {
