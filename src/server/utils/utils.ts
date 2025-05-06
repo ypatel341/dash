@@ -82,3 +82,7 @@ export const getCurrentYearMonth = async (): Promise<string> => {
   const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based, so add 1
   return `${year}-${month}`;
 };
+
+export const isValidDate = (dateString: string | undefined): boolean => {
+  return !!dateString && !/^\d{4}-\d{2}$/.test(dateString as string);
+}

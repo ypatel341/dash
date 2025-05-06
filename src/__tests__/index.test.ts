@@ -103,13 +103,28 @@ describe('GET /budget/info/allbucketexpense', () => {
   });
 });
 
-describe.only('GET /budget/info/bucketexpense', () => {
-  it.only('should return all expenses for the month provided', async () => {
+describe('GET /budget/info/bucketexpense', () => {
+  it('should return all expenses for the month provided', async () => {
     const response = await request(app)
       .get('/budget/info/bucketexpense/rent/?YYYYMM=2025-04');
 
     expect(response.status).toBe(200);
-    console.log('response', response.body)
     expect(response.body).toBeDefined();
+  })
+
+  it('should throw an error if the date is invalid', async () => {
+    const response = await request(app)
+      .get('/budget/info/bucketexpense/rent/?YYYYMM=invalid-date');
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Invalid month format. Expected YYYY-MM');
+  });
+
+  it('should return an error if the bucket name is invalid', async () => {
+    const response = await request(app)
+      .get('/budget/info/bucketexpense/invalid-bucket/?YYYYMM=2025-04');
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Invalid bucketname invalid-bucket');
   })
 });
