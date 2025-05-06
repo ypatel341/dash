@@ -53,7 +53,9 @@ if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
   }
 
   cluster.on('exit', (worker, code, signal) => {
-    logger.info(`Worker ${worker.process.pid} died code: ${code}, signal: ${signal}`);
+    logger.info(
+      `Worker ${worker.process.pid} died code: ${code}, signal: ${signal}`,
+    );
   });
 } else {
   app = express();

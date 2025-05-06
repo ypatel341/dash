@@ -12,7 +12,7 @@ import {
   getAllMonthlyExpense as getAllMonthlyExpenseFromDB,
   insertExpense,
   updateExpense,
-  simpleSelect
+  simpleSelect,
 } from '../utils/db-operation-helpers';
 import { calculateBucketExpenses } from '../utils/utils';
 
@@ -37,12 +37,14 @@ export const getAllMonthlyExpensesByMonth = async (
 
 export const getBucketExpenses = async (
   bucketname: string,
-  YYYYMM?: string
+  YYYYMM?: string,
 ): Promise<MonthlyExpense[]> => {
   if (YYYYMM) {
     const rawMonthlyData: MonthlyExpense[] =
       await getAllMonthlyExpensesByMonth(YYYYMM);
-    return rawMonthlyData.filter((expense) => expense.bucketname === bucketname);
+    return rawMonthlyData.filter(
+      (expense) => expense.bucketname === bucketname,
+    );
   }
   const data: MonthlyExpense[] = await getAllMonthlyExpense();
   return data.filter((expense) => expense.bucketname === bucketname);
@@ -66,4 +68,4 @@ export const updateExpenseService = async (
 
 export const dbHealthCheckService = async (): Promise<boolean> => {
   return await simpleSelect();
-}
+};

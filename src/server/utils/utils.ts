@@ -85,4 +85,4 @@ export const getCurrentYearMonth = async (): Promise<string> => {
 
 export const isValidDate = (dateString: string | undefined): boolean => {
   return !!dateString && !/^\d{4}-\d{2}$/.test(dateString as string);
-}
+};

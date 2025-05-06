@@ -138,8 +138,8 @@ export const simpleSelect = async (): Promise<boolean> => {
     const response = await db.raw('select * from budget_monthly_allocation');
     logger.info(`Simple select response: ${JSON.stringify(response)}`);
     return true;
-  } catch (error){
+  } catch (error) {
     logger.error(`Error checking DB health: ${error}`);
     throw error;
   }
-}
+};

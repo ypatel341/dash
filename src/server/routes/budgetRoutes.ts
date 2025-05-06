@@ -8,7 +8,7 @@ import {
   insertExpenseController,
   updateExpenseController,
   healthCheckController,
-  healthCheckDbController
+  healthCheckDbController,
 } from '../controllers/budgetController';
 
 const router = Router();
