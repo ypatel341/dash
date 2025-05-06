@@ -148,3 +148,34 @@ export const healthCheckController = async (req: Request, res: Response) => {
   logger.info(`Health check, ${req}`);
   res.status(200).json({ status: 'UP' });
 };
+
+export const generateMonthlyReportController = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    // This should call a service that generates the report based on current data
+    const reportData = {}; // Replace with actual report data generation logic
+
+    const { YYYYMM } = req.params;
+    const response = await getAllMonthlyExpensesByMonth(YYYYMM);
+
+    const formattedResponse = response.map((expense) => ({
+      ...expense,
+      expensedate: new Date(expense.expensedate).toISOString().split('T')[0], // Format date as YYYY-MM-DD
+    }));
+
+    // Format the data here
+    console.log(formattedResponse);
+
+    // Insert logic here for generating the PDF report
+
+    res.json({
+      message: 'Monthly report generated successfully',
+      data: reportData,
+    });
+  } catch (error) {
+    logger.error(`Error generating monthly report: ${error}`);
+    res.status(500).json({ error: `Internal Server Error ${error}` });
+  }
+}

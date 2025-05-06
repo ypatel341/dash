@@ -123,4 +123,9 @@ export const formatSubValue = (subValue: number | undefined): string => {
 
 export const getMonthFromDate = (date: Date): string => {
   return dayjs(date).format('YYYY-MM');
+};
+
+export const isCurrentMonth = (date: Date): boolean => {
+  const today = new Date();
+  return date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
 }
