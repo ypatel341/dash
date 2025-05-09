@@ -9,7 +9,7 @@ import {
   updateExpenseController,
   healthCheckController,
   healthCheckDbController,
-  generateMonthlyReportController
+  generateMonthlyReportController,
 } from '../controllers/budgetController';
 
 const router = Router();
@@ -19,7 +19,10 @@ router.get('/info/allmonthexpense', getAllMonthlyExpenses);
 router.get('/info/allbucketexpense', getAllBucketExpensesController);
 router.get('/info/bucketexpense/:bucketname', getBucketExpensesController);
 router.get('/info/getbymonthexpense/:month', getByMonthExpenseController);
-router.get('/reports/generateMonthlyReport/:YYYYMM', generateMonthlyReportController);
+router.get(
+  '/reports/generateMonthlyReport/:YYYYMM',
+  generateMonthlyReportController,
+);
 
 // POSTS
 router.post('/expense', insertExpenseController);

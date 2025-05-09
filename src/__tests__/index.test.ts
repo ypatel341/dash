@@ -130,4 +130,17 @@ describe('GET /budget/info/bucketexpense', () => {
     expect(response.status).toBe(400);
     expect(response.body.error).toBe('Invalid bucketname invalid-bucket');
   });
+
+  describe.only('GET /budget/info/generateMonthlyReportController', () => {
+    it.only('should generate a monthly report', async () => {
+      const response = await request(app).get(
+        '/budget/reports/generateMonthlyReport/2025-04',
+      );
+
+      console.log('body', response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBeDefined();
+    });
+  });
 });

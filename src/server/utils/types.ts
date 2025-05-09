@@ -50,6 +50,16 @@ export type MonthlyExpense = {
   expensedate: string;
 };
 
+export type MonthlyExpenseWithTimestamps = MonthlyExpense & {
+  createdat: string;
+  updatedat: string | null;
+  deletedat: string | null;
+};
+
+export type AggregatedMonthlyReport = {
+  [key: string]: MonthlyExpenseWithTimestamps[];
+};
+
 export type InsertResponseId = {
   id: string;
 };

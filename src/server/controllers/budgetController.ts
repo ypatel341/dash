@@ -11,11 +11,15 @@ import {
 } from '../services/budgetService';
 import logger from '../utils/logger';
 import {
+  formatMonthlyExpensesToBucketExpenses,
   isValidDate,
   validateExpense,
   validateInputBucket,
 } from '../utils/utils';
-import { UpdateExpenseType } from '../utils/types';
+import {
+  MonthlyExpenseWithTimestamps,
+  UpdateExpenseType,
+} from '../utils/types';
 
 export const getAllMonthlyExpenses = async (req: Request, res: Response) => {
   logger.info(req.body);
@@ -154,21 +158,12 @@ export const generateMonthlyReportController = async (
   res: Response,
 ) => {
   try {
-    // This should call a service that generates the report based on current data
-    const reportData = {}; // Replace with actual report data generation logic
-
     const { YYYYMM } = req.params;
-    const response = await getAllMonthlyExpensesByMonth(YYYYMM);
 
-    const formattedResponse = response.map((expense) => ({
-      ...expense,
-      expensedate: new Date(expense.expensedate).toISOString().split('T')[0], // Format date as YYYY-MM-DD
-    }));
-
-    // Format the data here
-    console.log(formattedResponse);
-
-    // Insert logic here for generating the PDF report
+    const response = (await getAllMonthlyExpensesByMonth(
+      YYYYMM,
+    )) as MonthlyExpenseWithTimestamps[];
+    const reportData = await formatMonthlyExpensesToBucketExpenses(response);
 
     res.json({
       message: 'Monthly report generated successfully',
@@ -178,4 +173,4 @@ export const generateMonthlyReportController = async (
     logger.error(`Error generating monthly report: ${error}`);
     res.status(500).json({ error: `Internal Server Error ${error}` });
   }
-}
+};

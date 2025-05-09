@@ -98,7 +98,7 @@ const BudgetHomePage: React.FC = () => {
   const generateReport = async () => {
     setLoading(true);
     const formattedDate = dayjs(selectedDate).format('YYYY-MM');
-    console.log(formattedDate)
+
     try {
       const response = await axios.get(
         `http://localhost:5000/budget/reports/generateMonthlyReport/${formattedDate}`,
