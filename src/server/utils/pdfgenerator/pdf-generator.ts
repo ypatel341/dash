@@ -42,9 +42,9 @@ export const enrichDataForReport = async (
 };
 
 // Add in some metadata around template type and the data type, throw error if the data can not be coupled with template type
-export const renderPDF = async (RenderPDFDataInput: RenderPDFDataInput) => {
+export const renderPDF = async (renderPDFDataInput: RenderPDFDataInput) => {
   const { reportDate, templateData, templateStyleSheet, reportName } =
-    RenderPDFDataInput;
+  renderPDFDataInput;
 
   try {
     const templateContents = fs.readFileSync(
@@ -68,7 +68,7 @@ export const renderPDF = async (RenderPDFDataInput: RenderPDFDataInput) => {
         reportDate,
         reportName,
     }
-    
+
     await generatePDF(generatePDFinput);
   } catch (error) {
     console.log(error);
@@ -76,9 +76,9 @@ export const renderPDF = async (RenderPDFDataInput: RenderPDFDataInput) => {
 };
 
 const generatePDF = async (
-    GeneratePDFInput: GeneratePDFInput
+    generatePDFInput: GeneratePDFInput
 ) => {
-    const { htmlString, reportDate, reportName } = GeneratePDFInput;
+    const { htmlString, reportDate, reportName } = generatePDFInput;
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.setContent(htmlString);
