@@ -3,7 +3,7 @@ import puppeteer from 'puppeteer';
 import fs from 'fs';
 import path from 'path';
 import dayjs from 'dayjs';
-import { AggregatedMonthlyReport, RenderPDFDataInput } from '../types';
+import { AggregatedMonthlyReport, RenderPDFDataInput, GeneratePDFInput } from '../types';
 import {
   monthlyBudgetReportCSS,
   reportTitle,
@@ -62,19 +62,30 @@ export const renderPDF = async (RenderPDFDataInput: RenderPDFDataInput) => {
         'utf8',
       ),
     });
-
-    (async () => {
-      const browser = await puppeteer.launch();
-      const page = await browser.newPage();
-      await page.setContent(htmlString);
-      await page.setViewport({ width: 1, height: 1 });
-      await page.emulateMediaType('screen');
-      await page.pdf({
-        path: `./${reportDate}-${reportName}.pdf`,
-      });
-      await browser.close();
-    })();
+    
+    const generatePDFinput: GeneratePDFInput = {
+        htmlString,
+        reportDate,
+        reportName,
+    }
+    
+    await generatePDF(generatePDFinput);
   } catch (error) {
     console.log(error);
   }
+};
+
+const generatePDF = async (
+    GeneratePDFInput: GeneratePDFInput
+) => {
+    const { htmlString, reportDate, reportName } = GeneratePDFInput;
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.setContent(htmlString);
+  await page.setViewport({ width: 1, height: 1 });
+  await page.emulateMediaType('screen');
+  await page.pdf({
+    path: `./${reportDate}-${reportName}.pdf`,
+  });
+  await browser.close();
 };

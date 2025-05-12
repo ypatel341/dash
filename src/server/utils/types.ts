@@ -78,3 +78,9 @@ export type RenderPDFDataInput = {
   templateStyleSheet: string;
   reportName: string;
 };
+
+export type GeneratePDFInput = {
+  htmlString: string,
+  reportDate: string,
+  reportName: string,
+}

@@ -161,14 +161,18 @@ const BudgetHomePage: React.FC = () => {
           </Button>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={isCurrentMonth(selectedDate)}
-            onClick={() => generateReport()}
-          >
-            {en.budgetHomePage.generateReport}
-          </Button>
+          {isCurrentMonth(selectedDate) ? (
+            ''
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={isCurrentMonth(selectedDate)}
+              onClick={() => generateReport()}
+            >
+              {en.budgetHomePage.generateReport}
+            </Button>
+          )}
         </Grid>
       </Grid>
       <Grid container spacing={3}>
