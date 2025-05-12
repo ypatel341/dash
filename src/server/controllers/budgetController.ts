@@ -166,11 +166,7 @@ export const generateMonthlyReportController = async (
     )) as MonthlyExpenseWithTimestamps[];
 
     const reportData = await formatMonthlyExpensesToBucketExpenses(response);
-    // const monthlyReport = await calculateMonthlyBucketExpenses(reportData)
-
-    // console.log(monthlyReport)
-
-    generateMonthlyPDFReport(reportData);
+    generateMonthlyPDFReport(reportData, YYYYMM);
 
     res.json({
       message: 'Monthly report generated successfully',

@@ -108,7 +108,7 @@ export const formatMonthlyExpensesToBucketExpenses = async (
         monthlyExpenseTotal: 0,
         monthlyBucketAllocation: 0,
         monthlyExpenses: [],
-      }
+      };
     }
     aggregatedMonthlyReport[bucketname].monthlyExpenses.push(expense);
   });
@@ -121,19 +121,3 @@ export const formatMonthlyExpensesToBucketExpenses = async (
 
   return aggregatedMonthlyReport;
 };
-
-// export const calculateMonthlyBucketExpenses = async (aggregatedMonthlyReport: AggregatedMonthlyReport): Promise<FinalAggregatedMonthlyReport> => {
-//   const monthlyBucketExpenses: FinalAggregatedMonthlyReport = {
-//     expenses: [],
-//     monthlyTotal: 0
-//   };
-
-//   Object.keys(aggregatedMonthlyReport).forEach((bucketname) => {
-//     const expenses = aggregatedMonthlyReport[bucketname];
-//     const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-//     monthlyBucketExpenses.expenses.push(...expenses);
-//     monthlyBucketExpenses.monthlyTotal += total;
-//   });
-
-//   return monthlyBucketExpenses;
-// };
