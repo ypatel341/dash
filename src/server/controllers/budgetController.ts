@@ -11,11 +11,16 @@ import {
 } from '../services/budgetService';
 import logger from '../utils/logger';
 import {
+  formatMonthlyExpensesToBucketExpenses,
   isValidDate,
   validateExpense,
   validateInputBucket,
 } from '../utils/utils';
-import { UpdateExpenseType } from '../utils/types';
+import {
+  MonthlyExpenseWithTimestamps,
+  UpdateExpenseType,
+} from '../utils/types';
+import { generateMonthlyPDFReport } from '../utils/pdfgenerator/pdf-generator';
 
 export const getAllMonthlyExpenses = async (req: Request, res: Response) => {
   logger.info(req.body);
@@ -147,4 +152,28 @@ export const healthCheckDbController = async (req: Request, res: Response) => {
 export const healthCheckController = async (req: Request, res: Response) => {
   logger.info(`Health check, ${req}`);
   res.status(200).json({ status: 'UP' });
+};
+
+export const generateMonthlyReportController = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const { YYYYMM } = req.params;
+
+    const response = (await getAllMonthlyExpensesByMonth(
+      YYYYMM,
+    )) as MonthlyExpenseWithTimestamps[];
+
+    const reportData = await formatMonthlyExpensesToBucketExpenses(response);
+    generateMonthlyPDFReport(reportData, YYYYMM);
+
+    res.json({
+      message: 'Monthly report generated successfully',
+      data: reportData,
+    });
+  } catch (error) {
+    logger.error(`Error generating monthly report: ${error}`);
+    res.status(500).json({ error: `Internal Server Error ${error}` });
+  }
 };

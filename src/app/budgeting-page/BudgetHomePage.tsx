@@ -8,6 +8,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import {
   calculateSurplus,
   formatMonthlyExpensesToBucketExpenses,
+  isCurrentMonth,
 } from './utils/helpers';
 import ExpenseMonthDateSelector from './shared-budget-components/ExpenseMonthDateSelector';
 import en from '../i18n/en';
@@ -94,6 +95,25 @@ const BudgetHomePage: React.FC = () => {
     setSelectedDate(new Date());
   };
 
+  const generateReport = async () => {
+    setLoading(true);
+    const formattedDate = dayjs(selectedDate).format('YYYY-MM');
+
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/budget/reports/generateMonthlyReport/${formattedDate}`,
+      );
+      const { data } = response;
+      console.log(data);
+    } catch (error: unknown) {
+      error instanceof Error
+        ? setError(error.message)
+        : setError(en.errors.unknownError);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Container>
       <h1>{en.budgetHomePage.header}</h1>
@@ -139,6 +159,20 @@ const BudgetHomePage: React.FC = () => {
           >
             {en.budgetHomePage.resetMonth}
           </Button>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          {isCurrentMonth(selectedDate) ? (
+            ''
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={isCurrentMonth(selectedDate)}
+              onClick={() => generateReport()}
+            >
+              {en.budgetHomePage.generateReport}
+            </Button>
+          )}
         </Grid>
       </Grid>
       <Grid container spacing={3}>

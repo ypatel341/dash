@@ -8,6 +8,8 @@ import {
   MonthlyExpense,
   BucketExpenseMap,
   BudgetTypeWithCurrentAmount,
+  AggregatedMonthlyReport,
+  MonthlyExpenseWithTimestamps,
 } from './types';
 
 export const validateExpense = async (
@@ -85,4 +87,37 @@ export const getCurrentYearMonth = async (): Promise<string> => {
 
 export const isValidDate = (dateString: string | undefined): boolean => {
   return !!dateString && !/^\d{4}-\d{2}$/.test(dateString as string);
+};
+
+export const formatMonthlyExpensesToBucketExpenses = async (
+  monthlyExpenses: MonthlyExpenseWithTimestamps[],
+): Promise<AggregatedMonthlyReport> => {
+  const formattedResponse: MonthlyExpenseWithTimestamps[] = monthlyExpenses.map(
+    (expense) => ({
+      ...expense,
+      expensedate: new Date(expense.expensedate).toISOString().split('T')[0], // Format date as YYYY-MM-DD
+    }),
+  );
+
+  const aggregatedMonthlyReport: AggregatedMonthlyReport = {};
+
+  formattedResponse.forEach((expense) => {
+    const { bucketname } = expense;
+    if (!aggregatedMonthlyReport[bucketname]) {
+      aggregatedMonthlyReport[bucketname] = {
+        monthlyExpenseTotal: 0,
+        monthlyBucketAllocation: 0,
+        monthlyExpenses: [],
+      };
+    }
+    aggregatedMonthlyReport[bucketname].monthlyExpenses.push(expense);
+  });
+
+  Object.keys(aggregatedMonthlyReport).forEach((bucketname) => {
+    const expenses = aggregatedMonthlyReport[bucketname].monthlyExpenses;
+    const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+    aggregatedMonthlyReport[bucketname].monthlyExpenseTotal = total;
+  });
+
+  return aggregatedMonthlyReport;
 };

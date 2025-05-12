@@ -50,8 +50,37 @@ export type MonthlyExpense = {
   expensedate: string;
 };
 
+export type MonthlyExpenseWithTimestamps = MonthlyExpense & {
+  createdat: string;
+  updatedat: string | null;
+  deletedat: string | null;
+};
+
+type MonthlyExpensesWithBucketSummary = {
+  monthlyExpenseTotal: number;
+  monthlyBucketAllocation: number;
+  monthlyExpenses: MonthlyExpenseWithTimestamps[];
+};
+
+export type AggregatedMonthlyReport = {
+  [key: string]: MonthlyExpensesWithBucketSummary;
+};
+
 export type InsertResponseId = {
   id: string;
 };
 
 export type BucketExpenseMap = Map<string, number>;
+
+export type RenderPDFDataInput = {
+  reportDate: string;
+  templateData: AggregatedMonthlyReport;
+  templateStyleSheet: string;
+  reportName: string;
+};
+
+export type GeneratePDFInput = {
+  htmlString: string,
+  reportDate: string,
+  reportName: string,
+}

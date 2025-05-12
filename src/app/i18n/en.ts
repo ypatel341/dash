@@ -4,6 +4,7 @@ const en = {
   budgetHomePage: {
     header: 'Budget Home Page',
     resetMonth: 'Reset Month',
+    generateReport: 'Generate Report',
   },
   budgetSubHeader: {
     networth: 'Net Worth',
