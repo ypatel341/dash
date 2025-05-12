@@ -56,8 +56,14 @@ export type MonthlyExpenseWithTimestamps = MonthlyExpense & {
   deletedat: string | null;
 };
 
+type MonthlyExpensesWithBucketSummary = {
+  monthlyExpenseTotal: number;
+  monthlyBucketAllocation: number;
+  monthlyExpenses: MonthlyExpenseWithTimestamps[];
+}
+
 export type AggregatedMonthlyReport = {
-  [key: string]: MonthlyExpenseWithTimestamps[];
+  [key: string]: MonthlyExpensesWithBucketSummary;
 };
 
 export type InsertResponseId = {

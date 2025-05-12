@@ -20,6 +20,7 @@ import {
   MonthlyExpenseWithTimestamps,
   UpdateExpenseType,
 } from '../utils/types';
+import { generateMonthlyPDFReport } from '../utils/pdfgenerator/pdf-generator';
 
 export const getAllMonthlyExpenses = async (req: Request, res: Response) => {
   logger.info(req.body);
@@ -163,7 +164,13 @@ export const generateMonthlyReportController = async (
     const response = (await getAllMonthlyExpensesByMonth(
       YYYYMM,
     )) as MonthlyExpenseWithTimestamps[];
+
     const reportData = await formatMonthlyExpensesToBucketExpenses(response);
+    // const monthlyReport = await calculateMonthlyBucketExpenses(reportData)
+
+    // console.log(monthlyReport)
+
+    generateMonthlyPDFReport(reportData);
 
     res.json({
       message: 'Monthly report generated successfully',

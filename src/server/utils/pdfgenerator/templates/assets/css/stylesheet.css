@@ -1,0 +1,17 @@
+html {
+    border: 3px solid #73ad21;
+    width: 768px;
+    margin: 0;
+    font-family: "Courier New", Courier, monospace;
+  }
+  .container {
+    padding: 10px;
+    margin: 0;
+  }
+  p {
+    display: inline-block;
+    line-height: 1px;
+  }
+  p.title {
+    font-weight: bold;
+  }

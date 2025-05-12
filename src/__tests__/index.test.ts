@@ -137,8 +137,6 @@ describe('GET /budget/info/bucketexpense', () => {
         '/budget/reports/generateMonthlyReport/2025-04',
       );
 
-      console.log('body', response.body);
-
       expect(response.status).toBe(200);
       expect(response.body).toBeDefined();
     });
