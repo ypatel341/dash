@@ -80,7 +80,7 @@ export type RenderPDFDataInput = {
 };
 
 export type GeneratePDFInput = {
-  htmlString: string,
-  reportDate: string,
-  reportName: string,
-}
+  htmlString: string;
+  reportDate: string;
+  reportName: string;
+};
