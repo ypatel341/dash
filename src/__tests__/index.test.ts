@@ -12,12 +12,21 @@ import {
   MonthlyExpense,
 } from '../server/utils/types';
 import { calculateBucketExpenses } from '../server/utils/utils';
-import { budgetAllDataInfo, insertData } from '../test_data/budgetData';
+import { budgetAllDataInfo } from '../test_data/budgetData';
+import { createInsertExpense } from '../server/utils/data-factory/testDataFactory';
 
 afterAll(async () => {
   await db.destroy();
   server.close();
 });
+
+const insertData: InsertExpenseType = createInsertExpense({
+  person: 'Yogi',
+  bucketname: 'rent',
+  vendor: 'Domus',
+  amount: 3200,
+  description: 'January Rent'
+})
 
 describe('getAllBudgetData', () => {
   it('should retrieve all budget data', async () => {

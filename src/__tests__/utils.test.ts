@@ -6,6 +6,7 @@ import {
   ExpenseRequestBody,
   InsertExpenseType,
   MonthlyExpenseWithTimestamps,
+  AggregatedMonthlyReport,
 } from '../server/utils/types';
 import {
   calculateBucketExpenses,
@@ -14,6 +15,7 @@ import {
   validateInputBucket,
 } from '../server/utils/utils';
 import {
+  createAggregatedMonthlyReport,
   createBudgetTypeWithCurrentAmount,
   createExpenseRequestBody,
   createInsertExpense,
@@ -135,8 +137,12 @@ describe('calculateBucketExpenses', () => {
 
 describe('validateExpense', () => {
   it('should validate and return the expense object', async () => {
-    const reqBody: ExpenseRequestBody = createExpenseRequestBody();
-    const expected: InsertExpenseType = createInsertExpense();
+    const reqBody: ExpenseRequestBody = createExpenseRequestBody({
+      bucketname: 'rent'
+    });
+    const expected: InsertExpenseType = createInsertExpense({
+      bucketname: 'rent'
+    });
 
     const result = await validateExpense(reqBody);
     expect(result).toEqual(expected);
@@ -155,6 +161,7 @@ describe('validateExpense', () => {
   it('should throw an error if required fields are missing', async () => {
     const reqBody: ExpenseRequestBody = createExpenseRequestBody({
       person: '',
+      bucketname: 'groceries'
     });
 
     await expect(validateExpense(reqBody)).rejects.toThrow(
@@ -191,10 +198,13 @@ describe('validateInputBucket', () => {
   describe('formatMonthlyExpensesToBucketExpenses', () => {
     it('should format and aggregate monthly expenses correctly', async () => {
       const monthlyExpenses: MonthlyExpenseWithTimestamps[] = [
-        createMonthlyExpenseWithTimestamps(),
+        createMonthlyExpenseWithTimestamps({
+          bucketname: "groceries"
+        }),
         createMonthlyExpenseWithTimestamps({
           id: '2',
           amount: 50,
+          bucketname: 'groceries',
           expensedate: '2023-10-02T12:00:00Z',
           createdat: '2023-10-02T12:00:00Z',
         }),
@@ -205,11 +215,9 @@ describe('validateInputBucket', () => {
         }),
       ];
 
-      // TODO: Continue to mock here
-      const expected = {
+      const expected: AggregatedMonthlyReport = createAggregatedMonthlyReport({
         groceries: {
           monthlyExpenseTotal: 150,
-          monthlyBucketAllocation: 0,
           monthlyExpenses: [
             {
               id: '1',
@@ -239,7 +247,6 @@ describe('validateInputBucket', () => {
         },
         rent: {
           monthlyExpenseTotal: 2000,
-          monthlyBucketAllocation: 0,
           monthlyExpenses: [
             {
               id: '3',
@@ -255,7 +262,7 @@ describe('validateInputBucket', () => {
             },
           ],
         },
-      };
+      });
 
       const result =
         await formatMonthlyExpensesToBucketExpenses(monthlyExpenses);

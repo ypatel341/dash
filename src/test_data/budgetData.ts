@@ -1,12 +1,3 @@
-//INFO: ACTUAL DATA USED FOR TESTING -> TEST DATA
-export const insertData = {
-  person: 'Yogi',
-  bucketname: 'rent',
-  vendor: 'Domus',
-  amount: 3200,
-  description: 'January Rent',
-};
-
 //INFO: ACTUAL DATA USED FOR TESTING -> ASSERTIONS
 export const budgetAllDataInfo = [
   {

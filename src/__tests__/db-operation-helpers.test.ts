@@ -7,13 +7,21 @@ import {
   updateExpense,
 } from '../server/utils/db-operation-helpers';
 import { getCurrentYearMonth } from '../server/utils/utils';
-import { InsertResponseId } from '../server/utils/types';
-import { insertData } from '../test_data/budgetData';
+import { InsertExpenseType, InsertResponseId } from '../server/utils/types';
+import { createInsertExpense } from '../server/utils/data-factory/testDataFactory';
 
 describe('handles all DB operations and closes the connection', () => {
   let insertExpenseIdDelete: InsertResponseId;
   let insertExpenseIdUpdate: InsertResponseId;
   let insertExpenseIdMonthly: InsertResponseId;
+
+  const insertData: InsertExpenseType = createInsertExpense({
+    person: 'Yogi',
+    bucketname: 'rent',
+    vendor: 'Domus',
+    amount: 3200,
+    description: 'January Rent'
+  })
 
   beforeAll(async () => {
     // TODO: if this gets big enough create a loop to insert multiple expenses and delete them later in the loop too to clean up the database

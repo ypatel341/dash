@@ -1,21 +1,25 @@
+import { BudgetData } from '../../../app/budgeting-page/types/BudgetCategoryTypes';
 import {
   MonthlyExpense,
   BudgetTypeWithCurrentAmount,
   ExpenseRequestBody,
   InsertExpenseType,
   MonthlyExpenseWithTimestamps,
+  AggregatedMonthlyReport,
+  MonthlyExpensesWithBucketSummary,
 } from '../types';
+import { generateRandomBucket, generateRandomPerson } from './utils';
 
 // Factory for MonthlyExpense
 export const createMonthlyExpense = (
   overrides: Partial<MonthlyExpense> = {},
 ): MonthlyExpense => ({
   id: '1',
-  person: 'test',
-  vendor: 'test vendor',
-  description: 'test description',
+  person: generateRandomPerson(),
+  vendor: 'test',
+  description: 'test',
   expensedate: '2023-10-01',
-  bucketname: 'rent',
+  bucketname: generateRandomBucket(),
   amount: 1000,
   ...overrides, // Allow overriding default values
 });
@@ -30,7 +34,7 @@ export const createMonthlyExpenseWithTimestamps = (
   vendor: 'Walmart',
   person: 'John Doe',
   description: 'Weekly groceries',
-  bucketname: 'groceries',
+  bucketname: generateRandomBucket(),
   amount: 100,
   expensedate: '2023-10-01T12:00:00Z',
   createdat: '2023-10-01T12:00:00Z',
@@ -44,7 +48,7 @@ export const createBudgetTypeWithCurrentAmount = (
   overrides: Partial<BudgetTypeWithCurrentAmount> = {},
 ): BudgetTypeWithCurrentAmount => ({
   id: '1',
-  bucketname: 'rent',
+  bucketname: generateRandomBucket(),
   amount: 2000,
   currentamount: 0,
   category: 'housing',
@@ -57,7 +61,7 @@ export const createExpenseRequestBody = (
   overrides: Partial<ExpenseRequestBody> = {},
 ): ExpenseRequestBody => ({
   person: 'John Doe',
-  bucketname: 'groceries',
+  bucketname: generateRandomBucket(),
   vendor: 'Walmart',
   amount: 100,
   description: 'Weekly groceries',
@@ -71,10 +75,40 @@ export const createInsertExpense = (
   overrides: Partial<InsertExpenseType> = {},
 ): InsertExpenseType => ({
   person: 'John Doe',
-  bucketname: 'groceries',
+  bucketname: generateRandomBucket(),
   vendor: 'Walmart',
   amount: 100,
   description: 'Weekly groceries',
   expensedate: '2021-01-01',
   ...overrides,
 });
+
+export const createAggregatedMonthlyReport = (
+  overrides: Record<string, Partial<MonthlyExpensesWithBucketSummary>> = {},
+): AggregatedMonthlyReport => {
+  const defaultReport: MonthlyExpensesWithBucketSummary = {
+    monthlyExpenseTotal: 0,
+    monthlyBucketAllocation: 0,
+    monthlyExpenses: [createMonthlyExpenseWithTimestamps()],
+  };
+
+  const report: AggregatedMonthlyReport = {};
+
+  for (const key in overrides) {
+    report[key] = { ...defaultReport, ...overrides[key] };
+  }
+
+  return report;
+};
+
+export const createBucketBudgetData = (
+  overrides: Partial<BudgetData> = {}
+): BudgetData => ({
+  id: '1',
+  category: 'test',
+  amount: 0,
+  bucketname: generateRandomBucket(),
+  household: 'test',
+  currentamount: 0,
+  ...overrides
+})
