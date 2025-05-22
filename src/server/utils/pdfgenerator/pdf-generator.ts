@@ -3,7 +3,11 @@ import puppeteer from 'puppeteer';
 import fs from 'fs';
 import path from 'path';
 import dayjs from 'dayjs';
-import { AggregatedMonthlyReport, RenderPDFDataInput, GeneratePDFInput } from '../types';
+import {
+  AggregatedMonthlyReport,
+  RenderPDFDataInput,
+  GeneratePDFInput,
+} from '../types';
 import {
   monthlyBudgetReportCSS,
   reportTitle,
@@ -44,7 +48,7 @@ export const enrichDataForReport = async (
 // Add in some metadata around template type and the data type, throw error if the data can not be coupled with template type
 export const renderPDF = async (renderPDFDataInput: RenderPDFDataInput) => {
   const { reportDate, templateData, templateStyleSheet, reportName } =
-  renderPDFDataInput;
+    renderPDFDataInput;
 
   try {
     const templateContents = fs.readFileSync(
@@ -62,12 +66,12 @@ export const renderPDF = async (renderPDFDataInput: RenderPDFDataInput) => {
         'utf8',
       ),
     });
-    
+
     const generatePDFinput: GeneratePDFInput = {
-        htmlString,
-        reportDate,
-        reportName,
-    }
+      htmlString,
+      reportDate,
+      reportName,
+    };
 
     await generatePDF(generatePDFinput);
   } catch (error) {
@@ -75,10 +79,8 @@ export const renderPDF = async (renderPDFDataInput: RenderPDFDataInput) => {
   }
 };
 
-const generatePDF = async (
-    generatePDFInput: GeneratePDFInput
-) => {
-    const { htmlString, reportDate, reportName } = generatePDFInput;
+const generatePDF = async (generatePDFInput: GeneratePDFInput) => {
+  const { htmlString, reportDate, reportName } = generatePDFInput;
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.setContent(htmlString);

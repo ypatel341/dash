@@ -6,6 +6,7 @@ import {
   ExpenseRequestBody,
   InsertExpenseType,
   MonthlyExpenseWithTimestamps,
+  AggregatedMonthlyReport,
 } from '../server/utils/types';
 import {
   calculateBucketExpenses,
@@ -14,13 +15,13 @@ import {
   validateInputBucket,
 } from '../server/utils/utils';
 import {
-  rawMonthlyData,
-  allBudgetData,
-  expectedCalculatedBudgetExpenses,
-  rawMonthlyDataTest2,
-  allBudgetDataTest2,
-  expectedTest2,
-} from '../test_data/utilsTestData';
+  createAggregatedMonthlyReport,
+  createBudgetTypeWithCurrentAmount,
+  createExpenseRequestBody,
+  createInsertExpense,
+  createMonthlyExpense,
+  createMonthlyExpenseWithTimestamps,
+} from '../server/utils/data-factory/testDataFactory';
 
 jest.mock('../server/utils/db-operation-helpers', () => ({
   getAllBudgetData: jest.fn(),
@@ -28,11 +29,78 @@ jest.mock('../server/utils/db-operation-helpers', () => ({
 
 describe('calculateBucketExpenses', () => {
   it('should calculate the current amount spent for each bucket', async () => {
+    const rawMonthlyData = [
+      createMonthlyExpense({ bucketname: 'rent', amount: 1000 }),
+      createMonthlyExpense({ bucketname: 'groceries', amount: 200 }),
+      createMonthlyExpense({ bucketname: 'rent', amount: 500 }),
+      createMonthlyExpense({ bucketname: 'entertainment', amount: 150 }),
+    ];
+
+    const allBudgetData = [
+      createBudgetTypeWithCurrentAmount({ bucketname: 'rent', amount: 2000 }),
+      createBudgetTypeWithCurrentAmount({
+        id: '2',
+        bucketname: 'groceries',
+        amount: 300,
+        category: 'food',
+      }),
+      createBudgetTypeWithCurrentAmount({
+        id: '3',
+        bucketname: 'entertainment',
+        amount: 200,
+        category: 'fun',
+      }),
+    ];
+
+    const expectedCalculatedBudgetExpenses = [
+      createBudgetTypeWithCurrentAmount({
+        bucketname: 'rent',
+        amount: 2000,
+        currentamount: 1500,
+      }),
+      createBudgetTypeWithCurrentAmount({
+        id: '2',
+        bucketname: 'groceries',
+        amount: 300,
+        currentamount: 200,
+        category: 'food',
+      }),
+      createBudgetTypeWithCurrentAmount({
+        id: '3',
+        bucketname: 'entertainment',
+        amount: 200,
+        currentamount: 150,
+        category: 'fun',
+      }),
+    ];
+
     const result = await calculateBucketExpenses(rawMonthlyData, allBudgetData);
     expect(result).toEqual(expectedCalculatedBudgetExpenses);
   });
 
   it('should return zero current amount for buckets with no expenses', async () => {
+    const rawMonthlyDataTest2 = [
+      createMonthlyExpense({ bucketname: 'groceries', amount: 0 }),
+    ];
+    const allBudgetDataTest2 = [
+      createBudgetTypeWithCurrentAmount({ bucketname: 'rent', amount: 2000 }),
+      createBudgetTypeWithCurrentAmount({
+        bucketname: 'groceries',
+        amount: 300,
+      }),
+    ];
+    const expectedTest2 = [
+      createBudgetTypeWithCurrentAmount({
+        bucketname: 'rent',
+        currentamount: 0,
+      }),
+      createBudgetTypeWithCurrentAmount({
+        bucketname: 'groceries',
+        amount: 300,
+        currentamount: 0,
+      }),
+    ];
+
     const result = await calculateBucketExpenses(
       rawMonthlyDataTest2,
       allBudgetDataTest2,
@@ -42,23 +110,21 @@ describe('calculateBucketExpenses', () => {
 
   it('should handle empty rawMonthlyData', async () => {
     const emptyRawMonthlyData: MonthlyExpense[] = [];
+
     const expected: BudgetTypeWithCurrentAmount[] = [
-      {
-        bucketname: 'rent',
-        amount: 2000,
-        currentamount: 0,
-        category: 'housing',
-        household: 'household',
-        id: '1',
-      },
-      {
+      createBudgetTypeWithCurrentAmount({ bucketname: 'rent', amount: 2000 }),
+      createBudgetTypeWithCurrentAmount({
         bucketname: 'groceries',
         amount: 300,
         currentamount: 0,
-        category: 'food',
-        household: 'household',
-        id: '2',
-      },
+      }),
+    ];
+    const allBudgetDataTest2 = [
+      createBudgetTypeWithCurrentAmount({ bucketname: 'rent', amount: 2000 }),
+      createBudgetTypeWithCurrentAmount({
+        bucketname: 'groceries',
+        amount: 300,
+      }),
     ];
 
     const result = await calculateBucketExpenses(
@@ -71,37 +137,21 @@ describe('calculateBucketExpenses', () => {
 
 describe('validateExpense', () => {
   it('should validate and return the expense object', async () => {
-    const reqBody: ExpenseRequestBody = {
-      person: 'John Doe',
-      bucketname: 'groceries',
-      vendor: 'Walmart',
-      amount: 100,
-      description: 'Weekly groceries',
-      date: '2021-01-01',
-    };
-
-    const expected: InsertExpenseType = {
-      person: 'John Doe',
-      bucketname: 'groceries',
-      vendor: 'Walmart',
-      amount: 100,
-      description: 'Weekly groceries',
-      expensedate: '2021-01-01',
-    };
+    const reqBody: ExpenseRequestBody = createExpenseRequestBody({
+      bucketname: 'rent'
+    });
+    const expected: InsertExpenseType = createInsertExpense({
+      bucketname: 'rent'
+    });
 
     const result = await validateExpense(reqBody);
     expect(result).toEqual(expected);
   });
 
   it('should throw an error if amount is missing or invalid', async () => {
-    const reqBody: ExpenseRequestBody = {
-      person: 'John Doe',
-      bucketname: 'groceries',
-      vendor: 'Walmart',
+    const reqBody: ExpenseRequestBody = createExpenseRequestBody({
       amount: -100,
-      description: 'Weekly groceries',
-      date: '2021-01-01',
-    };
+    });
 
     await expect(validateExpense(reqBody)).rejects.toThrow(
       ExpenseAmountMinAndMaxError,
@@ -109,14 +159,10 @@ describe('validateExpense', () => {
   });
 
   it('should throw an error if required fields are missing', async () => {
-    const reqBody: ExpenseRequestBody = {
+    const reqBody: ExpenseRequestBody = createExpenseRequestBody({
       person: '',
-      bucketname: 'groceries',
-      vendor: 'Walmart',
-      amount: 100,
-      description: 'Weekly groceries',
-      date: '2021-01-01',
-    };
+      bucketname: 'groceries'
+    });
 
     await expect(validateExpense(reqBody)).rejects.toThrow(
       'Missing required fields person: , bucketname: groceries, vendor: Walmart',
@@ -151,49 +197,27 @@ describe('validateInputBucket', () => {
 
   describe('formatMonthlyExpensesToBucketExpenses', () => {
     it('should format and aggregate monthly expenses correctly', async () => {
-      const monthlyExpenses = [
-        {
-          id: '1',
-          vendor: 'Walmart',
-          person: 'John Doe',
-          description: 'Weekly groceries',
-          bucketname: 'groceries',
-          amount: 100,
-          expensedate: '2023-10-01T12:00:00Z',
-          createdat: '2023-10-01T12:00:00Z',
-          updatedat: null,
-          deletedat: null,
-        },
-        {
+      const monthlyExpenses: MonthlyExpenseWithTimestamps[] = [
+        createMonthlyExpenseWithTimestamps({
+          bucketname: "groceries"
+        }),
+        createMonthlyExpenseWithTimestamps({
           id: '2',
-          vendor: 'Walmart',
-          person: 'John Doe',
-          description: 'Weekly groceries',
-          bucketname: 'groceries',
           amount: 50,
+          bucketname: 'groceries',
           expensedate: '2023-10-02T12:00:00Z',
           createdat: '2023-10-02T12:00:00Z',
-          updatedat: null,
-          deletedat: null,
-        },
-        {
+        }),
+        createMonthlyExpenseWithTimestamps({
           id: '3',
-          vendor: 'Walmart',
-          person: 'John Doe',
-          description: 'Weekly groceries',
           bucketname: 'rent',
           amount: 2000,
-          expensedate: '2023-10-01T12:00:00Z',
-          createdat: '2023-10-01T12:00:00Z',
-          updatedat: null,
-          deletedat: null,
-        },
+        }),
       ];
 
-      const expected = {
+      const expected: AggregatedMonthlyReport = createAggregatedMonthlyReport({
         groceries: {
           monthlyExpenseTotal: 150,
-          monthlyBucketAllocation: 0,
           monthlyExpenses: [
             {
               id: '1',
@@ -223,7 +247,6 @@ describe('validateInputBucket', () => {
         },
         rent: {
           monthlyExpenseTotal: 2000,
-          monthlyBucketAllocation: 0,
           monthlyExpenses: [
             {
               id: '3',
@@ -239,7 +262,7 @@ describe('validateInputBucket', () => {
             },
           ],
         },
-      };
+      });
 
       const result =
         await formatMonthlyExpensesToBucketExpenses(monthlyExpenses);

@@ -56,7 +56,8 @@ export type MonthlyExpenseWithTimestamps = MonthlyExpense & {
   deletedat: string | null;
 };
 
-type MonthlyExpensesWithBucketSummary = {
+// Should be private type, exporting for test
+export type MonthlyExpensesWithBucketSummary = {
   monthlyExpenseTotal: number;
   monthlyBucketAllocation: number;
   monthlyExpenses: MonthlyExpenseWithTimestamps[];
@@ -80,7 +81,7 @@ export type RenderPDFDataInput = {
 };
 
 export type GeneratePDFInput = {
-  htmlString: string,
-  reportDate: string,
-  reportName: string,
-}
+  htmlString: string;
+  reportDate: string;
+  reportName: string;
+};
