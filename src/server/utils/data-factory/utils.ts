@@ -5,9 +5,9 @@ const getRandomInt = (max: number): number => {
 }
 
 export const generateRandomBucket = (): string => {
-    return expenseTypeOptions[getRandomInt(17)]
+    return expenseTypeOptions[getRandomInt(expenseTypeOptions.length)]
 }
 
 export const generateRandomPerson = (): string => {
-    return expensePersonOptions[getRandomInt(2)]
+    return expensePersonOptions[getRandomInt(expensePersonOptions.length)]
 }
