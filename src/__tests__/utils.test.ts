@@ -138,10 +138,10 @@ describe('calculateBucketExpenses', () => {
 describe('validateExpense', () => {
   it('should validate and return the expense object', async () => {
     const reqBody: ExpenseRequestBody = createExpenseRequestBody({
-      bucketname: 'rent'
+      bucketname: 'rent',
     });
     const expected: InsertExpenseType = createInsertExpense({
-      bucketname: 'rent'
+      bucketname: 'rent',
     });
 
     const result = await validateExpense(reqBody);
@@ -161,7 +161,7 @@ describe('validateExpense', () => {
   it('should throw an error if required fields are missing', async () => {
     const reqBody: ExpenseRequestBody = createExpenseRequestBody({
       person: '',
-      bucketname: 'groceries'
+      bucketname: 'groceries',
     });
 
     await expect(validateExpense(reqBody)).rejects.toThrow(
@@ -199,7 +199,7 @@ describe('validateInputBucket', () => {
     it('should format and aggregate monthly expenses correctly', async () => {
       const monthlyExpenses: MonthlyExpenseWithTimestamps[] = [
         createMonthlyExpenseWithTimestamps({
-          bucketname: "groceries"
+          bucketname: 'groceries',
         }),
         createMonthlyExpenseWithTimestamps({
           id: '2',
@@ -275,7 +275,7 @@ describe('validateInputBucket', () => {
 
       const result =
         await formatMonthlyExpensesToBucketExpenses(monthlyExpenses);
-      expect(result).toEqual(expected);
+      expect(result.buckets).toEqual(expected);
     });
 
     it('should handle expenses with the same bucket but different dates', async () => {
@@ -307,35 +307,37 @@ describe('validateInputBucket', () => {
       ];
 
       const expected = {
-        utilities: {
-          monthlyExpenseTotal: 200,
-          monthlyBucketAllocation: 0,
-          monthlyExpenses: [
-            {
-              id: '1',
-              vendor: 'Walmart',
-              person: 'John Doe',
-              description: 'Weekly groceries',
-              bucketname: 'utilities',
-              amount: 120,
-              expensedate: '2023-10-01',
-              createdat: '2023-10-01T12:00:00Z',
-              updatedat: null,
-              deletedat: null,
-            },
-            {
-              id: '2',
-              vendor: 'Walmart',
-              person: 'John Doe',
-              description: 'Weekly groceries',
-              bucketname: 'utilities',
-              amount: 80,
-              expensedate: '2023-10-15',
-              createdat: '2023-10-15T12:00:00Z',
-              updatedat: null,
-              deletedat: null,
-            },
-          ],
+        buckets: {
+          utilities: {
+            monthlyExpenseTotal: 200,
+            monthlyBucketAllocation: 0,
+            monthlyExpenses: [
+              {
+                id: '1',
+                vendor: 'Walmart',
+                person: 'John Doe',
+                description: 'Weekly groceries',
+                bucketname: 'utilities',
+                amount: 120,
+                expensedate: '2023-10-01',
+                createdat: '2023-10-01T12:00:00Z',
+                updatedat: null,
+                deletedat: null,
+              },
+              {
+                id: '2',
+                vendor: 'Walmart',
+                person: 'John Doe',
+                description: 'Weekly groceries',
+                bucketname: 'utilities',
+                amount: 80,
+                expensedate: '2023-10-15',
+                createdat: '2023-10-15T12:00:00Z',
+                updatedat: null,
+                deletedat: null,
+              },
+            ],
+          },
         },
       };
 
@@ -361,23 +363,25 @@ describe('validateInputBucket', () => {
       ];
 
       const expected = {
-        entertainment: {
-          monthlyExpenseTotal: 50,
-          monthlyBucketAllocation: 0,
-          monthlyExpenses: [
-            {
-              id: '1',
-              vendor: 'Walmart',
-              person: 'John Doe',
-              description: 'Weekly groceries',
-              bucketname: 'entertainment',
-              amount: 50,
-              expensedate: '2023-10-05',
-              createdat: '2023-10-05T18:30:00Z',
-              updatedat: null,
-              deletedat: null,
-            },
-          ],
+        buckets: {
+          entertainment: {
+            monthlyExpenseTotal: 50,
+            monthlyBucketAllocation: 0,
+            monthlyExpenses: [
+              {
+                id: '1',
+                vendor: 'Walmart',
+                person: 'John Doe',
+                description: 'Weekly groceries',
+                bucketname: 'entertainment',
+                amount: 50,
+                expensedate: '2023-10-05',
+                createdat: '2023-10-05T18:30:00Z',
+                updatedat: null,
+                deletedat: null,
+              },
+            ],
+          },
         },
       };
 

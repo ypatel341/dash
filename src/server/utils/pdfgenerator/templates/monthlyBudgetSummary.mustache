@@ -1,331 +1,347 @@
-here are all the groceries expenses for the month:
+Monthly Report:
 
-{{#groceries}}
-<h2>Groceries used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
+<h2>Yearly Accumulated Summary Since Start of Year</h2>
 <table border="1" cellspacing="0" cellpadding="5">
   <tr>
-    <th>Person</th>
-    <th>Amount</th>
-    <th>Vendor</th>
-    <th>Description</th>
-    <th>Expense Date</th>
+    <th>Bucket Name</th>
+    <th>Total Amount</th>
   </tr>
-    {{#monthlyExpenses}}
-      <tr>
-        <td>{{person}}</td>
-        <td>{{amount}}</td>
-        <td>{{vendor}}</td>
-        <td>{{description}}</td>
-        <td>{{expensedate}}</td>
-      </tr>
-    {{/monthlyExpenses}}
+  {{#yearlyAccumulatedData}}
+    <tr>
+      <td>{{bucketname}}</td>
+      <td>{{total_amount}}</td>
+    </tr>
+  {{/yearlyAccumulatedData}}
 </table>
-{{/groceries}}
 
-{{#date_night}}
-<h2>Date Night used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-<table border="1" cellspacing="0" cellpadding="5">
-  <tr>
-    <th>Person</th>
-    <th>Amount</th>
-    <th>Vendor</th>
-    <th>Description</th>
-    <th>Expense Date</th>
-  </tr>
-    {{#monthlyExpenses}}
-      <tr>
-        <td>{{person}}</td>
-        <td>{{amount}}</td>
-        <td>{{vendor}}</td>
-        <td>{{description}}</td>
-        <td>{{expensedate}}</td>
-      </tr>
-    {{/monthlyExpenses}}
-</table>
-{{/date_night}}
+{{#buckets}}
+  {{#groceries}}
+  <h2>Groceries used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
+  <table border="1" cellspacing="0" cellpadding="5">
+    <tr>
+      <th>Person</th>
+      <th>Amount</th>
+      <th>Vendor</th>
+      <th>Description</th>
+      <th>Expense Date</th>
+    </tr>
+      {{#monthlyExpenses}}
+        <tr>
+          <td>{{person}}</td>
+          <td>{{amount}}</td>
+          <td>{{vendor}}</td>
+          <td>{{description}}</td>
+          <td>{{expensedate}}</td>
+        </tr>
+      {{/monthlyExpenses}}
+  </table>
+  {{/groceries}}
 
-{{#gifts}}
-<h2>Gifts used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-<table border="1" cellspacing="0" cellpadding="5">
-  <tr>
-    <th>Person</th>
-    <th>Amount</th>
-    <th>Vendor</th>
-    <th>Description</th>
-    <th>Expense Date</th>
-  </tr>
-    {{#monthlyExpenses}}
-      <tr>
-        <td>{{person}}</td>
-        <td>{{amount}}</td>
-        <td>{{vendor}}</td>
-        <td>{{description}}</td>
-        <td>{{expensedate}}</td>
-      </tr>
-    {{/monthlyExpenses}}
-</table>
-{{/gifts}}
+  {{#date_night}}
+  <h2>Date Night used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
+  <table border="1" cellspacing="0" cellpadding="5">
+    <tr>
+      <th>Person</th>
+      <th>Amount</th>
+      <th>Vendor</th>
+      <th>Description</th>
+      <th>Expense Date</th>
+    </tr>
+      {{#monthlyExpenses}}
+        <tr>
+          <td>{{person}}</td>
+          <td>{{amount}}</td>
+          <td>{{vendor}}</td>
+          <td>{{description}}</td>
+          <td>{{expensedate}}</td>
+        </tr>
+      {{/monthlyExpenses}}
+  </table>
+  {{/date_night}}
 
-{{#house_supplies}}
-<h2>House Supplies used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-<table border="1" cellspacing="0" cellpadding="5">
-  <tr>
-    <th>Person</th>
-    <th>Amount</th>
-    <th>Vendor</th>
-    <th>Description</th>
-    <th>Expense Date</th>
-  </tr>
-    {{#monthlyExpenses}}
-      <tr>
-        <td>{{person}}</td>
-        <td>{{amount}}</td>
-        <td>{{vendor}}</td>
-        <td>{{description}}</td>
-        <td>{{expensedate}}</td>
-      </tr>
-    {{/monthlyExpenses}}
-</table>
-{{/house_supplies}}
+  {{#gifts}}
+  <h2>Gifts used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
+  <table border="1" cellspacing="0" cellpadding="5">
+    <tr>
+      <th>Person</th>
+      <th>Amount</th>
+      <th>Vendor</th>
+      <th>Description</th>
+      <th>Expense Date</th>
+    </tr>
+      {{#monthlyExpenses}}
+        <tr>
+          <td>{{person}}</td>
+          <td>{{amount}}</td>
+          <td>{{vendor}}</td>
+          <td>{{description}}</td>
+          <td>{{expensedate}}</td>
+        </tr>
+      {{/monthlyExpenses}}
+  </table>
+  {{/gifts}}
 
-{{#rent}}
-<h2>Rent used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-<table border="1" cellspacing="0" cellpadding="5">
-  <tr>
-    <th>Person</th>
-    <th>Amount</th>
-    <th>Vendor</th>
-    <th>Description</th>
-    <th>Expense Date</th>
-  </tr>
-    {{#monthlyExpenses}}
-      <tr>
-        <td>{{person}}</td>
-        <td>{{amount}}</td>
-        <td>{{vendor}}</td>
-        <td>{{description}}</td>
-        <td>{{expensedate}}</td>
-      </tr>
-    {{/monthlyExpenses}}
-</table>
-{{/rent}}
+  {{#house_supplies}}
+  <h2>House Supplies used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
+  <table border="1" cellspacing="0" cellpadding="5">
+    <tr>
+      <th>Person</th>
+      <th>Amount</th>
+      <th>Vendor</th>
+      <th>Description</th>
+      <th>Expense Date</th>
+    </tr>
+      {{#monthlyExpenses}}
+        <tr>
+          <td>{{person}}</td>
+          <td>{{amount}}</td>
+          <td>{{vendor}}</td>
+          <td>{{description}}</td>
+          <td>{{expensedate}}</td>
+        </tr>
+      {{/monthlyExpenses}}
+  </table>
+  {{/house_supplies}}
 
-{{#internet}}
-<h2>Internet used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-<table border="1" cellspacing="0" cellpadding="5">
-  <tr>
-    <th>Person</th>
-    <th>Amount</th>
-    <th>Vendor</th>
-    <th>Description</th>
-    <th>Expense Date</th>
-  </tr>
-    {{#monthlyExpenses}}
-      <tr>
-        <td>{{person}}</td>
-        <td>{{amount}}</td>
-        <td>{{vendor}}</td>
-        <td>{{description}}</td>
-        <td>{{expensedate}}</td>
-      </tr>
-    {{/monthlyExpenses}}
-</table>
-{{/internet}}
+  {{#rent}}
+  <h2>Rent used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
+  <table border="1" cellspacing="0" cellpadding="5">
+    <tr>
+      <th>Person</th>
+      <th>Amount</th>
+      <th>Vendor</th>
+      <th>Description</th>
+      <th>Expense Date</th>
+    </tr>
+      {{#monthlyExpenses}}
+        <tr>
+          <td>{{person}}</td>
+          <td>{{amount}}</td>
+          <td>{{vendor}}</td>
+          <td>{{description}}</td>
+          <td>{{expensedate}}</td>
+        </tr>
+      {{/monthlyExpenses}}
+  </table>
+  {{/rent}}
 
-{{#parcel}}
-<h2>Parcel Pending used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-<table border="1" cellspacing="0" cellpadding="5">
-  <tr>
-    <th>Person</th>
-    <th>Amount</th>
-    <th>Vendor</th>
-    <th>Description</th>
-    <th>Expense Date</th>
-  </tr>
-    {{#monthlyExpenses}}
-      <tr>
-        <td>{{person}}</td>
-        <td>{{amount}}</td>
-        <td>{{vendor}}</td>
-        <td>{{description}}</td>
-        <td>{{expensedate}}</td>
-      </tr>
-    {{/monthlyExpenses}}
-</table>
-{{/parcel}}
+  {{#internet}}
+  <h2>Internet used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
+  <table border="1" cellspacing="0" cellpadding="5">
+    <tr>
+      <th>Person</th>
+      <th>Amount</th>
+      <th>Vendor</th>
+      <th>Description</th>
+      <th>Expense Date</th>
+    </tr>
+      {{#monthlyExpenses}}
+        <tr>
+          <td>{{person}}</td>
+          <td>{{amount}}</td>
+          <td>{{vendor}}</td>
+          <td>{{description}}</td>
+          <td>{{expensedate}}</td>
+        </tr>
+      {{/monthlyExpenses}}
+  </table>
+  {{/internet}}
 
-{{#spotify}}
-<h2>Spotify used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-<table border="1" cellspacing="0" cellpadding="5">
-  <tr>
-    <th>Person</th>
-    <th>Amount</th>
-    <th>Vendor</th>
-    <th>Description</th>
-    <th>Expense Date</th>
-  </tr>
-    {{#monthlyExpenses}}
-      <tr>
-        <td>{{person}}</td>
-        <td>{{amount}}</td>
-        <td>{{vendor}}</td>
-        <td>{{description}}</td>
-        <td>{{expensedate}}</td>
-      </tr>
-    {{/monthlyExpenses}}
-</table>
-{{/spotify}}
+  {{#parcel}}
+  <h2>Parcel Pending used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
+  <table border="1" cellspacing="0" cellpadding="5">
+    <tr>
+      <th>Person</th>
+      <th>Amount</th>
+      <th>Vendor</th>
+      <th>Description</th>
+      <th>Expense Date</th>
+    </tr>
+      {{#monthlyExpenses}}
+        <tr>
+          <td>{{person}}</td>
+          <td>{{amount}}</td>
+          <td>{{vendor}}</td>
+          <td>{{description}}</td>
+          <td>{{expensedate}}</td>
+        </tr>
+      {{/monthlyExpenses}}
+  </table>
+  {{/parcel}}
 
-{{#netflix}}
-<h2>Netflix used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-<table border="1" cellspacing="0" cellpadding="5">
-  <tr>
-    <th>Person</th>
-    <th>Amount</th>
-    <th>Vendor</th>
-    <th>Description</th>
-    <th>Expense Date</th>
-  </tr>
-    {{#monthlyExpenses}}
-      <tr>
-        <td>{{person}}</td>
-        <td>{{amount}}</td>
-        <td>{{vendor}}</td>
-        <td>{{description}}</td>
-        <td>{{expensedate}}</td>
-      </tr>
-    {{/monthlyExpenses}}
-</table>
-{{/netflix}}
+  {{#spotify}}
+  <h2>Spotify used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
+  <table border="1" cellspacing="0" cellpadding="5">
+    <tr>
+      <th>Person</th>
+      <th>Amount</th>
+      <th>Vendor</th>
+      <th>Description</th>
+      <th>Expense Date</th>
+    </tr>
+      {{#monthlyExpenses}}
+        <tr>
+          <td>{{person}}</td>
+          <td>{{amount}}</td>
+          <td>{{vendor}}</td>
+          <td>{{description}}</td>
+          <td>{{expensedate}}</td>
+        </tr>
+      {{/monthlyExpenses}}
+  </table>
+  {{/spotify}}
 
-{{#gas}}
-<h2>Gas used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-<table border="1" cellspacing="0" cellpadding="5">
-  <tr>
-    <th>Person</th>
-    <th>Amount</th>
-    <th>Vendor</th>
-    <th>Description</th>
-    <th>Expense Date</th>
-  </tr>
-    {{#monthlyExpenses}}
-      <tr>
-        <td>{{person}}</td>
-        <td>{{amount}}</td>
-        <td>{{vendor}}</td>
-        <td>{{description}}</td>
-        <td>{{expensedate}}</td>
-      </tr>
-    {{/monthlyExpenses}}
-</table>
-{{/gas}}
+  {{#netflix}}
+  <h2>Netflix used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
+  <table border="1" cellspacing="0" cellpadding="5">
+    <tr>
+      <th>Person</th>
+      <th>Amount</th>
+      <th>Vendor</th>
+      <th>Description</th>
+      <th>Expense Date</th>
+    </tr>
+      {{#monthlyExpenses}}
+        <tr>
+          <td>{{person}}</td>
+          <td>{{amount}}</td>
+          <td>{{vendor}}</td>
+          <td>{{description}}</td>
+          <td>{{expensedate}}</td>
+        </tr>
+      {{/monthlyExpenses}}
+  </table>
+  {{/netflix}}
 
-{{#savings_chase_2112}}
-<h2>Savings used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-<table border="1" cellspacing="0" cellpadding="5">
-  <tr>
-    <th>Person</th>
-    <th>Amount</th>
-    <th>Vendor</th>
-    <th>Description</th>
-    <th>Expense Date</th>
-  </tr>
-    {{#monthlyExpenses}}
-      <tr>
-        <td>{{person}}</td>
-        <td>{{amount}}</td>
-        <td>{{vendor}}</td>
-        <td>{{description}}</td>
-        <td>{{expensedate}}</td>
-      </tr>
-    {{/monthlyExpenses}}
-</table>
-{{/savings_chase_2112}}
+  {{#gas}}
+  <h2>Gas used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
+  <table border="1" cellspacing="0" cellpadding="5">
+    <tr>
+      <th>Person</th>
+      <th>Amount</th>
+      <th>Vendor</th>
+      <th>Description</th>
+      <th>Expense Date</th>
+    </tr>
+      {{#monthlyExpenses}}
+        <tr>
+          <td>{{person}}</td>
+          <td>{{amount}}</td>
+          <td>{{vendor}}</td>
+          <td>{{description}}</td>
+          <td>{{expensedate}}</td>
+        </tr>
+      {{/monthlyExpenses}}
+  </table>
+  {{/gas}}
 
-{{#electric}}
-<h2>Electricity used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-<table border="1" cellspacing="0" cellpadding="5">
-  <tr>
-    <th>Person</th>
-    <th>Amount</th>
-    <th>Vendor</th>
-    <th>Description</th>
-    <th>Expense Date</th>
-  </tr>
-    {{#monthlyExpenses}}
-      <tr>
-        <td>{{person}}</td>
-        <td>{{amount}}</td>
-        <td>{{vendor}}</td>
-        <td>{{description}}</td>
-        <td>{{expensedate}}</td>
-      </tr>
-    {{/monthlyExpenses}}
-</table>
-{{/electric}}
+  {{#savings_chase_2112}}
+  <h2>Savings used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
+  <table border="1" cellspacing="0" cellpadding="5">
+    <tr>
+      <th>Person</th>
+      <th>Amount</th>
+      <th>Vendor</th>
+      <th>Description</th>
+      <th>Expense Date</th>
+    </tr>
+      {{#monthlyExpenses}}
+        <tr>
+          <td>{{person}}</td>
+          <td>{{amount}}</td>
+          <td>{{vendor}}</td>
+          <td>{{description}}</td>
+          <td>{{expensedate}}</td>
+        </tr>
+      {{/monthlyExpenses}}
+  </table>
+  {{/savings_chase_2112}}
 
-{{#yogi_activities}}
-<h2>Yogi Activities used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-<table border="1" cellspacing="0" cellpadding="5">
-  <tr>
-    <th>Person</th>
-    <th>Amount</th>
-    <th>Vendor</th>
-    <th>Description</th>
-    <th>Expense Date</th>
-  </tr>
-    {{#monthlyExpenses}}
-      <tr>
-        <td>{{person}}</td>
-        <td>{{amount}}</td>
-        <td>{{vendor}}</td>
-        <td>{{description}}</td>
-        <td>{{expensedate}}</td>
-      </tr>
-    {{/monthlyExpenses}}
-</table>
-{{/yogi_activities}}
+  {{#electric}}
+  <h2>Electricity used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
+  <table border="1" cellspacing="0" cellpadding="5">
+    <tr>
+      <th>Person</th>
+      <th>Amount</th>
+      <th>Vendor</th>
+      <th>Description</th>
+      <th>Expense Date</th>
+    </tr>
+      {{#monthlyExpenses}}
+        <tr>
+          <td>{{person}}</td>
+          <td>{{amount}}</td>
+          <td>{{vendor}}</td>
+          <td>{{description}}</td>
+          <td>{{expensedate}}</td>
+        </tr>
+      {{/monthlyExpenses}}
+  </table>
+  {{/electric}}
 
-{{#going_out_yogi}}
-<h2>Going Out used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-<table border="1" cellspacing="0" cellpadding="5">
-  <tr>
-    <th>Person</th>
-    <th>Amount</th>
-    <th>Vendor</th>
-    <th>Description</th>
-    <th>Expense Date</th>
-  </tr>
-    {{#monthlyExpenses}}
-      <tr>
-        <td>{{person}}</td>
-        <td>{{amount}}</td>
-        <td>{{vendor}}</td>
-        <td>{{description}}</td>
-        <td>{{expensedate}}</td>
-      </tr>
-    {{/monthlyExpenses}}
-</table>
-{{/going_out_yogi}}
+  {{#yogi_activities}}
+  <h2>Yogi Activities used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
+  <table border="1" cellspacing="0" cellpadding="5">
+    <tr>
+      <th>Person</th>
+      <th>Amount</th>
+      <th>Vendor</th>
+      <th>Description</th>
+      <th>Expense Date</th>
+    </tr>
+      {{#monthlyExpenses}}
+        <tr>
+          <td>{{person}}</td>
+          <td>{{amount}}</td>
+          <td>{{vendor}}</td>
+          <td>{{description}}</td>
+          <td>{{expensedate}}</td>
+        </tr>
+      {{/monthlyExpenses}}
+  </table>
+  {{/yogi_activities}}
 
-{{#vacation}}
-<h2>Vacation used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-<table border="1" cellspacing="0" cellpadding="5">
-  <tr>
-    <th>Person</th>
-    <th>Amount</th>
-    <th>Vendor</th>
-    <th>Description</th>
-    <th>Expense Date</th>
-  </tr>
-    {{#monthlyExpenses}}
-      <tr>
-        <td>{{person}}</td>
-        <td>{{amount}}</td>
-        <td>{{vendor}}</td>
-        <td>{{description}}</td>
-        <td>{{expensedate}}</td>
-      </tr>
-    {{/monthlyExpenses}}
-</table>
-{{/vacation}}
+  {{#going_out_yogi}}
+  <h2>Going Out used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
+  <table border="1" cellspacing="0" cellpadding="5">
+    <tr>
+      <th>Person</th>
+      <th>Amount</th>
+      <th>Vendor</th>
+      <th>Description</th>
+      <th>Expense Date</th>
+    </tr>
+      {{#monthlyExpenses}}
+        <tr>
+          <td>{{person}}</td>
+          <td>{{amount}}</td>
+          <td>{{vendor}}</td>
+          <td>{{description}}</td>
+          <td>{{expensedate}}</td>
+        </tr>
+      {{/monthlyExpenses}}
+  </table>
+  {{/going_out_yogi}}
+
+  {{#vacation}}
+  <h2>Vacation used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
+  <table border="1" cellspacing="0" cellpadding="5">
+    <tr>
+      <th>Person</th>
+      <th>Amount</th>
+      <th>Vendor</th>
+      <th>Description</th>
+      <th>Expense Date</th>
+    </tr>
+      {{#monthlyExpenses}}
+        <tr>
+          <td>{{person}}</td>
+          <td>{{amount}}</td>
+          <td>{{vendor}}</td>
+          <td>{{description}}</td>
+          <td>{{expensedate}}</td>
+        </tr>
+      {{/monthlyExpenses}}
+  </table>
+  {{/vacation}}
+{{/buckets}}

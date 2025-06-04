@@ -25,8 +25,8 @@ const insertData: InsertExpenseType = createInsertExpense({
   bucketname: 'rent',
   vendor: 'Domus',
   amount: 3200,
-  description: 'January Rent'
-})
+  description: 'January Rent',
+});
 
 describe('getAllBudgetData', () => {
   it('should retrieve all budget data', async () => {

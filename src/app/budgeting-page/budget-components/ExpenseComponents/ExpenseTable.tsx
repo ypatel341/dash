@@ -154,7 +154,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({
               <TableCell>
                 {editMode[row.id] ? (
                   <TextField
-                    disabled={true} // Should be a dropdown menu in the future
+                    disabled={true} //TODO: Should be a dropdown menu in the future
                     value={editedData?.bucketname || ''}
                     onChange={(e) =>
                       handleInputChange('bucketname', e.target.value)

@@ -1,5 +1,6 @@
 import {
   BudgetType,
+  CurrentYearlyAccumulatedData,
   InsertExpenseType,
   InsertResponseId,
   MonthlyExpense,
@@ -13,6 +14,7 @@ import {
   insertExpense,
   updateExpense,
   simpleSelect,
+  getAccumulatedYearlyData,
 } from '../utils/db-operation-helpers';
 import { calculateBucketExpenses } from '../utils/utils';
 
@@ -29,10 +31,21 @@ export const getAllBucketExpenses = async () => {
 export const getAllMonthlyExpensesByMonth = async (
   month: string,
 ): Promise<MonthlyExpense[]> => {
-  // Handle input of year here
   const rawMonthlyData: MonthlyExpense[] =
     await getAllMonthlyExpenseByMonth(month);
   return rawMonthlyData;
+};
+
+export const getYearlyAccumulatedData = async (
+  month: string,
+): Promise<CurrentYearlyAccumulatedData[]> => {
+  const accumulatedYearlyData = await getAccumulatedYearlyData(month);
+
+  accumulatedYearlyData.forEach((data) => {
+    data.total_amount = parseFloat(data.total_amount.toFixed(2));
+  });
+
+  return accumulatedYearlyData;
 };
 
 export const getBucketExpenses = async (
