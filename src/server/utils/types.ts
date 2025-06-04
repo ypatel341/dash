@@ -50,13 +50,16 @@ export type MonthlyExpense = {
   expensedate: string;
 };
 
+// export type AggregatedMonthlyReportWithYearlyData = AggregatedMonthlyReport & {
+//   yearlyAccumulatedData?: CurrentYearlyAccumulatedData[];
+// };
+
 export type MonthlyExpenseWithTimestamps = MonthlyExpense & {
   createdat: string;
   updatedat: string | null;
   deletedat: string | null;
 };
 
-// Should be private type, exporting for test
 export type MonthlyExpensesWithBucketSummary = {
   monthlyExpenseTotal: number;
   monthlyBucketAllocation: number;
@@ -85,3 +88,8 @@ export type GeneratePDFInput = {
   reportDate: string;
   reportName: string;
 };
+
+export type CurrentYearlyAccumulatedData = {
+  bucketname: string;
+  total_amount: number;
+}

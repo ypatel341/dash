@@ -8,6 +8,7 @@ import {
   insertExpenseService,
   updateExpenseService,
   dbHealthCheckService,
+  getYearlyAccumulatedData,
 } from '../services/budgetService';
 import logger from '../utils/logger';
 import {
@@ -154,6 +155,11 @@ export const healthCheckController = async (req: Request, res: Response) => {
   res.status(200).json({ status: 'UP' });
 };
 
+/**
+ * Build a cumulative report based on month that is generated
+ *  
+ */
+
 export const generateMonthlyReportController = async (
   req: Request,
   res: Response,
@@ -166,7 +172,10 @@ export const generateMonthlyReportController = async (
     )) as MonthlyExpenseWithTimestamps[];
 
     const reportData = await formatMonthlyExpensesToBucketExpenses(response);
-    generateMonthlyPDFReport(reportData, YYYYMM);
+    const yearlyAccumulatedData = await getYearlyAccumulatedData(YYYYMM);
+
+    // TODO: more than 3 params create a type here
+    generateMonthlyPDFReport(reportData, yearlyAccumulatedData, YYYYMM);
 
     res.json({
       message: 'Monthly report generated successfully',

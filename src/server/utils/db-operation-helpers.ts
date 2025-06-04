@@ -2,6 +2,7 @@ import db from '../../config/db';
 import logger from './logger';
 import {
   BudgetType,
+  CurrentYearlyAccumulatedData,
   InsertExpenseType,
   InsertResponseId,
   MonthlyExpense,
@@ -143,3 +144,30 @@ export const simpleSelect = async (): Promise<boolean> => {
     throw error;
   }
 };
+
+export const getAccumulatedYearlyData = async (
+  month: string,
+): Promise<CurrentYearlyAccumulatedData[]> => {
+  const year = month.split('-')[0];
+
+  try {
+    const result = await db('budget_monthly_expenses')
+    .select('bucketname')
+    .sum('amount as total_amount')
+    .where('expensedate', '>=', db.raw(`DATE '${year}-01-01'`))
+    .where(
+      'expensedate',
+      '<',
+      db.raw(`DATE '${month}-01' + INTERVAL '1 month'`)
+    )
+    .whereNull('deletedat')
+    .groupBy('bucketname');
+
+    logger.info(`Fetched accumulated yearly data for month: ${month}`);
+
+    return result as CurrentYearlyAccumulatedData[];
+  } catch (error) {
+    logger.error(`Error fetching accumulated yearly data: ${error}`);
+    throw error;
+  }
+}

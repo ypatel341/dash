@@ -1,6 +1,7 @@
 import { db, server } from '../server';
 import {
   deleteExpense,
+  getAccumulatedYearlyData,
   getAllMonthlyExpense,
   getAllMonthlyExpenseByMonth,
   insertExpense,
@@ -115,6 +116,29 @@ describe('handles all DB operations and closes the connection', () => {
 
     expect(allMonthlyExpenses.length).toBeGreaterThan(0);
     expect(latestExpense.description).toBe('updated description');
+  });
+
+  it('should fetch accumulated yearly data for a given month', async () => {
+    const yearMonth = await getCurrentYearMonth();
+
+    const accumulatedData = await getAccumulatedYearlyData(yearMonth);
+
+    expect(accumulatedData).toBeDefined();
+    expect(accumulatedData.length).toBeGreaterThan(0);
+
+    const rentData = accumulatedData.find((data) => data.bucketname === 'rent');
+    const groceriesData = accumulatedData.find(
+      (data) => data.bucketname === 'groceries'
+    );
+    const utilitiesData = accumulatedData.find(
+      (data) => data.bucketname === 'utilities'
+    );
+
+    // The reason we are no checking for exact amount is because of DB refreshes
+    // It might be worthwhile to explore this option in the future
+    expect(rentData).toBeDefined();
+    expect(groceriesData).toBeDefined();
+    expect(utilitiesData).toBeDefined();
   });
 
   // Hard deleting expense to clean up the database
