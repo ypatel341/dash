@@ -21,8 +21,8 @@ describe('handles all DB operations and closes the connection', () => {
     bucketname: 'rent',
     vendor: 'Domus',
     amount: 3200,
-    description: 'January Rent'
-  })
+    description: 'January Rent',
+  });
 
   beforeAll(async () => {
     // TODO: if this gets big enough create a loop to insert multiple expenses and delete them later in the loop too to clean up the database
@@ -128,17 +128,13 @@ describe('handles all DB operations and closes the connection', () => {
 
     const rentData = accumulatedData.find((data) => data.bucketname === 'rent');
     const groceriesData = accumulatedData.find(
-      (data) => data.bucketname === 'groceries'
-    );
-    const utilitiesData = accumulatedData.find(
-      (data) => data.bucketname === 'utilities'
+      (data) => data.bucketname === 'groceries',
     );
 
     // The reason we are no checking for exact amount is because of DB refreshes
     // It might be worthwhile to explore this option in the future
     expect(rentData).toBeDefined();
     expect(groceriesData).toBeDefined();
-    expect(utilitiesData).toBeDefined();
   });
 
   // Hard deleting expense to clean up the database

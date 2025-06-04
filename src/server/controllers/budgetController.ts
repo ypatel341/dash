@@ -18,6 +18,7 @@ import {
   validateInputBucket,
 } from '../utils/utils';
 import {
+  GenerateReportInput,
   MonthlyExpenseWithTimestamps,
   UpdateExpenseType,
 } from '../utils/types';
@@ -155,11 +156,6 @@ export const healthCheckController = async (req: Request, res: Response) => {
   res.status(200).json({ status: 'UP' });
 };
 
-/**
- * Build a cumulative report based on month that is generated
- *  
- */
-
 export const generateMonthlyReportController = async (
   req: Request,
   res: Response,
@@ -171,15 +167,21 @@ export const generateMonthlyReportController = async (
       YYYYMM,
     )) as MonthlyExpenseWithTimestamps[];
 
-    const reportData = await formatMonthlyExpensesToBucketExpenses(response);
-    const yearlyAccumulatedData = await getYearlyAccumulatedData(YYYYMM);
+    const aggregateMonthlyData =
+      await formatMonthlyExpensesToBucketExpenses(response);
+    const aggregateYearlyData = await getYearlyAccumulatedData(YYYYMM);
 
-    // TODO: more than 3 params create a type here
-    generateMonthlyPDFReport(reportData, yearlyAccumulatedData, YYYYMM);
+    const generateReportInput: GenerateReportInput = {
+      YYYYMM,
+      aggregateMonthlyData,
+      aggregateYearlyData,
+    };
+
+    generateMonthlyPDFReport(generateReportInput);
 
     res.json({
       message: 'Monthly report generated successfully',
-      data: reportData,
+      data: generateReportInput,
     });
   } catch (error) {
     logger.error(`Error generating monthly report: ${error}`);

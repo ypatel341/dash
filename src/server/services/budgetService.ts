@@ -36,10 +36,17 @@ export const getAllMonthlyExpensesByMonth = async (
   return rawMonthlyData;
 };
 
-export const getYearlyAccumulatedData = async (month: string): Promise<CurrentYearlyAccumulatedData[]> =>{
+export const getYearlyAccumulatedData = async (
+  month: string,
+): Promise<CurrentYearlyAccumulatedData[]> => {
   const accumulatedYearlyData = await getAccumulatedYearlyData(month);
+
+  accumulatedYearlyData.forEach((data) => {
+    data.total_amount = parseFloat(data.total_amount.toFixed(2));
+  });
+
   return accumulatedYearlyData;
-}
+};
 
 export const getBucketExpenses = async (
   bucketname: string,

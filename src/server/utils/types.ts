@@ -50,10 +50,6 @@ export type MonthlyExpense = {
   expensedate: string;
 };
 
-// export type AggregatedMonthlyReportWithYearlyData = AggregatedMonthlyReport & {
-//   yearlyAccumulatedData?: CurrentYearlyAccumulatedData[];
-// };
-
 export type MonthlyExpenseWithTimestamps = MonthlyExpense & {
   createdat: string;
   updatedat: string | null;
@@ -67,7 +63,13 @@ export type MonthlyExpensesWithBucketSummary = {
 };
 
 export type AggregatedMonthlyReport = {
-  [key: string]: MonthlyExpensesWithBucketSummary;
+  buckets: {
+    [bucketName: string]: MonthlyExpensesWithBucketSummary;
+  };
+};
+
+export type AggregatedMonthlyReportWithYearlyData = AggregatedMonthlyReport & {
+  yearlyAccumulatedData?: CurrentYearlyAccumulatedData[];
 };
 
 export type InsertResponseId = {
@@ -92,4 +94,10 @@ export type GeneratePDFInput = {
 export type CurrentYearlyAccumulatedData = {
   bucketname: string;
   total_amount: number;
-}
+};
+
+export type GenerateReportInput = {
+  aggregateMonthlyData: AggregatedMonthlyReport;
+  aggregateYearlyData: CurrentYearlyAccumulatedData[];
+  YYYYMM: string;
+};

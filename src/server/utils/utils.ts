@@ -99,24 +99,29 @@ export const formatMonthlyExpensesToBucketExpenses = async (
     }),
   );
 
-  const aggregatedMonthlyReport: AggregatedMonthlyReport = {};
+  const aggregatedMonthlyReport: AggregatedMonthlyReport = {
+    buckets: {},
+  };
 
   formattedResponse.forEach((expense) => {
     const { bucketname } = expense;
-    if (!aggregatedMonthlyReport[bucketname]) {
-      aggregatedMonthlyReport[bucketname] = {
+
+    if (!aggregatedMonthlyReport.buckets[bucketname]) {
+      aggregatedMonthlyReport.buckets[bucketname] = {
         monthlyExpenseTotal: 0,
         monthlyBucketAllocation: 0,
         monthlyExpenses: [],
       };
     }
-    aggregatedMonthlyReport[bucketname].monthlyExpenses.push(expense);
+
+    aggregatedMonthlyReport.buckets[bucketname].monthlyExpenses.push(expense);
   });
 
-  Object.keys(aggregatedMonthlyReport).forEach((bucketname) => {
-    const expenses = aggregatedMonthlyReport[bucketname].monthlyExpenses;
+  Object.keys(aggregatedMonthlyReport.buckets).forEach((bucketname) => {
+    const expenses =
+      aggregatedMonthlyReport.buckets[bucketname].monthlyExpenses;
     const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-    aggregatedMonthlyReport[bucketname].monthlyExpenseTotal = total;
+    aggregatedMonthlyReport.buckets[bucketname].monthlyExpenseTotal = total;
   });
 
   return aggregatedMonthlyReport;

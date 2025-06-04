@@ -152,16 +152,16 @@ export const getAccumulatedYearlyData = async (
 
   try {
     const result = await db('budget_monthly_expenses')
-    .select('bucketname')
-    .sum('amount as total_amount')
-    .where('expensedate', '>=', db.raw(`DATE '${year}-01-01'`))
-    .where(
-      'expensedate',
-      '<',
-      db.raw(`DATE '${month}-01' + INTERVAL '1 month'`)
-    )
-    .whereNull('deletedat')
-    .groupBy('bucketname');
+      .select('bucketname')
+      .sum('amount as total_amount')
+      .where('expensedate', '>=', db.raw(`DATE '${year}-01-01'`))
+      .where(
+        'expensedate',
+        '<',
+        db.raw(`DATE '${month}-01' + INTERVAL '1 month'`),
+      )
+      .whereNull('deletedat')
+      .groupBy('bucketname');
 
     logger.info(`Fetched accumulated yearly data for month: ${month}`);
 
@@ -170,4 +170,4 @@ export const getAccumulatedYearlyData = async (
     logger.error(`Error fetching accumulated yearly data: ${error}`);
     throw error;
   }
-}
+};
