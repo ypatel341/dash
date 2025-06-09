@@ -86,6 +86,26 @@ export const expenseTypeOptions: ExpenseType[] = [
   'savings_chase_2112',
 ];
 
+export const expenseTypeOptionsMapping = {
+  rent: 'Rent',
+  electric: 'Electric',
+  internet: 'Internet',
+  parcel: 'Parcel',
+  groceries: 'Groceries',
+  gas: 'Gas',
+  therapy: 'Therapy',
+  house_supplies: 'House Supplies',
+  netflix: 'Netflix',
+  spotify: 'Spotify',
+  date_night: 'Date Night',
+  vacation: 'Vacation',
+  going_out_yogi: 'Going Out Yogi',
+  gifts: 'Gifts',
+  yogi_activities: 'Yogi Activities',
+  clothes: 'Clothes',
+  savings_chase_2112: 'Savings Chase 2112',
+};
+
 export const expensePersonOptions: ExpensePerson[] = ['Yogi', 'Riddhi', 'Both'];
 
 export type MonthlyExpense = {

@@ -56,7 +56,6 @@ export type MonthlyExpenseWithTimestamps = MonthlyExpense & {
   deletedat: string | null;
 };
 
-// Should be private type, exporting for test
 export type MonthlyExpensesWithBucketSummary = {
   monthlyExpenseTotal: number;
   monthlyBucketAllocation: number;
@@ -64,7 +63,13 @@ export type MonthlyExpensesWithBucketSummary = {
 };
 
 export type AggregatedMonthlyReport = {
-  [key: string]: MonthlyExpensesWithBucketSummary;
+  buckets: {
+    [bucketName: string]: MonthlyExpensesWithBucketSummary;
+  };
+};
+
+export type AggregatedMonthlyReportWithYearlyData = AggregatedMonthlyReport & {
+  yearlyAccumulatedData?: CurrentYearlyAccumulatedData[];
 };
 
 export type InsertResponseId = {
@@ -84,4 +89,15 @@ export type GeneratePDFInput = {
   htmlString: string;
   reportDate: string;
   reportName: string;
+};
+
+export type CurrentYearlyAccumulatedData = {
+  bucketname: string;
+  total_amount: number;
+};
+
+export type GenerateReportInput = {
+  aggregateMonthlyData: AggregatedMonthlyReport;
+  aggregateYearlyData: CurrentYearlyAccumulatedData[];
+  YYYYMM: string;
 };

@@ -92,17 +92,17 @@ export const createAggregatedMonthlyReport = (
     monthlyExpenses: [createMonthlyExpenseWithTimestamps()],
   };
 
-  const report: AggregatedMonthlyReport = {};
+  const report: AggregatedMonthlyReport = { buckets: {} };
 
   for (const key in overrides) {
-    report[key] = { ...defaultReport, ...overrides[key] };
+    report.buckets[key] = { ...defaultReport, ...overrides[key] };
   }
 
   return report;
 };
 
 export const createBucketBudgetData = (
-  overrides: Partial<BudgetData> = {}
+  overrides: Partial<BudgetData> = {},
 ): BudgetData => ({
   id: '1',
   category: 'test',
@@ -110,5 +110,5 @@ export const createBucketBudgetData = (
   bucketname: generateRandomBucket(),
   household: 'test',
   currentamount: 0,
-  ...overrides
-})
+  ...overrides,
+});

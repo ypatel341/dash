@@ -8,6 +8,7 @@ import {
   insertExpenseService,
   updateExpenseService,
   dbHealthCheckService,
+  getYearlyAccumulatedData,
 } from '../services/budgetService';
 import logger from '../utils/logger';
 import {
@@ -17,6 +18,7 @@ import {
   validateInputBucket,
 } from '../utils/utils';
 import {
+  GenerateReportInput,
   MonthlyExpenseWithTimestamps,
   UpdateExpenseType,
 } from '../utils/types';
@@ -165,12 +167,21 @@ export const generateMonthlyReportController = async (
       YYYYMM,
     )) as MonthlyExpenseWithTimestamps[];
 
-    const reportData = await formatMonthlyExpensesToBucketExpenses(response);
-    generateMonthlyPDFReport(reportData, YYYYMM);
+    const aggregateMonthlyData =
+      await formatMonthlyExpensesToBucketExpenses(response);
+    const aggregateYearlyData = await getYearlyAccumulatedData(YYYYMM);
+
+    const generateReportInput: GenerateReportInput = {
+      YYYYMM,
+      aggregateMonthlyData,
+      aggregateYearlyData,
+    };
+
+    generateMonthlyPDFReport(generateReportInput);
 
     res.json({
       message: 'Monthly report generated successfully',
-      data: reportData,
+      data: generateReportInput,
     });
   } catch (error) {
     logger.error(`Error generating monthly report: ${error}`);

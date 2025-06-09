@@ -7,6 +7,9 @@ import {
   AggregatedMonthlyReport,
   RenderPDFDataInput,
   GeneratePDFInput,
+  CurrentYearlyAccumulatedData,
+  AggregatedMonthlyReportWithYearlyData,
+  GenerateReportInput,
 } from '../types';
 import {
   monthlyBudgetReportCSS,
@@ -15,10 +18,12 @@ import {
 } from '../consts';
 
 export const generateMonthlyPDFReport = (
-  inputData: AggregatedMonthlyReport,
-  YYYYMM: string,
+  generateReportInput: GenerateReportInput,
 ) => {
-  if (!inputData) {
+  const { aggregateMonthlyData, aggregateYearlyData, YYYYMM } =
+    generateReportInput;
+
+  if (!aggregateMonthlyData) {
     throw new Error('Monthly Data is required');
   }
 
@@ -26,18 +31,28 @@ export const generateMonthlyPDFReport = (
     throw new Error('YYYYMM is required');
   }
 
+  if (!aggregateYearlyData) {
+    throw new Error('Yearly Data is required');
+  }
+
   const reportDate = dayjs(YYYYMM).format('MMMM');
 
-  enrichDataForReport(inputData, reportDate);
+  enrichDataForReport(aggregateMonthlyData, aggregateYearlyData, reportDate);
 };
 
 export const enrichDataForReport = async (
-  inputTemplateData: AggregatedMonthlyReport,
+  aggregatedMonthlyReport: AggregatedMonthlyReport,
+  aggregatedYearlyReport: CurrentYearlyAccumulatedData[],
   reportDate: string,
 ) => {
+  const combinedTemplateData: AggregatedMonthlyReportWithYearlyData = {
+    ...aggregatedMonthlyReport,
+    yearlyAccumulatedData: aggregatedYearlyReport,
+  };
+
   const renderPDFInput: RenderPDFDataInput = {
     reportDate,
-    templateData: inputTemplateData,
+    templateData: combinedTemplateData,
     templateStyleSheet: monthlyBudgetReportCSS,
     reportName: reportTitle,
   };
