@@ -9,8 +9,11 @@ import {
   Paper,
   TextField,
   IconButton,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import {
+  expenseTypeOptionsMapping,
   MonthlyExpense,
   ToastMessageOptions,
 } from '../../types/BudgetCategoryTypes';
@@ -153,13 +156,19 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({
               </TableCell>
               <TableCell>
                 {editMode[row.id] ? (
-                  <TextField
-                    disabled={true} //TODO: Should be a dropdown menu in the future
+                  <Select
                     value={editedData?.bucketname || ''}
                     onChange={(e) =>
                       handleInputChange('bucketname', e.target.value)
-                    }
-                  />
+                    } // Handle changes
+                    fullWidth
+                  >
+                    {Object.entries(expenseTypeOptionsMapping).map(([key, value]) => (
+                      <MenuItem key={key} value={key}>
+                        {value}
+                      </MenuItem>
+                    ))}
+                  </Select>
                 ) : (
                   row.bucketname
                 )}
