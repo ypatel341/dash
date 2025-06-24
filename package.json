@@ -45,7 +45,7 @@
     "rollback": "npx knex migrate:rollback",
     "start": "react-scripts start",
     "start-backend": "tsc && NODE_ENV=development node dist/server/index.js",
-    "start-all": "NODE_ENV=development concurrently \"npm run start\" \"npm run start-backend\"",
+    "start-all": "npm run migrate && NODE_ENV=development concurrently \"npm run start\" \"npm run start-backend\"",
     "build-frontend": "react-scripts build",
     "start-frontend-prod": "npm run build-frontend && npx serve -s build -l 3000",
     "start-backend-prod": "tsc && NODE_ENV=production node dist/server/index.js",

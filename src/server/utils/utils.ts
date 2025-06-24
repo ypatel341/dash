@@ -121,7 +121,8 @@ export const formatMonthlyExpensesToBucketExpenses = async (
     const expenses =
       aggregatedMonthlyReport.buckets[bucketname].monthlyExpenses;
     const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-    aggregatedMonthlyReport.buckets[bucketname].monthlyExpenseTotal = total;
+    const roundedTotal = Math.round(total * 100) / 100;
+    aggregatedMonthlyReport.buckets[bucketname].monthlyExpenseTotal = roundedTotal;
   });
 
   return aggregatedMonthlyReport;
