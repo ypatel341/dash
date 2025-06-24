@@ -41,6 +41,8 @@
   "scripts": {
     "analyze": "webpack --profile --json > stats.json && webpack-bundle-analyzer stats.json",
     "build": "webpack --config webpack.config.js",
+    "migrate": "npx knex migrate:latest",
+    "rollback": "npx knex migrate:rollback",
     "start": "react-scripts start",
     "start-backend": "tsc && NODE_ENV=development node dist/server/index.js",
     "start-all": "NODE_ENV=development concurrently \"npm run start\" \"npm run start-backend\"",

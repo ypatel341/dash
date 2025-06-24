@@ -163,11 +163,13 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({
                     } // Handle changes
                     fullWidth
                   >
-                    {Object.entries(expenseTypeOptionsMapping).map(([key, value]) => (
-                      <MenuItem key={key} value={key}>
-                        {value}
-                      </MenuItem>
-                    ))}
+                    {Object.entries(expenseTypeOptionsMapping).map(
+                      ([key, value]) => (
+                        <MenuItem key={key} value={key}>
+                          {value}
+                        </MenuItem>
+                      ),
+                    )}
                   </Select>
                 ) : (
                   row.bucketname
