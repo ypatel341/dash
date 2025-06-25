@@ -66,7 +66,7 @@ describe('POST /budget/expense', () => {
       .send({ ...insertData, amount: 10001 });
 
     expect(response.body.error).toBe(
-      'Invalid request body Error: Amount must be greater than 0 or less than 10000',
+      'Invalid request body Error: Amount must be between $0.01 and $10000',
     );
     expect(response.status).toBe(400);
   });
