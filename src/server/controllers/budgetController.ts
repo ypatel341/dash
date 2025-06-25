@@ -9,6 +9,7 @@ import {
   updateExpenseService,
   dbHealthCheckService,
   getYearlyAccumulatedData,
+  getAllBudgetAllocationData,
 } from '../services/budgetService';
 import logger from '../utils/logger';
 import {
@@ -163,12 +164,16 @@ export const generateMonthlyReportController = async (
   try {
     const { YYYYMM } = req.params;
 
-    const response = (await getAllMonthlyExpensesByMonth(
+    const allMonthlyExpenseResponse = (await getAllMonthlyExpensesByMonth(
       YYYYMM,
     )) as MonthlyExpenseWithTimestamps[];
 
-    const aggregateMonthlyData =
-      await formatMonthlyExpensesToBucketExpenses(response);
+    const monthlyBudgetAllocationResponse = await getAllBudgetAllocationData();
+
+    const aggregateMonthlyData = await formatMonthlyExpensesToBucketExpenses(
+      allMonthlyExpenseResponse,
+      monthlyBudgetAllocationResponse,
+    );
     const aggregateYearlyData = await getYearlyAccumulatedData(YYYYMM);
 
     const generateReportInput: GenerateReportInput = {

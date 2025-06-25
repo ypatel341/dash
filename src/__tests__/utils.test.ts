@@ -7,6 +7,7 @@ import {
   InsertExpenseType,
   MonthlyExpenseWithTimestamps,
   AggregatedMonthlyReport,
+  BudgetType,
 } from '../server/utils/types';
 import {
   calculateBucketExpenses,
@@ -26,6 +27,12 @@ import {
 jest.mock('../server/utils/db-operation-helpers', () => ({
   getAllBudgetData: jest.fn(),
 }));
+
+let allBudgetData: BudgetType[];
+
+beforeEach(async () => {
+  allBudgetData = await getAllBudgetData();
+});
 
 describe('calculateBucketExpenses', () => {
   it('should calculate the current amount spent for each bucket', async () => {
@@ -217,6 +224,7 @@ describe('validateInputBucket', () => {
 
       const expected: AggregatedMonthlyReport = createAggregatedMonthlyReport({
         groceries: {
+          monthlyBucketAllocation: undefined,
           monthlyExpenseTotal: 150,
           monthlyExpenses: [
             {
@@ -246,6 +254,7 @@ describe('validateInputBucket', () => {
           ],
         },
         rent: {
+          monthlyBucketAllocation: undefined,
           monthlyExpenseTotal: 2000,
           monthlyExpenses: [
             {
@@ -264,8 +273,10 @@ describe('validateInputBucket', () => {
         },
       });
 
-      const result =
-        await formatMonthlyExpensesToBucketExpenses(monthlyExpenses);
+      const result = await formatMonthlyExpensesToBucketExpenses(
+        monthlyExpenses,
+        allBudgetData,
+      );
       expect(result).toEqual(expected);
     });
 
@@ -273,8 +284,11 @@ describe('validateInputBucket', () => {
       const monthlyExpenses: MonthlyExpenseWithTimestamps[] = [];
       const expected = {};
 
-      const result =
-        await formatMonthlyExpensesToBucketExpenses(monthlyExpenses);
+      
+      const result = await formatMonthlyExpensesToBucketExpenses(
+        monthlyExpenses,
+        allBudgetData,
+      );
       expect(result.buckets).toEqual(expected);
     });
 
@@ -341,8 +355,12 @@ describe('validateInputBucket', () => {
         },
       };
 
-      const result =
-        await formatMonthlyExpensesToBucketExpenses(monthlyExpenses);
+      
+
+      const result = await formatMonthlyExpensesToBucketExpenses(
+        monthlyExpenses,
+        allBudgetData,
+      );
       expect(result).toEqual(expected);
     });
 
@@ -385,8 +403,10 @@ describe('validateInputBucket', () => {
         },
       };
 
-      const result =
-        await formatMonthlyExpensesToBucketExpenses(monthlyExpenses);
+      const result = await formatMonthlyExpensesToBucketExpenses(
+        monthlyExpenses,
+        allBudgetData,
+      );
       expect(result).toEqual(expected);
     });
   });

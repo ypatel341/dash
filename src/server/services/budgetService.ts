@@ -1,6 +1,8 @@
 import {
   BudgetType,
+  BudgetTypeWithCurrentAmount,
   CurrentYearlyAccumulatedData,
+  CurrentYearlyAccumulatedWithAllocation,
   InsertExpenseType,
   InsertResponseId,
   MonthlyExpense,
@@ -22,10 +24,17 @@ export const getAllMonthlyExpense = async (): Promise<MonthlyExpense[]> => {
   return await getAllMonthlyExpenseFromDB();
 };
 
-export const getAllBucketExpenses = async () => {
+export const getAllBucketExpenses = async (): Promise<
+  BudgetTypeWithCurrentAmount[]
+> => {
   const rawMonthlyData: MonthlyExpense[] = await getAllMonthlyExpense();
   const allBudgetData: BudgetType[] = await getAllBudgetData();
   return await calculateBucketExpenses(rawMonthlyData, allBudgetData);
+};
+
+export const getAllBudgetAllocationData = async (): Promise<BudgetType[]> => {
+  const allBudgetData: BudgetType[] = await getAllBudgetData();
+  return allBudgetData;
 };
 
 export const getAllMonthlyExpensesByMonth = async (
@@ -38,14 +47,31 @@ export const getAllMonthlyExpensesByMonth = async (
 
 export const getYearlyAccumulatedData = async (
   month: string,
-): Promise<CurrentYearlyAccumulatedData[]> => {
-  const accumulatedYearlyData = await getAccumulatedYearlyData(month);
+): Promise<CurrentYearlyAccumulatedWithAllocation[]> => {
+  const accumulatedYearlyData: CurrentYearlyAccumulatedData[] =
+    await getAccumulatedYearlyData(month);
+  const monthlyAllocatedData: BudgetType[] = await getAllBudgetData();
 
   accumulatedYearlyData.forEach((data) => {
-    data.total_amount = parseFloat(data.total_amount.toFixed(2));
+    data.yearlyAccumulated = parseFloat(data.yearlyAccumulated.toFixed(2));
   });
 
-  return accumulatedYearlyData;
+  const accumulatedYearlyDataWithAllocation: CurrentYearlyAccumulatedWithAllocation[] =
+    accumulatedYearlyData.map((data) => ({
+      ...data,
+      yearlyAllocated: 0, // Default value
+    }));
+
+  accumulatedYearlyDataWithAllocation.forEach((data) => {
+    const monthlyAllocation = monthlyAllocatedData.find(
+      (allocation) => allocation.bucketname === data.bucketname,
+    );
+    if (monthlyAllocation) {
+      data.yearlyAllocated = monthlyAllocation.amount * 12;
+    }
+  });
+
+  return accumulatedYearlyDataWithAllocation;
 };
 
 export const getBucketExpenses = async (

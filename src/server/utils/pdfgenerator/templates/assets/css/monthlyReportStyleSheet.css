@@ -1,9 +1,33 @@
-#headerTitle {
-  margin-top: 4pt;
-  margin-right: 0in;
-  margin-bottom: 0in;
-  margin-left: 7pt;
-  font-size: 19px;
-  font-family: 'Arial Rounded MT Bold', sans-serif;
-  font-weight: bold;
+@page {
+  margin: 1in 1in 1.5in 1in; /* top, right, bottom, left - extra bottom margin */
+  
+  @bottom-right {
+    content: "Page " counter(page);
+    font-size: 10px;
+    color: #666;
+    margin-bottom: 0.5in;
+  }
+}
+
+/* Force page break after yearly summary */
+.yearly-summary {
+  page-break-after: always;
+}
+
+/* Control page breaks for bucket sections */
+.bucket-section {
+  page-break-inside: avoid;
+  break-inside: avoid;
+  margin-bottom: 30px;
+}
+
+/* If a bucket section is too long, allow page break but with proper spacing */
+.bucket-section.long-section {
+  page-break-inside: auto;
+}
+
+/* Add padding at the bottom of each page */
+.page-content {
+  min-height: calc(100vh - 2in); /* Account for margins */
+  padding-bottom: 1in;
 }

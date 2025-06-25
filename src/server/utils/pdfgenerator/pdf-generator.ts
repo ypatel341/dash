@@ -60,7 +60,6 @@ export const enrichDataForReport = async (
   renderPDF(renderPDFInput);
 };
 
-// Add in some metadata around template type and the data type, throw error if the data can not be coupled with template type
 export const renderPDF = async (renderPDFDataInput: RenderPDFDataInput) => {
   const { reportDate, templateData, templateStyleSheet, reportName } =
     renderPDFDataInput;
@@ -68,6 +67,7 @@ export const renderPDF = async (renderPDFDataInput: RenderPDFDataInput) => {
   try {
     const templateContents = fs.readFileSync(
       path.resolve(
+        //TODO: Expand this path to include the template file instead of using a hardcoded path when ready for other templates
         `./src/server/utils/pdfgenerator/templates/${monthlyBudgetReportTemplate}`,
       ),
       'utf8',

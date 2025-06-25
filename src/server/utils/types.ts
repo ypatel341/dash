@@ -93,8 +93,13 @@ export type GeneratePDFInput = {
 
 export type CurrentYearlyAccumulatedData = {
   bucketname: string;
-  total_amount: number;
+  yearlyAccumulated: number;
 };
+
+export type CurrentYearlyAccumulatedWithAllocation =
+  CurrentYearlyAccumulatedData & {
+    yearlyAllocated: number;
+  };
 
 export type GenerateReportInput = {
   aggregateMonthlyData: AggregatedMonthlyReport;

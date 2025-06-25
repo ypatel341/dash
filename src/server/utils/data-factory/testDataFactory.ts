@@ -92,6 +92,8 @@ export const createAggregatedMonthlyReport = (
     monthlyExpenses: [createMonthlyExpenseWithTimestamps()],
   };
 
+  // TODO: update test
+
   const report: AggregatedMonthlyReport = { buckets: {} };
 
   for (const key in overrides) {
