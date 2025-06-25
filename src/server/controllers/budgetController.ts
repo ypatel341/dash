@@ -168,11 +168,11 @@ export const generateMonthlyReportController = async (
       YYYYMM,
     )) as MonthlyExpenseWithTimestamps[];
 
-    const allMonthlyAllocationResponse = await getAllBudgetAllocationData();
+    const monthlyBudgetAllocationResponse = await getAllBudgetAllocationData();
 
     const aggregateMonthlyData = await formatMonthlyExpensesToBucketExpenses(
       allMonthlyExpenseResponse,
-      allMonthlyAllocationResponse,
+      monthlyBudgetAllocationResponse,
     );
     const aggregateYearlyData = await getYearlyAccumulatedData(YYYYMM);
 

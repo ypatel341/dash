@@ -1,349 +1,553 @@
-<h2>Yearly Accumulated Summary Since Start of Year</h2>
-<table border="1" cellspacing="0" cellpadding="5">
-  <tr>
-    <th>Bucket Name</th>
-    <th>Total Amount</th>
-    <th>Yearly Allocation</th>
-  </tr>
-  {{#yearlyAccumulatedData}}
-    <tr>
-      <td>{{bucketname}}</td>
-      <td>{{yearlyAccumulated}}</td>
-      <td>{{yearlyAllocated}}</td>
-    </tr>
-  {{/yearlyAccumulatedData}}
-</table>
-
-<h3>Monthly Summary</h3>
-
-{{#buckets}}
-  {{#groceries}}
-  <h2>Groceries used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-  <table border="1" cellspacing="0" cellpadding="5">
-    <tr>
-      <th>Person</th>
-      <th>Amount</th>
-      <th>Vendor</th>
-      <th>Description</th>
-      <th>Expense Date</th>
-    </tr>
-      {{#monthlyExpenses}}
+<!-- filepath: /Users/x326567/Desktop/personal/dash/src/server/utils/pdfgenerator/templates/monthlyBudgetSummary.mustache -->
+<div class="page-content">
+  <div class="yearly-summary section-break">
+    <h2>Yearly Accumulated Summary Since Start of Year</h2>
+    <table border="1" cellspacing="0" cellpadding="5">
+      <tr>
+        <th>Bucket Name</th>
+        <th>Yearly Spent</th>
+        <th>Yearly Allocated</th>
+      </tr>
+      {{#yearlyAccumulatedData}}
         <tr>
-          <td>{{person}}</td>
-          <td>{{amount}}</td>
-          <td>{{vendor}}</td>
-          <td>{{description}}</td>
-          <td>{{expensedate}}</td>
+          <td>{{bucketname}}</td>
+          <td>${{yearlyAccumulated}}</td>
+          <td>${{yearlyAllocated}}</td>
         </tr>
-      {{/monthlyExpenses}}
-  </table>
-  {{/groceries}}
+      {{/yearlyAccumulatedData}}
+    </table>
+  </div>
 
-  {{#date_night}}
-  <h2>Date Night used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-  <table border="1" cellspacing="0" cellpadding="5">
-    <tr>
-      <th>Person</th>
-      <th>Amount</th>
-      <th>Vendor</th>
-      <th>Description</th>
-      <th>Expense Date</th>
-    </tr>
-      {{#monthlyExpenses}}
-        <tr>
-          <td>{{person}}</td>
-          <td>{{amount}}</td>
-          <td>{{vendor}}</td>
-          <td>{{description}}</td>
-          <td>{{expensedate}}</td>
-        </tr>
-      {{/monthlyExpenses}}
-  </table>
-  {{/date_night}}
+  <div class="monthly-summary">
+    <h2>Monthly Summary</h2>
+    
+    {{#buckets}}
+      {{#groceries}}
+        <div class="bucket-section">
+          <div class="bucket-header">
+            <h3>Groceries - Used: ${{monthlyExpenseTotal}} | Allocated: ${{monthlyBucketAllocation}}</h3>
+          </div>
+          {{#monthlyExpenses.length}}
+            <table border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <th>Person</th>
+                <th>Amount</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th>Expense Date</th>
+              </tr>
+              {{#monthlyExpenses}}
+                <tr>
+                  <td>{{person}}</td>
+                  <td>${{amount}}</td>
+                  <td>{{vendor}}</td>
+                  <td>{{description}}</td>
+                  <td>{{expensedate}}</td>
+                </tr>
+              {{/monthlyExpenses}}
+            </table>
+          {{/monthlyExpenses.length}}
+          {{^monthlyExpenses.length}}
+            <p class="no-expenses"><em>No expenses recorded for this bucket this month</em></p>
+          {{/monthlyExpenses.length}}
+        </div>
+      {{/groceries}}
 
-  {{#gifts}}
-  <h2>Gifts used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-  <table border="1" cellspacing="0" cellpadding="5">
-    <tr>
-      <th>Person</th>
-      <th>Amount</th>
-      <th>Vendor</th>
-      <th>Description</th>
-      <th>Expense Date</th>
-    </tr>
-      {{#monthlyExpenses}}
-        <tr>
-          <td>{{person}}</td>
-          <td>{{amount}}</td>
-          <td>{{vendor}}</td>
-          <td>{{description}}</td>
-          <td>{{expensedate}}</td>
-        </tr>
-      {{/monthlyExpenses}}
-  </table>
-  {{/gifts}}
+      {{#date_night}}
+        <div class="bucket-section">
+          <div class="bucket-header">
+            <h3>Date Night - Used: ${{monthlyExpenseTotal}} | Allocated: ${{monthlyBucketAllocation}}</h3>
+          </div>
+          {{#monthlyExpenses.length}}
+            <table border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <th>Person</th>
+                <th>Amount</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th>Expense Date</th>
+              </tr>
+              {{#monthlyExpenses}}
+                <tr>
+                  <td>{{person}}</td>
+                  <td>${{amount}}</td>
+                  <td>{{vendor}}</td>
+                  <td>{{description}}</td>
+                  <td>{{expensedate}}</td>
+                </tr>
+              {{/monthlyExpenses}}
+            </table>
+          {{/monthlyExpenses.length}}
+          {{^monthlyExpenses.length}}
+            <p class="no-expenses"><em>No expenses recorded for this bucket this month</em></p>
+          {{/monthlyExpenses.length}}
+        </div>
+      {{/date_night}}
 
-  {{#house_supplies}}
-  <h2>House Supplies used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-  <table border="1" cellspacing="0" cellpadding="5">
-    <tr>
-      <th>Person</th>
-      <th>Amount</th>
-      <th>Vendor</th>
-      <th>Description</th>
-      <th>Expense Date</th>
-    </tr>
-      {{#monthlyExpenses}}
-        <tr>
-          <td>{{person}}</td>
-          <td>{{amount}}</td>
-          <td>{{vendor}}</td>
-          <td>{{description}}</td>
-          <td>{{expensedate}}</td>
-        </tr>
-      {{/monthlyExpenses}}
-  </table>
-  {{/house_supplies}}
+      {{#going_out_yogi}}
+        <div class="bucket-section">
+          <div class="bucket-header">
+            <h3>Going Out (Yogi) - Used: ${{monthlyExpenseTotal}} | Allocated: ${{monthlyBucketAllocation}}</h3>
+          </div>
+          {{#monthlyExpenses.length}}
+            <table border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <th>Person</th>
+                <th>Amount</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th>Expense Date</th>
+              </tr>
+              {{#monthlyExpenses}}
+                <tr>
+                  <td>{{person}}</td>
+                  <td>${{amount}}</td>
+                  <td>{{vendor}}</td>
+                  <td>{{description}}</td>
+                  <td>{{expensedate}}</td>
+                </tr>
+              {{/monthlyExpenses}}
+            </table>
+          {{/monthlyExpenses.length}}
+          {{^monthlyExpenses.length}}
+            <p class="no-expenses"><em>No expenses recorded for this bucket this month</em></p>
+          {{/monthlyExpenses.length}}
+        </div>
+      {{/going_out_yogi}}
 
-  {{#rent}}
-  <h2>Rent used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-  <table border="1" cellspacing="0" cellpadding="5">
-    <tr>
-      <th>Person</th>
-      <th>Amount</th>
-      <th>Vendor</th>
-      <th>Description</th>
-      <th>Expense Date</th>
-    </tr>
-      {{#monthlyExpenses}}
-        <tr>
-          <td>{{person}}</td>
-          <td>{{amount}}</td>
-          <td>{{vendor}}</td>
-          <td>{{description}}</td>
-          <td>{{expensedate}}</td>
-        </tr>
-      {{/monthlyExpenses}}
-  </table>
-  {{/rent}}
+      {{#internet}}
+        <div class="bucket-section">
+          <div class="bucket-header">
+            <h3>Internet - Used: ${{monthlyExpenseTotal}} | Allocated: ${{monthlyBucketAllocation}}</h3>
+          </div>
+          {{#monthlyExpenses.length}}
+            <table border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <th>Person</th>
+                <th>Amount</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th>Expense Date</th>
+              </tr>
+              {{#monthlyExpenses}}
+                <tr>
+                  <td>{{person}}</td>
+                  <td>${{amount}}</td>
+                  <td>{{vendor}}</td>
+                  <td>{{description}}</td>
+                  <td>{{expensedate}}</td>
+                </tr>
+              {{/monthlyExpenses}}
+            </table>
+          {{/monthlyExpenses.length}}
+          {{^monthlyExpenses.length}}
+            <p class="no-expenses"><em>No expenses recorded for this bucket this month</em></p>
+          {{/monthlyExpenses.length}}
+        </div>
+      {{/internet}}
 
-  {{#internet}}
-  <h2>Internet used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-  <table border="1" cellspacing="0" cellpadding="5">
-    <tr>
-      <th>Person</th>
-      <th>Amount</th>
-      <th>Vendor</th>
-      <th>Description</th>
-      <th>Expense Date</th>
-    </tr>
-      {{#monthlyExpenses}}
-        <tr>
-          <td>{{person}}</td>
-          <td>{{amount}}</td>
-          <td>{{vendor}}</td>
-          <td>{{description}}</td>
-          <td>{{expensedate}}</td>
-        </tr>
-      {{/monthlyExpenses}}
-  </table>
-  {{/internet}}
+      {{#vacation}}
+        <div class="bucket-section">
+          <div class="bucket-header">
+            <h3>Vacation - Used: ${{monthlyExpenseTotal}} | Allocated: ${{monthlyBucketAllocation}}</h3>
+          </div>
+          {{#monthlyExpenses.length}}
+            <table border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <th>Person</th>
+                <th>Amount</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th>Expense Date</th>
+              </tr>
+              {{#monthlyExpenses}}
+                <tr>
+                  <td>{{person}}</td>
+                  <td>${{amount}}</td>
+                  <td>{{vendor}}</td>
+                  <td>{{description}}</td>
+                  <td>{{expensedate}}</td>
+                </tr>
+              {{/monthlyExpenses}}
+            </table>
+          {{/monthlyExpenses.length}}
+          {{^monthlyExpenses.length}}
+            <p class="no-expenses"><em>No expenses recorded for this bucket this month</em></p>
+          {{/monthlyExpenses.length}}
+        </div>
+      {{/vacation}}
 
-  {{#parcel}}
-  <h2>Parcel Pending used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-  <table border="1" cellspacing="0" cellpadding="5">
-    <tr>
-      <th>Person</th>
-      <th>Amount</th>
-      <th>Vendor</th>
-      <th>Description</th>
-      <th>Expense Date</th>
-    </tr>
-      {{#monthlyExpenses}}
-        <tr>
-          <td>{{person}}</td>
-          <td>{{amount}}</td>
-          <td>{{vendor}}</td>
-          <td>{{description}}</td>
-          <td>{{expensedate}}</td>
-        </tr>
-      {{/monthlyExpenses}}
-  </table>
-  {{/parcel}}
+      {{#house_supplies}}
+        <div class="bucket-section">
+          <div class="bucket-header">
+            <h3>House Supplies - Used: ${{monthlyExpenseTotal}} | Allocated: ${{monthlyBucketAllocation}}</h3>
+          </div>
+          {{#monthlyExpenses.length}}
+            <table border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <th>Person</th>
+                <th>Amount</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th>Expense Date</th>
+              </tr>
+              {{#monthlyExpenses}}
+                <tr>
+                  <td>{{person}}</td>
+                  <td>${{amount}}</td>
+                  <td>{{vendor}}</td>
+                  <td>{{description}}</td>
+                  <td>{{expensedate}}</td>
+                </tr>
+              {{/monthlyExpenses}}
+            </table>
+          {{/monthlyExpenses.length}}
+          {{^monthlyExpenses.length}}
+            <p class="no-expenses"><em>No expenses recorded for this bucket this month</em></p>
+          {{/monthlyExpenses.length}}
+        </div>
+      {{/house_supplies}}
 
-  {{#spotify}}
-  <h2>Spotify used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-  <table border="1" cellspacing="0" cellpadding="5">
-    <tr>
-      <th>Person</th>
-      <th>Amount</th>
-      <th>Vendor</th>
-      <th>Description</th>
-      <th>Expense Date</th>
-    </tr>
-      {{#monthlyExpenses}}
-        <tr>
-          <td>{{person}}</td>
-          <td>{{amount}}</td>
-          <td>{{vendor}}</td>
-          <td>{{description}}</td>
-          <td>{{expensedate}}</td>
-        </tr>
-      {{/monthlyExpenses}}
-  </table>
-  {{/spotify}}
+      {{#gas}}
+        <div class="bucket-section">
+          <div class="bucket-header">
+            <h3>Gas - Used: ${{monthlyExpenseTotal}} | Allocated: ${{monthlyBucketAllocation}}</h3>
+          </div>
+          {{#monthlyExpenses.length}}
+            <table border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <th>Person</th>
+                <th>Amount</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th>Expense Date</th>
+              </tr>
+              {{#monthlyExpenses}}
+                <tr>
+                  <td>{{person}}</td>
+                  <td>${{amount}}</td>
+                  <td>{{vendor}}</td>
+                  <td>{{description}}</td>
+                  <td>{{expensedate}}</td>
+                </tr>
+              {{/monthlyExpenses}}
+            </table>
+          {{/monthlyExpenses.length}}
+          {{^monthlyExpenses.length}}
+            <p class="no-expenses"><em>No expenses recorded for this bucket this month</em></p>
+          {{/monthlyExpenses.length}}
+        </div>
+      {{/gas}}
 
-  {{#netflix}}
-  <h2>Netflix used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-  <table border="1" cellspacing="0" cellpadding="5">
-    <tr>
-      <th>Person</th>
-      <th>Amount</th>
-      <th>Vendor</th>
-      <th>Description</th>
-      <th>Expense Date</th>
-    </tr>
-      {{#monthlyExpenses}}
-        <tr>
-          <td>{{person}}</td>
-          <td>{{amount}}</td>
-          <td>{{vendor}}</td>
-          <td>{{description}}</td>
-          <td>{{expensedate}}</td>
-        </tr>
-      {{/monthlyExpenses}}
-  </table>
-  {{/netflix}}
+      {{#yogi_activities}}
+        <div class="bucket-section">
+          <div class="bucket-header">
+            <h3>Yogi Activities - Used: ${{monthlyExpenseTotal}} | Allocated: ${{monthlyBucketAllocation}}</h3>
+          </div>
+          {{#monthlyExpenses.length}}
+            <table border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <th>Person</th>
+                <th>Amount</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th>Expense Date</th>
+              </tr>
+              {{#monthlyExpenses}}
+                <tr>
+                  <td>{{person}}</td>
+                  <td>${{amount}}</td>
+                  <td>{{vendor}}</td>
+                  <td>{{description}}</td>
+                  <td>{{expensedate}}</td>
+                </tr>
+              {{/monthlyExpenses}}
+            </table>
+          {{/monthlyExpenses.length}}
+          {{^monthlyExpenses.length}}
+            <p class="no-expenses"><em>No expenses recorded for this bucket this month</em></p>
+          {{/monthlyExpenses.length}}
+        </div>
+      {{/yogi_activities}}
 
-  {{#gas}}
-  <h2>Gas used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-  <table border="1" cellspacing="0" cellpadding="5">
-    <tr>
-      <th>Person</th>
-      <th>Amount</th>
-      <th>Vendor</th>
-      <th>Description</th>
-      <th>Expense Date</th>
-    </tr>
-      {{#monthlyExpenses}}
-        <tr>
-          <td>{{person}}</td>
-          <td>{{amount}}</td>
-          <td>{{vendor}}</td>
-          <td>{{description}}</td>
-          <td>{{expensedate}}</td>
-        </tr>
-      {{/monthlyExpenses}}
-  </table>
-  {{/gas}}
+      {{#gifts}}
+        <div class="bucket-section">
+          <div class="bucket-header">
+            <h3>Gifts - Used: ${{monthlyExpenseTotal}} | Allocated: ${{monthlyBucketAllocation}}</h3>
+          </div>
+          {{#monthlyExpenses.length}}
+            <table border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <th>Person</th>
+                <th>Amount</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th>Expense Date</th>
+              </tr>
+              {{#monthlyExpenses}}
+                <tr>
+                  <td>{{person}}</td>
+                  <td>${{amount}}</td>
+                  <td>{{vendor}}</td>
+                  <td>{{description}}</td>
+                  <td>{{expensedate}}</td>
+                </tr>
+              {{/monthlyExpenses}}
+            </table>
+          {{/monthlyExpenses.length}}
+          {{^monthlyExpenses.length}}
+            <p class="no-expenses"><em>No expenses recorded for this bucket this month</em></p>
+          {{/monthlyExpenses.length}}
+        </div>
+      {{/gifts}}
 
-  {{#savings_chase_2112}}
-  <h2>Savings used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-  <table border="1" cellspacing="0" cellpadding="5">
-    <tr>
-      <th>Person</th>
-      <th>Amount</th>
-      <th>Vendor</th>
-      <th>Description</th>
-      <th>Expense Date</th>
-    </tr>
-      {{#monthlyExpenses}}
-        <tr>
-          <td>{{person}}</td>
-          <td>{{amount}}</td>
-          <td>{{vendor}}</td>
-          <td>{{description}}</td>
-          <td>{{expensedate}}</td>
-        </tr>
-      {{/monthlyExpenses}}
-  </table>
-  {{/savings_chase_2112}}
+      {{#spotify}}
+        <div class="bucket-section">
+          <div class="bucket-header">
+            <h3>Spotify - Used: ${{monthlyExpenseTotal}} | Allocated: ${{monthlyBucketAllocation}}</h3>
+          </div>
+          {{#monthlyExpenses.length}}
+            <table border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <th>Person</th>
+                <th>Amount</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th>Expense Date</th>
+              </tr>
+              {{#monthlyExpenses}}
+                <tr>
+                  <td>{{person}}</td>
+                  <td>${{amount}}</td>
+                  <td>{{vendor}}</td>
+                  <td>{{description}}</td>
+                  <td>{{expensedate}}</td>
+                </tr>
+              {{/monthlyExpenses}}
+            </table>
+          {{/monthlyExpenses.length}}
+          {{^monthlyExpenses.length}}
+            <p class="no-expenses"><em>No expenses recorded for this bucket this month</em></p>
+          {{/monthlyExpenses.length}}
+        </div>
+      {{/spotify}}
 
-  {{#electric}}
-  <h2>Electricity used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-  <table border="1" cellspacing="0" cellpadding="5">
-    <tr>
-      <th>Person</th>
-      <th>Amount</th>
-      <th>Vendor</th>
-      <th>Description</th>
-      <th>Expense Date</th>
-    </tr>
-      {{#monthlyExpenses}}
-        <tr>
-          <td>{{person}}</td>
-          <td>{{amount}}</td>
-          <td>{{vendor}}</td>
-          <td>{{description}}</td>
-          <td>{{expensedate}}</td>
-        </tr>
-      {{/monthlyExpenses}}
-  </table>
-  {{/electric}}
+      {{#parcel}}
+        <div class="bucket-section">
+          <div class="bucket-header">
+            <h3>Parcel - Used: ${{monthlyExpenseTotal}} | Allocated: ${{monthlyBucketAllocation}}</h3>
+          </div>
+          {{#monthlyExpenses.length}}
+            <table border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <th>Person</th>
+                <th>Amount</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th>Expense Date</th>
+              </tr>
+              {{#monthlyExpenses}}
+                <tr>
+                  <td>{{person}}</td>
+                  <td>${{amount}}</td>
+                  <td>{{vendor}}</td>
+                  <td>{{description}}</td>
+                  <td>{{expensedate}}</td>
+                </tr>
+              {{/monthlyExpenses}}
+            </table>
+          {{/monthlyExpenses.length}}
+          {{^monthlyExpenses.length}}
+            <p class="no-expenses"><em>No expenses recorded for this bucket this month</em></p>
+          {{/monthlyExpenses.length}}
+        </div>
+      {{/parcel}}
 
-  {{#yogi_activities}}
-  <h2>Yogi Activities used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-  <table border="1" cellspacing="0" cellpadding="5">
-    <tr>
-      <th>Person</th>
-      <th>Amount</th>
-      <th>Vendor</th>
-      <th>Description</th>
-      <th>Expense Date</th>
-    </tr>
-      {{#monthlyExpenses}}
-        <tr>
-          <td>{{person}}</td>
-          <td>{{amount}}</td>
-          <td>{{vendor}}</td>
-          <td>{{description}}</td>
-          <td>{{expensedate}}</td>
-        </tr>
-      {{/monthlyExpenses}}
-  </table>
-  {{/yogi_activities}}
+      {{#savings_chase_2112}}
+        <div class="bucket-section">
+          <div class="bucket-header">
+            <h3>Savings (Chase 2112) - Used: ${{monthlyExpenseTotal}} | Allocated: ${{monthlyBucketAllocation}}</h3>
+          </div>
+          {{#monthlyExpenses.length}}
+            <table border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <th>Person</th>
+                <th>Amount</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th>Expense Date</th>
+              </tr>
+              {{#monthlyExpenses}}
+                <tr>
+                  <td>{{person}}</td>
+                  <td>${{amount}}</td>
+                  <td>{{vendor}}</td>
+                  <td>{{description}}</td>
+                  <td>{{expensedate}}</td>
+                </tr>
+              {{/monthlyExpenses}}
+            </table>
+          {{/monthlyExpenses.length}}
+          {{^monthlyExpenses.length}}
+            <p class="no-expenses"><em>No expenses recorded for this bucket this month</em></p>
+          {{/monthlyExpenses.length}}
+        </div>
+      {{/savings_chase_2112}}
 
-  {{#going_out_yogi}}
-  <h2>Going Out used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-  <table border="1" cellspacing="0" cellpadding="5">
-    <tr>
-      <th>Person</th>
-      <th>Amount</th>
-      <th>Vendor</th>
-      <th>Description</th>
-      <th>Expense Date</th>
-    </tr>
-      {{#monthlyExpenses}}
-        <tr>
-          <td>{{person}}</td>
-          <td>{{amount}}</td>
-          <td>{{vendor}}</td>
-          <td>{{description}}</td>
-          <td>{{expensedate}}</td>
-        </tr>
-      {{/monthlyExpenses}}
-  </table>
-  {{/going_out_yogi}}
+      {{#therapy}}
+        <div class="bucket-section">
+          <div class="bucket-header">
+            <h3>Therapy - Used: ${{monthlyExpenseTotal}} | Allocated: ${{monthlyBucketAllocation}}</h3>
+          </div>
+          {{#monthlyExpenses.length}}
+            <table border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <th>Person</th>
+                <th>Amount</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th>Expense Date</th>
+              </tr>
+              {{#monthlyExpenses}}
+                <tr>
+                  <td>{{person}}</td>
+                  <td>${{amount}}</td>
+                  <td>{{vendor}}</td>
+                  <td>{{description}}</td>
+                  <td>{{expensedate}}</td>
+                </tr>
+              {{/monthlyExpenses}}
+            </table>
+          {{/monthlyExpenses.length}}
+          {{^monthlyExpenses.length}}
+            <p class="no-expenses"><em>No expenses recorded for this bucket this month</em></p>
+          {{/monthlyExpenses.length}}
+        </div>
+      {{/therapy}}
 
-  {{#vacation}}
-  <h2>Vacation used: {{monthlyExpenseTotal}} total: {{monthlyBucketAllocation}}</h2>
-  <table border="1" cellspacing="0" cellpadding="5">
-    <tr>
-      <th>Person</th>
-      <th>Amount</th>
-      <th>Vendor</th>
-      <th>Description</th>
-      <th>Expense Date</th>
-    </tr>
-      {{#monthlyExpenses}}
-        <tr>
-          <td>{{person}}</td>
-          <td>{{amount}}</td>
-          <td>{{vendor}}</td>
-          <td>{{description}}</td>
-          <td>{{expensedate}}</td>
-        </tr>
-      {{/monthlyExpenses}}
-  </table>
-  {{/vacation}}
-{{/buckets}}
+      {{#netflix}}
+        <div class="bucket-section">
+          <div class="bucket-header">
+            <h3>Netflix - Used: ${{monthlyExpenseTotal}} | Allocated: ${{monthlyBucketAllocation}}</h3>
+          </div>
+          {{#monthlyExpenses.length}}
+            <table border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <th>Person</th>
+                <th>Amount</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th>Expense Date</th>
+              </tr>
+              {{#monthlyExpenses}}
+                <tr>
+                  <td>{{person}}</td>
+                  <td>${{amount}}</td>
+                  <td>{{vendor}}</td>
+                  <td>{{description}}</td>
+                  <td>{{expensedate}}</td>
+                </tr>
+              {{/monthlyExpenses}}
+            </table>
+          {{/monthlyExpenses.length}}
+          {{^monthlyExpenses.length}}
+            <p class="no-expenses"><em>No expenses recorded for this bucket this month</em></p>
+          {{/monthlyExpenses.length}}
+        </div>
+      {{/netflix}}
+
+      {{#electric}}
+        <div class="bucket-section">
+          <div class="bucket-header">
+            <h3>Electric - Used: ${{monthlyExpenseTotal}} | Allocated: ${{monthlyBucketAllocation}}</h3>
+          </div>
+          {{#monthlyExpenses.length}}
+            <table border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <th>Person</th>
+                <th>Amount</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th>Expense Date</th>
+              </tr>
+              {{#monthlyExpenses}}
+                <tr>
+                  <td>{{person}}</td>
+                  <td>${{amount}}</td>
+                  <td>{{vendor}}</td>
+                  <td>{{description}}</td>
+                  <td>{{expensedate}}</td>
+                </tr>
+              {{/monthlyExpenses}}
+            </table>
+          {{/monthlyExpenses.length}}
+          {{^monthlyExpenses.length}}
+            <p class="no-expenses"><em>No expenses recorded for this bucket this month</em></p>
+          {{/monthlyExpenses.length}}
+        </div>
+      {{/electric}}
+
+      {{#rent}}
+        <div class="bucket-section">
+          <div class="bucket-header">
+            <h3>Rent - Used: ${{monthlyExpenseTotal}} | Allocated: ${{monthlyBucketAllocation}}</h3>
+          </div>
+          {{#monthlyExpenses.length}}
+            <table border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <th>Person</th>
+                <th>Amount</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th>Expense Date</th>
+              </tr>
+              {{#monthlyExpenses}}
+                <tr>
+                  <td>{{person}}</td>
+                  <td>${{amount}}</td>
+                  <td>{{vendor}}</td>
+                  <td>{{description}}</td>
+                  <td>{{expensedate}}</td>
+                </tr>
+              {{/monthlyExpenses}}
+            </table>
+          {{/monthlyExpenses.length}}
+          {{^monthlyExpenses.length}}
+            <p class="no-expenses"><em>No expenses recorded for this bucket this month</em></p>
+          {{/monthlyExpenses.length}}
+        </div>
+      {{/rent}}
+
+      {{#clothes}}
+        <div class="bucket-section">
+          <div class="bucket-header">
+            <h3>Clothes - Used: ${{monthlyExpenseTotal}} | Allocated: ${{monthlyBucketAllocation}}</h3>
+          </div>
+          {{#monthlyExpenses.length}}
+            <table border="1" cellspacing="0" cellpadding="5">
+              <tr>
+                <th>Person</th>
+                <th>Amount</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th>Expense Date</th>
+              </tr>
+              {{#monthlyExpenses}}
+                <tr>
+                  <td>{{person}}</td>
+                  <td>${{amount}}</td>
+                  <td>{{vendor}}</td>
+                  <td>{{description}}</td>
+                  <td>{{expensedate}}</td>
+                </tr>
+              {{/monthlyExpenses}}
+            </table>
+          {{/monthlyExpenses.length}}
+          {{^monthlyExpenses.length}}
+            <p class="no-expenses"><em>No expenses recorded for this bucket this month</em></p>
+          {{/monthlyExpenses.length}}
+        </div>
+      {{/clothes}}
+    {{/buckets}}
+  </div>
+</div>

@@ -91,7 +91,7 @@ export const isValidDate = (dateString: string | undefined): boolean => {
 
 export const formatMonthlyExpensesToBucketExpenses = async (
   monthlyExpenses: MonthlyExpenseWithTimestamps[],
-  allMonthlyAllocationResponse: BudgetType[],
+  monthlyBudgetAllocationResponse: BudgetType[],
 ): Promise<AggregatedMonthlyReport> => {
   const formattedResponse: MonthlyExpenseWithTimestamps[] = monthlyExpenses.map(
     (expense) => ({
@@ -127,7 +127,7 @@ export const formatMonthlyExpensesToBucketExpenses = async (
       roundedTotal;
 
     // Find the corresponding budget allocation for the bucket
-    const budgetAllocation = allMonthlyAllocationResponse.find(
+    const budgetAllocation = monthlyBudgetAllocationResponse.find(
       (budget) => budget.bucketname === bucketname,
     );
     if (budgetAllocation) {
