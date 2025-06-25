@@ -3,14 +3,18 @@
   <tr>
     <th>Bucket Name</th>
     <th>Total Amount</th>
+    <th>Yearly Allocation</th>
   </tr>
   {{#yearlyAccumulatedData}}
     <tr>
       <td>{{bucketname}}</td>
-      <td>{{total_amount}}</td>
+      <td>{{yearlyAccumulated}}</td>
+      <td>{{yearlyAllocated}}</td>
     </tr>
   {{/yearlyAccumulatedData}}
 </table>
+
+<h3>Monthly Summary</h3>
 
 {{#buckets}}
   {{#groceries}}

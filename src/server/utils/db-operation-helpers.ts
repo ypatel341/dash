@@ -153,7 +153,7 @@ export const getAccumulatedYearlyData = async (
   try {
     const result = await db('budget_monthly_expenses')
       .select('bucketname')
-      .sum('amount as total_amount')
+      .sum('amount as yearlyAccumulated')
       .where('expensedate', '>=', db.raw(`DATE '${year}-01-01'`))
       .where(
         'expensedate',
