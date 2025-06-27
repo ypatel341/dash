@@ -9,9 +9,29 @@
    1. The original baseline_schema should not be run in production only because the tables were created first the purpose of the baseline_schema is for a new developer or machine
    2. preferably run the steps above to get a snapshot of some sorts
    3. run `npm run start` and should trigger the knex tables after
-   4. run `knex:migrate:make --stub` for a new knex migration
-   5. use this script to test connections to knex
+   4. run `npx knex migrate:make migration_name` for a new knex migration
 
+## USEFUL COMMANDS:
+1) Create new migration
+npx knex migrate:make migration_name
+
+2) Run pending migrations
+npx knex migrate:latest
+
+3) Rollback last migration
+npx knex migrate:rollback
+
+4) Check migration status
+npx knex migrate:currentVersion
+
+5) List all migrations
+npx knex migrate:list
+
+6) Create with specific environment
+npx knex migrate:make migration_name --env production
+
+
+7) Useful script below
 ```
 const knex = require('knex')(require('./knexfile').development);
 knex

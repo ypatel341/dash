@@ -1,4 +1,4 @@
-require('dotenv').config(); // Load environment variables from .env file
+require('dotenv').config(); // This will work with dotenv-cli
 
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
@@ -28,6 +28,10 @@ module.exports = {
       user: process.env.DB_USER, // Database user
       password: process.env.DB_PASSWORD, // Database password
       port: process.env.DB_PORT || 5432, // Default PostgreSQL port
+      ssl: {
+        rejectUnauthorized: false,
+      },
+      //ssl: false // Uncomment here for migrate:rollback
     },
     pool: {
       min: 2, // Minimum number of connections

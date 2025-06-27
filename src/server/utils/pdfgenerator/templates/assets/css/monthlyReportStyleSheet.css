@@ -1,8 +1,8 @@
 @page {
   margin: 1in 1in 1.5in 1in; /* top, right, bottom, left - extra bottom margin */
-  
+
   @bottom-right {
-    content: "Page " counter(page);
+    content: 'Page ' counter(page);
     font-size: 10px;
     color: #666;
     margin-bottom: 0.5in;

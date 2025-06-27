@@ -67,7 +67,6 @@ export const formatMonthlyExpensesToBucketExpenses = async (
   monthlyExpenses: MonthlyExpense[],
   existingBudgetData: BudgetData[],
 ): Promise<BudgetData[]> => {
-  // Accumulate amounts per bucket using reduce
   const bucketMap = monthlyExpenses.reduce((map, { bucketname, amount }) => {
     const current = map.get(bucketname) || 0;
     map.set(bucketname, current + amount);

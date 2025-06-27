@@ -33,8 +33,8 @@ const ExpenseDetailsHomePage: React.FC = () => {
   };
 
   const url = YYYYMM
-    ? `http://localhost:5000/budget/info/bucketexpense/${bucketname}?YYYYMM=${YYYYMM}`
-    : `http://localhost:5000/budget/info/bucketexpense/${bucketname}`;
+    ? `${process.env.REACT_APP_API_URL}/budget/info/bucketexpense/${bucketname}?YYYYMM=${YYYYMM}`
+    : `${process.env.REACT_APP_API_URL}/budget/info/bucketexpense/${bucketname}`;
 
   const fetchBucketData = async () => {
     setLoading(true);
