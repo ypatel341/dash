@@ -29,7 +29,7 @@ const BudgetHomePage: React.FC = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        'http://localhost:5000/budget/info/allbucketexpense',
+        `${process.env.REACT_APP_API_URL}/budget/info/allbucketexpense`,
       );
 
       const { data } = response;
@@ -68,7 +68,7 @@ const BudgetHomePage: React.FC = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:5000/budget/info/getbymonthexpense/${formattedDate}`,
+        `${process.env.REACT_APP_API_URL}/budget/info/getbymonthexpense/${formattedDate}`,
       );
       const { data } = response;
 
@@ -101,7 +101,7 @@ const BudgetHomePage: React.FC = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:5000/budget/reports/generateMonthlyReport/${formattedDate}`,
+        `${process.env.REACT_APP_API_URL}/budget/reports/generateMonthlyReport/${formattedDate}`,
       );
       const { data } = response;
       console.log(data);

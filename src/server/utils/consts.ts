@@ -13,5 +13,4 @@ export const VALIDATION_RULES = {
     MIN: 0,
     MAX: 10000,
   },
-  REQUIRED_FIELDS: ['person', 'bucketname', 'vendor'] as const,
 } as const;

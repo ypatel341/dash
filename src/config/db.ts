@@ -19,7 +19,7 @@ const databaseConfig: DatabaseConfig = {
       max: 5,
       idleTimeoutMillis: 30000,
     },
-    debug: true,
+    debug: true, // Enable debug mode for development
   },
 
   production: {
