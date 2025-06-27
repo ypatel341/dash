@@ -31,6 +31,7 @@ module.exports = {
       ssl: {
         rejectUnauthorized: false,
       },
+      //ssl: false // Uncomment here for migrate:rollback
     },
     pool: {
       min: 2, // Minimum number of connections
