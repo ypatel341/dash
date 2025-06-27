@@ -1,3 +1,4 @@
+import { VALIDATION_RULES } from './consts';
 import { getAllBudgetData } from './db-operation-helpers';
 import logger from './logger';
 import {
@@ -11,14 +12,21 @@ import {
   MonthlyExpenseWithTimestamps,
 } from './types';
 
-const VALIDATION_RULES = {
-  AMOUNT: {
-    MIN: 0,
-    MAX: 10000,
-  },
-  REQUIRED_FIELDS: ['person', 'bucketname', 'vendor'] as const,
-} as const;
-
+/**
+ * Validates an expense request body and returns a properly formatted expense object.
+ * @param reqBody - The expense request body containing expense details
+ * @param reqBody.person - The person associated with the expense
+ * @param reqBody.bucketname - The bucket/category name for the expense
+ * @param reqBody.vendor - The vendor/merchant name
+ * @param reqBody.amount - The expense amount (must be within validation limits)
+ * @param reqBody.description - Optional description of the expense
+ * @param reqBody.date - Optional date of the expense
+ * 
+ * @returns A promise that resolves to a validated InsertExpenseType object
+ * 
+ * @throws {Error} When amount is outside the valid range (min/max validation rules)
+ * @throws {Error} When required fields (person, bucketname, vendor) are missing
+ */
 export const validateExpense = async (
   reqBody: ExpenseRequestBody,
 ): Promise<InsertExpenseType> => {
@@ -49,10 +57,57 @@ export const validateExpense = async (
   return expense;
 };
 
+/**
+ * Calculates bucket expenses by mapping raw monthly data to budget types with current amounts.
+ * @param rawMonthlyData - Array of monthly expense data to be processed
+ * @param allBudgetData - Array of budget type configurations
+ * @returns Promise that resolves to an array of budget types enriched with current expense amounts
+ */
 export const calculateBucketExpenses = async (
   rawMonthlyData: MonthlyExpense[],
   allBudgetData: BudgetType[],
 ): Promise<BudgetTypeWithCurrentAmount[]> => {
+  const bucketExpenseMap: BucketExpenseMap = mapRawMonthlyDataToBucketExpense(rawMonthlyData);
+
+  logger.info(`(fx: calculateBucketExpense): ${bucketExpenseMap}`);
+
+  const budgetTypeWithCurrentAmount = appendCurrentAmountToBudgetData(
+    allBudgetData,
+    bucketExpenseMap,
+  );
+
+  logger.info(`(fx: calculateBucketExpense): ${budgetTypeWithCurrentAmount}`);
+
+  return budgetTypeWithCurrentAmount;
+};
+
+/**
+ * Appends current expense amounts to budget data by looking up expenses for each budget's bucket.
+ * @param allBudgetData - Array of budget objects to enhance with current amounts
+ * @param bucketExpenseMap - Map containing bucket names as keys and their corresponding expense amounts as values
+ * @returns Array of budget objects enhanced with current expense amounts for each bucket
+ */
+const appendCurrentAmountToBudgetData = (
+  allBudgetData: BudgetType[],
+  bucketExpenseMap: BucketExpenseMap,
+): BudgetTypeWithCurrentAmount[] => {
+  return allBudgetData.map((budget) => {
+    const currentamount = bucketExpenseMap.get(budget.bucketname) || 0;
+    return {
+      ...budget,
+      currentamount,
+    };
+  });
+};
+
+/**
+ * Maps an array of monthly expense data to a bucket expense map by aggregating amounts per bucket.
+ * @param rawMonthlyData - Array of monthly expense objects containing bucket names and amounts
+ * @returns A Map where keys are bucket names and values are the total aggregated amounts for each bucket
+ */
+const mapRawMonthlyDataToBucketExpense = (
+  rawMonthlyData: MonthlyExpense[],
+): BucketExpenseMap => {
   const bucketExpenseMap: BucketExpenseMap = new Map();
 
   rawMonthlyData.forEach((expense) => {
@@ -60,22 +115,14 @@ export const calculateBucketExpenses = async (
     bucketExpenseMap.set(expense.bucketname, currentAmount + expense.amount);
   });
 
-  logger.info(`(fx: calculateBucketExpense): ${bucketExpenseMap}`);
+  return bucketExpenseMap;
+}
 
-  const budgetTypeWithCurrentAmount: BudgetTypeWithCurrentAmount[] =
-    allBudgetData.map((budget) => {
-      const currentamount = bucketExpenseMap.get(budget.bucketname) || 0;
-      return {
-        ...budget,
-        currentamount,
-      };
-    });
-
-  logger.info(`(fx: calculateBucketExpense): ${budgetTypeWithCurrentAmount}`);
-
-  return budgetTypeWithCurrentAmount;
-};
-
+/**
+ * Validates if a given bucket name exists in the active budget data.
+ * @param bucketname - The name of the bucket to validate
+ * @returns A promise that resolves to true if the bucket name exists in the active budget data, false otherwise
+ */
 export const validateInputBucket = async (
   bucketname: string,
 ): Promise<boolean> => {
@@ -83,7 +130,6 @@ export const validateInputBucket = async (
   const bucketNames = activeBucketNames.map((bucket) => bucket.bucketname);
   return bucketNames.includes(bucketname);
 };
-
 
 /**
  * Gets the current year and month in YYYY-MM format.

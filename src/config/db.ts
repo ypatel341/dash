@@ -1,30 +1,62 @@
-import knex from 'knex';
+import knex, { Knex } from 'knex';
 import dotenv from 'dotenv';
 
-// TODO: i feel like there is a better way to handle this file
-// but right now im too tired to think of it
-// clean this guy up some day :)
+// Load environment-specific .env file
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
+dotenv.config({ path: envFile });
 
-dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+interface DatabaseConfig {
+  development: Knex.Config;
+  production: Knex.Config;
+}
 
-let connection = {
-  connectionString: process.env.DATABASE_URL,
-};
+const databaseConfig: DatabaseConfig = {
+  development: {
+    client: 'postgresql',
+    connection: process.env.DATABASE_URL || 'postgres://postgres:@localhost:5432/dash-test',
+    pool: {
+      min: 0,
+      max: 5,
+      idleTimeoutMillis: 30000,
+    },
+    debug: true,
+  },
 
-const prodConnection = {
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
+  production: {
+    client: 'postgresql',
+    connection: {
+      host: process.env.DB_HOST!,
+      database: process.env.DB_NAME!,
+      user: process.env.DB_USER!,
+      password: process.env.DB_PASSWORD!,
+      port: parseInt(process.env.DB_PORT || '5432'),
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    },
+    pool: {
+      min: 2,
+      max: 10,
+      idleTimeoutMillis: 30000,
+    },
+    acquireConnectionTimeout: 60000,
   },
 };
 
-if (process.env.NODE_ENV === 'production') {
-  connection = prodConnection;
+const environment = (process.env.NODE_ENV as keyof DatabaseConfig) || 'development';
+const config = databaseConfig[environment];
+
+if (environment === 'production') {
+  const requiredVars = ['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'];
+  const missingVars = requiredVars.filter(varName => !process.env[varName]);
+  
+  if (missingVars.length > 0) {
+    throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+  }
 }
 
-const db = knex({
-  client: 'pg',
-  connection,
-});
+const db = knex(config);
+
+console.log(`🗄️  Database configured for ${environment} environment`);
 
 export default db;
