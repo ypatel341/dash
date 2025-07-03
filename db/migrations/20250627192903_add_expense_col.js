@@ -4,7 +4,7 @@
  */
 exports.up = function(knex) {
   return knex.schema.table('budget_monthly_expenses', function(table) {
-    table.uuid('expensable').nullable()
+    table.uuid('expensable').nullable().unique();
   })
 };
 
@@ -14,6 +14,7 @@ exports.up = function(knex) {
  */
 exports.down = function(knex) {
     return knex.schema.table('budget_monthly_expenses', function(table) {
-        table.dropColumn('expensable');
+      table.dropUnique('expensable');
+      table.dropColumn('expensable');
     })
 };
