@@ -2,10 +2,14 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function(knex) {
+exports.up = async function(knex) {
+  // Ensure the UUID extension is enabled
+  await knex.raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
+
+  // Create the reimbursable_expenses table
   return knex.schema.createTable('reimbursable_expenses', function(table) {
-    table.uuid('id').primary();
-    table.uuid('expensable_id').references('expensable').inTable('budget_monthly_expenses').onDelete('CASCADE');
+    table.uuid('id').primary().defaultTo(knex.raw('uuid_generate_v4()')); // Auto-generate UUID for id
+    table.uuid('expensable_id').notNullable().defaultTo(knex.raw('uuid_generate_v4()')); // Auto-generate UUID for expensable_id
     table.string('company').notNullable();
     table.boolean('reimbursable').notNullable().defaultTo(false);
     table.string('description').nullable();
@@ -19,6 +23,6 @@ exports.up = function(knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function(knex) {
-    return knex.schema.dropTableIfExists('reimbursable_expenses');
+exports.down = async function(knex) {
+  return knex.schema.dropTableIfExists('reimbursable_expenses');
 };

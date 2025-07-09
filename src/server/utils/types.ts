@@ -4,6 +4,7 @@ export interface ExpenseRequestBody {
   bucketname: string;
   vendor: string;
   amount: number;
+  expensable?: boolean;
   description?: string;
   date?: string;
 }
@@ -25,6 +26,7 @@ export type InsertExpenseType = {
   bucketname: string;
   vendor: string;
   amount: number;
+  expensable?: boolean;
   description?: string;
   expensedate?: string;
 };
