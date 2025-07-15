@@ -13,6 +13,7 @@ const en = {
   },
   common: {
     enter: 'Enter',
+    expensable: 'Expensable',
     datePicker: 'Year and Month',
     budgetStartDate: '2025-01-01',
     budgetEndDate: formattedDate,

@@ -47,6 +47,7 @@ export type ExpenseData = {
   bucketname: ExpenseType;
   vendor: string;
   amount: number | null;
+  expensable: boolean;
   description?: string;
   date?: string;
 };

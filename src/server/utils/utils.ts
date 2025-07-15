@@ -30,7 +30,7 @@ import {
 export const validateExpense = async (
   reqBody: ExpenseRequestBody,
 ): Promise<InsertExpenseType> => {
-  const { person, bucketname, vendor, amount, description, date } = reqBody;
+  const { person, bucketname, vendor, amount, description, date, expensable } = reqBody;
 
   if (!amount || amount <= VALIDATION_RULES.AMOUNT.MIN || amount > VALIDATION_RULES.AMOUNT.MAX) {
     throw new Error(`Amount must be between $${VALIDATION_RULES.AMOUNT.MIN + 0.01} and $${VALIDATION_RULES.AMOUNT.MAX}`);
@@ -48,6 +48,7 @@ export const validateExpense = async (
     vendor,
     amount,
     description,
+    expensable
   };
 
   if (date) {

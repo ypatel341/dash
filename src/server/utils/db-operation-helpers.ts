@@ -39,6 +39,25 @@ export const insertExpense = async (
       expensedate: expense.expensedate,
     };
   }
+
+  if (expense.expensable) {
+    const expensableResult = await db('reimbursable_expenses')
+      .insert({
+        expensable_id: db.raw('gen_random_uuid()'),
+        company: 'test company',
+        reimbursable: true,
+        description: 'some description',
+      })
+      .returning('expensable_id');
+
+    const expensable_id = expensableResult[0].expensable_id;
+
+    insertObj = {
+      ...insertObj,
+      expensable: expensable_id, // Use the extracted UUID
+    };
+  }
+
   try {
     const result = await db('budget_monthly_expenses')
       .insert(insertObj)
@@ -49,7 +68,7 @@ export const insertExpense = async (
 
     return result[0];
   } catch (err) {
-    logger.error(`${ErrorInsertingExpense} ${err}`);
+    logger.error(`Error inserting expense: ${err}`);
     throw err;
   }
 };

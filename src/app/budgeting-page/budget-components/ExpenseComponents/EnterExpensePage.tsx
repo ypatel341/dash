@@ -35,6 +35,7 @@ export const EnterExpensePage: React.FC = () => {
     vendor: '',
     amount: null,
     description: '',
+    expensable: false
   });
   const [toastMessage, setToastMessage] = useState<string>('');
   const [toastSeverity, setToastSeverity] =
@@ -88,6 +89,11 @@ export const EnterExpensePage: React.FC = () => {
     }
   };
 
+  const handleExpensableButtonClick = async () => {
+    (formData.expensable = !formData.expensable);
+    console.log("formdata", formData)
+  }
+
   const handleSubmitButtonClick = async () => {
     const validationError = validateExpense(formData);
     if (validationError) {
@@ -109,6 +115,7 @@ export const EnterExpensePage: React.FC = () => {
         vendor: '',
         amount: null,
         description: '',
+        expensable: false
       });
       fetchExpenses();
     } catch (error) {
@@ -225,6 +232,17 @@ export const EnterExpensePage: React.FC = () => {
             </Box>
           </Grid>
         </Grid>
+        <Button // Convert this into a checkbox
+          variant="contained"
+          color="primary"
+          onClick={handleExpensableButtonClick}
+          disabled={
+            !formData.amount || !formData.bucketname || !formData.vendor
+          }
+          id="submit-button"
+        >
+          {en.common.expensable}
+        </Button>
         <Button
           variant="contained"
           color="primary"
