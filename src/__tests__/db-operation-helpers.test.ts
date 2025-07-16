@@ -87,7 +87,7 @@ describe('handles all DB operations and closes the connection', () => {
       updatedat: new Date().toISOString(),
       description: 'updated description',
     });
-
+    
     const allMonthlyExpensesAfterUpdate = await getAllMonthlyExpense();
     const insertedExpenseAfterUpdate = allMonthlyExpensesAfterUpdate.find(
       (expense) => expense.id === insertExpenseIdUpdate.id,
@@ -112,10 +112,12 @@ describe('handles all DB operations and closes the connection', () => {
     const yearMonth = await getCurrentYearMonth();
 
     const allMonthlyExpenses = await getAllMonthlyExpenseByMonth(yearMonth);
-    const latestExpense = allMonthlyExpenses[0];
-
+    const latestExpense = allMonthlyExpenses.find(
+      (expense) => expense.bucketname === 'rent',
+    );
+    
+    expect(latestExpense?.description).toBe('updated description');
     expect(allMonthlyExpenses.length).toBeGreaterThan(0);
-    expect(latestExpense.description).toBe('updated description');
   });
 
   it('should fetch accumulated yearly data for a given month', async () => {

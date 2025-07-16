@@ -146,9 +146,11 @@ export const updateExpense = async (
 ): Promise<void> => {
   const { id } = updateExpense;
 
+  console.log('comes here')
   try {
+    console.log('comes here again')
     await db('budget_monthly_expenses').where({ id: id }).update(updateExpense);
-
+    console.log('updated successfully')
     logger.info(`Updated expense with id ${updateExpense.id}`);
   } catch (error) {
     logger.error(`${ErrorInsertingExpense} ${error}`);
