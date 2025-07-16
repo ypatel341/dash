@@ -73,6 +73,7 @@ export const insertExpense = async (
   }
 };
 
+// TODO: might have to update this here for epensable row to be null as well
 export const getAllMonthlyExpense = async (): Promise<MonthlyExpense[]> => {
   try {
     const result: MonthlyExpense[] = await db('budget_monthly_expenses')
@@ -84,6 +85,7 @@ export const getAllMonthlyExpense = async (): Promise<MonthlyExpense[]> => {
         db.raw("date_trunc('month', CURRENT_DATE) + INTERVAL '1 month'"),
       )
       .whereNull('deletedat')
+      .whereNull('expensable')
       .orderBy('expensedate', 'desc');
 
     logger.info(`Fetching all monthly expenses ${result}`);
@@ -112,6 +114,7 @@ export const getAllMonthlyExpenseByMonth = async (
         db.raw("?::date + INTERVAL '1 month'", [yearMonthDay]),
       )
       .whereNull('deletedat')
+      .whereNull('expensable')
       .orderBy('expensedate', 'desc');
 
     logger.info(
@@ -180,6 +183,7 @@ export const getAccumulatedYearlyData = async (
         db.raw(`DATE '${month}-01' + INTERVAL '1 month'`),
       )
       .whereNull('deletedat')
+      .whereNull('expensable')
       .groupBy('bucketname');
 
     logger.info(`Fetched accumulated yearly data for month: ${month}`);
