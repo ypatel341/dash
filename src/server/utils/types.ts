@@ -37,7 +37,7 @@ export type ReimbursableExpense = {
   company: string;
   description: string;
   field3?: string;
-}
+};
 
 export type UpdateExpenseType = {
   id: string;

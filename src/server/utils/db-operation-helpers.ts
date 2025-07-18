@@ -44,15 +44,16 @@ export const insertExpense = async (
   if (expense.expensable) {
     const { reimbursement } = expense;
 
-    const validatedReimbursement = await validateReimbursableExpense(reimbursement);
-    
+    const validatedReimbursement =
+      await validateReimbursableExpense(reimbursement);
+
     const { company, description } = validatedReimbursement;
 
     const expensableResult = await db('reimbursable_expenses')
       .insert({
         expensable_id: db.raw('gen_random_uuid()'),
         company: company,
-        reimbursable: true,
+        reimbursable: false,
         description,
       })
       .returning('expensable_id');

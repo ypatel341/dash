@@ -10,7 +10,7 @@ import {
   BudgetTypeWithCurrentAmount,
   AggregatedMonthlyReport,
   MonthlyExpenseWithTimestamps,
-  ReimbursableExpense
+  ReimbursableExpense,
 } from './types';
 
 /**
@@ -31,8 +31,16 @@ import {
 export const validateExpense = async (
   reqBody: ExpenseRequestBody,
 ): Promise<InsertExpenseType> => {
-  const { person, bucketname, vendor, amount, description, date, expensable, reimbursement } =
-    reqBody;
+  const {
+    person,
+    bucketname,
+    vendor,
+    amount,
+    description,
+    date,
+    expensable,
+    reimbursement,
+  } = reqBody;
 
   if (
     !amount ||
@@ -57,7 +65,7 @@ export const validateExpense = async (
     amount,
     description,
     expensable,
-    reimbursement
+    reimbursement,
   };
 
   if (date) {
@@ -280,29 +288,30 @@ export const roundToCurrency = (
   return report;
 };
 
-
 export const validateReimbursableExpense = async (
   reimbursement: ReimbursableExpense | undefined,
 ): Promise<ReimbursableExpense> => {
   if (!reimbursement) {
-    logger.info('No reimbursement provided, update company and description to empty strings');
-    return reimbursement = {
+    logger.info(
+      'No reimbursement provided, update company and description to empty strings',
+    );
+    return {
       company: '',
       description: '',
-    }
+    };
   }
   const { company, description } = reimbursement;
 
-  if(!company){
+  if (!company) {
     logger.info('Update company name to empty string');
     reimbursement.company = '';
     reimbursement.description = 'Update company name to empty string';
   }
 
-  if(!description){
+  if (!description) {
     logger.info('No description provided, setting to empty string');
     reimbursement.description = '';
   }
 
   return reimbursement;
-}
+};

@@ -45,11 +45,11 @@ export const EnterExpensePage: React.FC = () => {
     amount: null,
     description: '',
     expensable: false,
-    reimbursement:{
+    reimbursement: {
       company: '',
       description: '',
       field3: '',
-    }
+    },
   });
   const [toastMessage, setToastMessage] = useState<string>('');
   const [toastSeverity, setToastSeverity] =
@@ -92,7 +92,7 @@ export const EnterExpensePage: React.FC = () => {
       setFormData({ ...formData, [field]: event.target.value });
     };
 
-  const handleReimbursementInputChange = 
+  const handleReimbursementInputChange =
     (field: keyof NonNullable<ExpenseData['reimbursement']>) =>
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setFormData((prev) => ({
@@ -122,7 +122,6 @@ export const EnterExpensePage: React.FC = () => {
       ...prev,
       expensable: !prev.expensable,
     }));
-    console.log('formData after toggle:', formData);
   };
 
   const handleSubmitButtonClick = async () => {
@@ -147,11 +146,11 @@ export const EnterExpensePage: React.FC = () => {
         amount: null,
         description: '',
         expensable: false,
-        reimbursement:{
+        reimbursement: {
           company: '',
           description: '',
           field3: '',
-        }
+        },
       });
       fetchExpenses();
     } catch (error) {
@@ -165,8 +164,6 @@ export const EnterExpensePage: React.FC = () => {
 
   const postExpense = async () => {
     const data = { ...formData };
-
-    console.log(data)
 
     if (date) {
       data.date = date.toISOString();
