@@ -5,6 +5,7 @@ export interface ExpenseRequestBody {
   vendor: string;
   amount: number;
   expensable?: boolean;
+  reimbursement?: ReimbursableExpense;
   description?: string;
   date?: string;
 }
@@ -29,7 +30,14 @@ export type InsertExpenseType = {
   expensable?: boolean;
   description?: string;
   expensedate?: string;
+  reimbursement?: ReimbursableExpense;
 };
+
+export type ReimbursableExpense = {
+  company: string;
+  description: string;
+  field3?: string;
+}
 
 export type UpdateExpenseType = {
   id: string;

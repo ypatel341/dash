@@ -12,26 +12,27 @@
    4. run `npx knex migrate:make migration_name` for a new knex migration
 
 ## USEFUL COMMANDS:
-1) Create new migration
-npx knex migrate:make migration_name
 
-2) Run pending migrations
-npx knex migrate:latest
+1. Create new migration
+   npx knex migrate:make migration_name
 
-3) Rollback last migration
-npx knex migrate:rollback
+2. Run pending migrations
+   npx knex migrate:latest
 
-4) Check migration status
-npx knex migrate:currentVersion
+3. Rollback last migration
+   npx knex migrate:rollback
 
-5) List all migrations
-npx knex migrate:list
+4. Check migration status
+   npx knex migrate:currentVersion
 
-6) Create with specific environment
-npx knex migrate:make migration_name --env production
+5. List all migrations
+   npx knex migrate:list
 
+6. Create with specific environment
+   npx knex migrate:make migration_name --env production
 
-7) Useful script below
+7. Useful script below
+
 ```
 const knex = require('knex')(require('./knexfile').development);
 knex

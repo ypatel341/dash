@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Container, Box, SelectChangeEvent, Grid } from '@mui/material';
+import {
+  Button,
+  Container,
+  Box,
+  SelectChangeEvent,
+  Grid,
+  Checkbox,
+  FormControlLabel,
+  TextField,
+} from '@mui/material';
 import {
   ExpensePerson,
   ExpenseType,
@@ -35,7 +44,12 @@ export const EnterExpensePage: React.FC = () => {
     vendor: '',
     amount: null,
     description: '',
-    expensable: false
+    expensable: false,
+    reimbursement:{
+      company: '',
+      description: '',
+      field3: '',
+    }
   });
   const [toastMessage, setToastMessage] = useState<string>('');
   const [toastSeverity, setToastSeverity] =
@@ -78,6 +92,20 @@ export const EnterExpensePage: React.FC = () => {
       setFormData({ ...formData, [field]: event.target.value });
     };
 
+  const handleReimbursementInputChange = 
+    (field: keyof NonNullable<ExpenseData['reimbursement']>) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData((prev) => ({
+        ...prev,
+        reimbursement: {
+          company: prev.reimbursement?.company || '',
+          description: prev.reimbursement?.description || '',
+          field3: prev.reimbursement?.field3 || '',
+          [field]: event.target.value,
+        },
+      }));
+    };
+
   const handleSelectChange =
     (field: keyof ExpenseData) => (event: SelectChangeEvent<string>) => {
       setFormData({ ...formData, [field]: event.target.value });
@@ -90,9 +118,12 @@ export const EnterExpensePage: React.FC = () => {
   };
 
   const handleExpensableButtonClick = async () => {
-    (formData.expensable = !formData.expensable);
-    console.log("formdata", formData)
-  }
+    setFormData((prev) => ({
+      ...prev,
+      expensable: !prev.expensable,
+    }));
+    console.log('formData after toggle:', formData);
+  };
 
   const handleSubmitButtonClick = async () => {
     const validationError = validateExpense(formData);
@@ -115,7 +146,12 @@ export const EnterExpensePage: React.FC = () => {
         vendor: '',
         amount: null,
         description: '',
-        expensable: false
+        expensable: false,
+        reimbursement:{
+          company: '',
+          description: '',
+          field3: '',
+        }
       });
       fetchExpenses();
     } catch (error) {
@@ -129,6 +165,8 @@ export const EnterExpensePage: React.FC = () => {
 
   const postExpense = async () => {
     const data = { ...formData };
+
+    console.log(data)
 
     if (date) {
       data.date = date.toISOString();
@@ -232,17 +270,34 @@ export const EnterExpensePage: React.FC = () => {
             </Box>
           </Grid>
         </Grid>
-        <Button // Convert this into a checkbox
-          variant="contained"
-          color="primary"
-          onClick={handleExpensableButtonClick}
-          disabled={
-            !formData.amount || !formData.bucketname || !formData.vendor
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={formData.expensable}
+              onChange={handleExpensableButtonClick}
+            />
           }
-          id="submit-button"
-        >
-          {en.common.expensable}
-        </Button>
+          label="Expensable"
+        />
+        {formData.expensable && (
+          <>
+            <TextField
+              label="Company"
+              value={formData.reimbursement?.company}
+              onChange={handleReimbursementInputChange('company')}
+            />
+            <TextField
+              label="Description"
+              value={formData.reimbursement?.description}
+              onChange={handleReimbursementInputChange('description')}
+            />
+            <TextField
+              label="Field 3"
+              value={formData.reimbursement?.field3}
+              onChange={handleReimbursementInputChange('field3')}
+            />
+          </>
+        )}
         <Button
           variant="contained"
           color="primary"

@@ -83,8 +83,9 @@ export const getBucketExpensesController = async (
 
 export const insertExpenseController = async (req: Request, res: Response) => {
   try {
+    console.log('request body', req.body);
     const expense = await validateExpense(req.body);
-    console.log('backend', expense)
+    console.log('backend', expense);
     const response = await insertExpenseService(expense);
     res.json(response);
   } catch (error) {

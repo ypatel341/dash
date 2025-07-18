@@ -9,6 +9,7 @@ import {
   UpdateExpenseType,
 } from './types';
 import { ErrorFetchingBudgetData, ErrorInsertingExpense } from './consts';
+import { validateReimbursableExpense } from './utils';
 
 export const getAllBudgetData = async (): Promise<BudgetType[]> => {
   try {
@@ -41,12 +42,18 @@ export const insertExpense = async (
   }
 
   if (expense.expensable) {
+    const { reimbursement } = expense;
+
+    const validatedReimbursement = await validateReimbursableExpense(reimbursement);
+    
+    const { company, description } = validatedReimbursement;
+
     const expensableResult = await db('reimbursable_expenses')
       .insert({
         expensable_id: db.raw('gen_random_uuid()'),
-        company: 'test company',
+        company: company,
         reimbursable: true,
-        description: 'some description',
+        description,
       })
       .returning('expensable_id');
 
@@ -73,7 +80,6 @@ export const insertExpense = async (
   }
 };
 
-// TODO: might have to update this here for epensable row to be null as well
 export const getAllMonthlyExpense = async (): Promise<MonthlyExpense[]> => {
   try {
     const result: MonthlyExpense[] = await db('budget_monthly_expenses')
@@ -146,11 +152,8 @@ export const updateExpense = async (
 ): Promise<void> => {
   const { id } = updateExpense;
 
-  console.log('comes here')
   try {
-    console.log('comes here again')
     await db('budget_monthly_expenses').where({ id: id }).update(updateExpense);
-    console.log('updated successfully')
     logger.info(`Updated expense with id ${updateExpense.id}`);
   } catch (error) {
     logger.error(`${ErrorInsertingExpense} ${error}`);

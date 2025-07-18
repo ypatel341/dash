@@ -10,6 +10,7 @@ import {
   BudgetTypeWithCurrentAmount,
   AggregatedMonthlyReport,
   MonthlyExpenseWithTimestamps,
+  ReimbursableExpense
 } from './types';
 
 /**
@@ -21,19 +22,26 @@ import {
  * @param reqBody.amount - The expense amount (must be within validation limits)
  * @param reqBody.description - Optional description of the expense
  * @param reqBody.date - Optional date of the expense
- * 
+ *
  * @returns A promise that resolves to a validated InsertExpenseType object
- * 
+ *
  * @throws {Error} When amount is outside the valid range (min/max validation rules)
  * @throws {Error} When required fields (person, bucketname, vendor) are missing
  */
 export const validateExpense = async (
   reqBody: ExpenseRequestBody,
 ): Promise<InsertExpenseType> => {
-  const { person, bucketname, vendor, amount, description, date, expensable } = reqBody;
+  const { person, bucketname, vendor, amount, description, date, expensable, reimbursement } =
+    reqBody;
 
-  if (!amount || amount <= VALIDATION_RULES.AMOUNT.MIN || amount > VALIDATION_RULES.AMOUNT.MAX) {
-    throw new Error(`Amount must be between $${VALIDATION_RULES.AMOUNT.MIN + 0.01} and $${VALIDATION_RULES.AMOUNT.MAX}`);
+  if (
+    !amount ||
+    amount <= VALIDATION_RULES.AMOUNT.MIN ||
+    amount > VALIDATION_RULES.AMOUNT.MAX
+  ) {
+    throw new Error(
+      `Amount must be between $${VALIDATION_RULES.AMOUNT.MIN + 0.01} and $${VALIDATION_RULES.AMOUNT.MAX}`,
+    );
   }
 
   if (!person || !bucketname || !vendor) {
@@ -48,7 +56,8 @@ export const validateExpense = async (
     vendor,
     amount,
     description,
-    expensable
+    expensable,
+    reimbursement
   };
 
   if (date) {
@@ -68,7 +77,8 @@ export const calculateBucketExpenses = async (
   rawMonthlyData: MonthlyExpense[],
   allBudgetData: BudgetType[],
 ): Promise<BudgetTypeWithCurrentAmount[]> => {
-  const bucketExpenseMap: BucketExpenseMap = mapRawMonthlyDataToBucketExpense(rawMonthlyData);
+  const bucketExpenseMap: BucketExpenseMap =
+    mapRawMonthlyDataToBucketExpense(rawMonthlyData);
 
   logger.info(`(fx: calculateBucketExpense): ${bucketExpenseMap}`);
 
@@ -117,7 +127,7 @@ const mapRawMonthlyDataToBucketExpense = (
   });
 
   return bucketExpenseMap;
-}
+};
 
 /**
  * Validates if a given bucket name exists in the active budget data.
@@ -269,3 +279,30 @@ export const roundToCurrency = (
   });
   return report;
 };
+
+
+export const validateReimbursableExpense = async (
+  reimbursement: ReimbursableExpense | undefined,
+): Promise<ReimbursableExpense> => {
+  if (!reimbursement) {
+    logger.info('No reimbursement provided, update company and description to empty strings');
+    return reimbursement = {
+      company: '',
+      description: '',
+    }
+  }
+  const { company, description } = reimbursement;
+
+  if(!company){
+    logger.info('Update company name to empty string');
+    reimbursement.company = '';
+    reimbursement.description = 'Update company name to empty string';
+  }
+
+  if(!description){
+    logger.info('No description provided, setting to empty string');
+    reimbursement.description = '';
+  }
+
+  return reimbursement;
+}

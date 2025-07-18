@@ -48,6 +48,11 @@ export type ExpenseData = {
   vendor: string;
   amount: number | null;
   expensable: boolean;
+  reimbursement?: {
+    company: string;
+    description: string;
+    field3: string;
+  };
   description?: string;
   date?: string;
 };
