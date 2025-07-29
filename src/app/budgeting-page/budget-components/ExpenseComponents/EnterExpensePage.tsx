@@ -47,8 +47,7 @@ export const EnterExpensePage: React.FC = () => {
     expensable: false,
     reimbursement: {
       company: '',
-      description: '',
-      field3: '',
+      description: ''
     },
   });
   const [toastMessage, setToastMessage] = useState<string>('');
@@ -100,7 +99,6 @@ export const EnterExpensePage: React.FC = () => {
         reimbursement: {
           company: prev.reimbursement?.company || '',
           description: prev.reimbursement?.description || '',
-          field3: prev.reimbursement?.field3 || '',
           [field]: event.target.value,
         },
       }));
@@ -149,7 +147,6 @@ export const EnterExpensePage: React.FC = () => {
         reimbursement: {
           company: '',
           description: '',
-          field3: '',
         },
       });
       fetchExpenses();
@@ -287,11 +284,6 @@ export const EnterExpensePage: React.FC = () => {
               label="Description"
               value={formData.reimbursement?.description}
               onChange={handleReimbursementInputChange('description')}
-            />
-            <TextField
-              label="Field 3"
-              value={formData.reimbursement?.field3}
-              onChange={handleReimbursementInputChange('field3')}
             />
           </>
         )}

@@ -33,11 +33,23 @@ const BudgetHomePage: React.FC = () => {
       );
 
       const { data } = response;
+      
       const { monthlyTotalBudget, currentMonthlyUsage } =
         await calculateSurplus(data);
 
       setMonthlyAmount(monthlyTotalBudget);
       setMonthlyUsage(currentMonthlyUsage);
+
+      //TODO: move reimbursement logic to the backend
+      data.push({
+        amount: 10000,
+        bucketname: 'reimbursement',
+        category: 'reimbursement',
+        currentamount: 0,
+        household: 'domus',
+        id: '1234'
+      });
+
       setBudgetData(data);
     } catch (error: unknown) {
       error instanceof Error

@@ -147,6 +147,8 @@ export const validateInputBucket = async (
 ): Promise<boolean> => {
   const activeBucketNames = await getAllBudgetData();
   const bucketNames = activeBucketNames.map((bucket) => bucket.bucketname);
+  // TODO: add reimbursement bucket to the active buckets
+  bucketNames.push('reimbursement');
   return bucketNames.includes(bucketname);
 };
 

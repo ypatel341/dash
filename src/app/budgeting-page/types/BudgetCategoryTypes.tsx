@@ -51,7 +51,6 @@ export type ExpenseData = {
   reimbursement?: {
     company: string;
     description: string;
-    field3: string;
   };
   description?: string;
   date?: string;
