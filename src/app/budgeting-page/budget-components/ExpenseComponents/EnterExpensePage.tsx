@@ -307,7 +307,7 @@ export const EnterExpensePage: React.FC = () => {
         )}
         {!loading && !error && (
           <ExpenseTable
-            data={data}
+            data={data} //TODO: Do better here
             handleToastMessage={handleToastMessage}
             refetchData={fetchExpenses}
           />

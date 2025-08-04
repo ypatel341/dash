@@ -15,6 +15,7 @@ import {
 import {
   expenseTypeOptionsMapping,
   MonthlyExpense,
+  MonthlyExpenseWithReimbursement,
   ToastMessageOptions,
 } from '../../types/BudgetCategoryTypes';
 import DeleteOrUpdateExpense from './DeleteOrUpdateExpense';
@@ -23,13 +24,15 @@ import SaveIcon from '@mui/icons-material/Save';
 import axios from 'axios';
 
 interface ExpenseTableProps {
-  data?: MonthlyExpense[];
+  data?: MonthlyExpenseWithReimbursement[];
+  bucketname?: string; // This is optional for the EnterExpensePage component as it is not used there
   handleToastMessage: (messageInfo: ToastMessageOptions) => void;
   refetchData: () => void;
 }
 
 const ExpenseTable: React.FC<ExpenseTableProps> = ({
   data,
+  bucketname,
   handleToastMessage,
   refetchData,
 }) => {
@@ -46,6 +49,8 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({
   const handleRightClick = (event: MouseEvent, expense: MonthlyExpense) => {
     event.preventDefault();
     setSelectedExpense(expense);
+    // expense.expensable is available for toggling expensable state
+    console.log('expense selected:', expense);
     setContextMenu(
       contextMenu === null
         ? {
@@ -89,6 +94,8 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({
     }
   };
 
+  const bucketNameHomePage = bucketname || 'Default Bucket';
+
   const handleInputChange = (field: string, value: string | number) => {
     setEditedData((prev) => (prev ? { ...prev, [field]: value } : null));
   };
@@ -108,6 +115,9 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({
             <TableCell>Bucket Name</TableCell>
             <TableCell>Amount</TableCell>
             <TableCell>Description</TableCell>
+            {bucketNameHomePage === 'reimbursement' && (
+              <TableCell>Reimbursed State</TableCell>
+            )}
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -199,6 +209,19 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({
                   row.description
                 )}
               </TableCell>
+              {bucketNameHomePage === 'reimbursement' && (<TableCell>
+                {editMode[row.id] ? (
+                  <TextField
+                    value={editedData?.amount || ''}
+                    onChange={(e) =>
+                      handleInputChange('amount', e.target.value)
+                    }
+                  />
+                ) : (
+                  'update here'
+                )}
+              </TableCell>
+              )}
               <TableCell>
                 {editMode[row.id] ? (
                   <IconButton onClick={() => handleSaveClick(row.id)}>
