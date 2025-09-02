@@ -6,6 +6,7 @@ import {
   InsertExpenseType,
   InsertResponseId,
   MonthlyExpense,
+  MonthlyExpenseWithReimbursable,
   UpdateExpenseType,
 } from '../utils/types';
 import {
@@ -17,6 +18,7 @@ import {
   updateExpense,
   simpleSelect,
   getAccumulatedYearlyData,
+  getAllMonthlyReimbursedExpenseByMonth,
 } from '../utils/db-operation-helpers';
 import { calculateBucketExpenses } from '../utils/utils';
 
@@ -42,6 +44,17 @@ export const getAllMonthlyExpensesByMonth = async (
 ): Promise<MonthlyExpense[]> => {
   const rawMonthlyData: MonthlyExpense[] =
     await getAllMonthlyExpenseByMonth(month);
+
+  const reimbursedMonthlyData: MonthlyExpenseWithReimbursable[] = await getAllMonthlyReimbursedExpenseByMonth(
+    month,
+  );
+
+  reimbursedMonthlyData.forEach((expense) => {
+    expense.bucketname = 'reimbursement';
+  });
+
+  rawMonthlyData.push(...reimbursedMonthlyData);
+
   return rawMonthlyData;
 };
 

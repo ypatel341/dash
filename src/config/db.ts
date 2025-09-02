@@ -2,7 +2,10 @@ import knex, { Knex } from 'knex';
 import dotenv from 'dotenv';
 
 // Load environment-specific .env file
-const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
+const envFile =
+  process.env.NODE_ENV === 'production'
+    ? '.env.production'
+    : '.env.development';
 dotenv.config({ path: envFile });
 
 interface DatabaseConfig {
@@ -13,7 +16,9 @@ interface DatabaseConfig {
 const databaseConfig: DatabaseConfig = {
   development: {
     client: 'postgresql',
-    connection: process.env.DATABASE_URL || 'postgres://postgres:@localhost:5432/dash-test',
+    connection:
+      process.env.DATABASE_URL ||
+      'postgres://postgres:@localhost:5432/dash-test',
     pool: {
       min: 0,
       max: 5,
@@ -43,15 +48,18 @@ const databaseConfig: DatabaseConfig = {
   },
 };
 
-const environment = (process.env.NODE_ENV as keyof DatabaseConfig) || 'development';
+const environment =
+  (process.env.NODE_ENV as keyof DatabaseConfig) || 'development';
 const config = databaseConfig[environment];
 
 if (environment === 'production') {
   const requiredVars = ['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'];
-  const missingVars = requiredVars.filter(varName => !process.env[varName]);
-  
+  const missingVars = requiredVars.filter((varName) => !process.env[varName]);
+
   if (missingVars.length > 0) {
-    throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+    throw new Error(
+      `Missing required environment variables: ${missingVars.join(', ')}`,
+    );
   }
 }
 

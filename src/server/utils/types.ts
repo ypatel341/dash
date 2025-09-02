@@ -1,10 +1,12 @@
 // Request Body -> using interfaces
+// TODO: sort all of the types by usages
 export interface ExpenseRequestBody {
   person: string;
   bucketname: string;
   vendor: string;
   amount: number;
   expensable?: boolean;
+  reimbursement?: ReimbursableExpense;
   description?: string;
   date?: string;
 }
@@ -29,6 +31,12 @@ export type InsertExpenseType = {
   expensable?: boolean;
   description?: string;
   expensedate?: string;
+  reimbursement?: ReimbursableExpense;
+};
+
+export type ReimbursableExpense = {
+  company: string;
+  description: string;
 };
 
 export type UpdateExpenseType = {
@@ -50,6 +58,11 @@ export type MonthlyExpense = {
   amount: number;
   description: string;
   expensedate: string;
+};
+
+export type MonthlyExpenseWithReimbursable = MonthlyExpense & {
+  expensable: boolean;
+  reimbursement?: ReimbursableExpense;
 };
 
 export type MonthlyExpenseWithTimestamps = MonthlyExpense & {

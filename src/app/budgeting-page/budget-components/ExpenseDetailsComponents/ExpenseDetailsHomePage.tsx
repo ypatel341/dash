@@ -67,7 +67,8 @@ const ExpenseDetailsHomePage: React.FC = () => {
       <h1>Bucket Details Page {bucketname}</h1>
       {!loading && !error && bucketData && (
         <ExpenseTable
-          data={bucketData}
+          data={bucketData} //TODO: Do better here
+          bucketname={bucketname}
           handleToastMessage={handleToastMessage}
           refetchData={fetchBucketData}
         />

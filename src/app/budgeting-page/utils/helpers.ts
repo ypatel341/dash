@@ -25,6 +25,7 @@ export const transformBucketName = (bucketname: string): string => {
     yogi_activities: 'Activities',
     gifts: 'Gifts',
     savings_chase_2112: 'Savings',
+    reimbursement: 'Reimbursement',
   };
 
   return transformations[bucketname] || `Error transforming: ${bucketname}`;
@@ -35,6 +36,7 @@ export const transformCategoryName = (category: string): string => {
     needs: 'Needs',
     wants: 'Wants',
     savings: 'Savings',
+    reimbursement: 'Reimbursement',
   };
 
   return transformations[category] || `Error transforming: ${category}`;

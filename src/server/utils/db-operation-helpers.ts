@@ -6,9 +6,11 @@ import {
   InsertExpenseType,
   InsertResponseId,
   MonthlyExpense,
+  MonthlyExpenseWithReimbursable,
   UpdateExpenseType,
 } from './types';
 import { ErrorFetchingBudgetData, ErrorInsertingExpense } from './consts';
+import { validateReimbursableExpense } from './utils';
 
 export const getAllBudgetData = async (): Promise<BudgetType[]> => {
   try {
@@ -41,12 +43,19 @@ export const insertExpense = async (
   }
 
   if (expense.expensable) {
+    const { reimbursement } = expense;
+
+    const validatedReimbursement =
+      await validateReimbursableExpense(reimbursement);
+
+    const { company, description } = validatedReimbursement;
+
     const expensableResult = await db('reimbursable_expenses')
       .insert({
         expensable_id: db.raw('gen_random_uuid()'),
-        company: 'test company',
-        reimbursable: true,
-        description: 'some description',
+        company: company,
+        reimbursed: false,
+        description,
       })
       .returning('expensable_id');
 
@@ -84,6 +93,7 @@ export const getAllMonthlyExpense = async (): Promise<MonthlyExpense[]> => {
         db.raw("date_trunc('month', CURRENT_DATE) + INTERVAL '1 month'"),
       )
       .whereNull('deletedat')
+      .whereNull('expensable')
       .orderBy('expensedate', 'desc');
 
     logger.info(`Fetching all monthly expenses ${result}`);
@@ -112,6 +122,7 @@ export const getAllMonthlyExpenseByMonth = async (
         db.raw("?::date + INTERVAL '1 month'", [yearMonthDay]),
       )
       .whereNull('deletedat')
+      .whereNull('expensable')
       .orderBy('expensedate', 'desc');
 
     logger.info(
@@ -124,6 +135,45 @@ export const getAllMonthlyExpenseByMonth = async (
     throw error;
   }
 };
+
+export const getAllMonthlyReimbursedExpenseByMonth = async (
+  yearMonth: string,
+): Promise<MonthlyExpenseWithReimbursable[]> => {
+  try {
+    const yearMonthDay = `${yearMonth}-01`;
+
+    logger.info(`Fetching reimbursed expenses for the month: ${yearMonthDay}`);
+
+    const result: MonthlyExpenseWithReimbursable[] = await db('budget_monthly_expenses')
+      .select(
+        'budget_monthly_expenses.*',
+        'reimbursable_expenses.company',
+        'reimbursable_expenses.description as reimbursementDescription',
+      )
+      .join(
+        'reimbursable_expenses',
+        'budget_monthly_expenses.expensable',
+        'reimbursable_expenses.expensable_id',
+      )
+      .where('expensedate', '>=', db.raw('?', [yearMonthDay]))
+      .where(
+        'expensedate',
+        '<',
+        db.raw("?::date + INTERVAL '1 month'", [yearMonthDay]),
+      )
+      .whereNull('deletedat')
+      .orderBy('expensedate', 'desc');
+
+    logger.info(
+      `Fetched ${result.length} reimbursed monthly expenses for month: ${yearMonth}`,
+    );
+
+    return result;
+  } catch (error) {
+    logger.error(`${ErrorFetchingBudgetData}: ${error}`);
+    throw error;
+  }
+}
 
 export const deleteExpense = async (id: string): Promise<void> => {
   try {
@@ -145,7 +195,6 @@ export const updateExpense = async (
 
   try {
     await db('budget_monthly_expenses').where({ id: id }).update(updateExpense);
-
     logger.info(`Updated expense with id ${updateExpense.id}`);
   } catch (error) {
     logger.error(`${ErrorInsertingExpense} ${error}`);
@@ -180,6 +229,7 @@ export const getAccumulatedYearlyData = async (
         db.raw(`DATE '${month}-01' + INTERVAL '1 month'`),
       )
       .whereNull('deletedat')
+      .whereNull('expensable')
       .groupBy('bucketname');
 
     logger.info(`Fetched accumulated yearly data for month: ${month}`);
