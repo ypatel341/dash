@@ -6,7 +6,7 @@ require('dotenv').config(); // This will work with dotenv-cli
 module.exports = {
   development: {
     client: 'postgresql',
-    connection: 'postgres://postgres:@localhost:5432/dash-test', // TODO: remove hardcoded
+    connection: process.env.DATABASE_URL || 'postgres://postgres:@localhost:5432/dash-test',
     pool: {
       min: 0, // Minimum number of connections
       max: 5, // Maximum number of connections
