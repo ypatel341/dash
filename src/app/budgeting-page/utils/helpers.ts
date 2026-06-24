@@ -100,6 +100,8 @@ export const calculateSurplus = async (budgetData: BudgetData[]) => {
     (acc, item) => acc + item.currentamount,
     0,
   );
+
+  // each bucket's amount is the budgeted amount for that bucket, so we can sum them up to get the total budgeted amount for the month
   const monthlyTotalBudget = budgetData.reduce(
     (acc, item) => acc + item.amount,
     0,

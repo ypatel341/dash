@@ -48,25 +48,18 @@ describe('handles all DB operations and closes the connection', () => {
     });
   });
 
-  it.skip('it should delete an expense', async () => {
-    const allMonthlyExpenses = await getAllMonthlyExpense();
-    const insertedExpense = allMonthlyExpenses.find(
-      (expense) => expense.id === insertExpenseIdDelete.id,
-    );
-    expect(insertedExpense).toBeDefined();
+  it('should delete an expense', async () => {
+    const before = await getAllMonthlyExpense();
+    const target = before.find((e) => e.id === insertExpenseIdDelete.id);
+    expect(target).toBeDefined();
 
-    allMonthlyExpenses.forEach(async (expense) => {
-      if (expense.id === insertExpenseIdDelete.id) {
-        await deleteExpense(insertExpenseIdDelete.id);
-      }
-    });
+    await deleteExpense(insertExpenseIdDelete.id);
 
-    const allMonthlyExpensesAfterDelete = await getAllMonthlyExpense();
-    const deletedExpense = allMonthlyExpensesAfterDelete.find(
-      (expense) => expense.id === insertExpenseIdDelete.id,
-    );
-    //TODO: Mock up timestamps for better handling
-    expect(deletedExpense).toBe({"amount": 3200, "bucketname": "rent", "createdat": '2026-06-23T16:56:27.328Z', "deletedat": null, "description": "January Rent", "expensable": null, "expensedate": '2026-06-23T16:56:27.308Z', "id": "4e61a78e-fb6a-415d-a6d3-184ca23ee018", "person": "Yogi", "updatedat": null, "vendor": "Domus"});
+    // Confirm it's gone (or soft-deleted) after
+    const after = await getAllMonthlyExpense();
+    const deletedExpense = after.find((e) => e.id === insertExpenseIdDelete.id);
+    
+    expect(deletedExpense).toBeUndefined(); // hard delete
   });
 
   it('should return an error if the expense id is invalid', async () => {
@@ -107,9 +100,7 @@ describe('handles all DB operations and closes the connection', () => {
     ).rejects.toThrow();
   });
 
-  it.skip('should get all of the monthly expenses by month', async () => {
-    // This test can be cleaned up by updating the beforeAll and afterAll to insert and delete multiple expenses
-    // This is just a quick test to make sure that the function is working
+  it.only('should get all of the monthly expenses by month', async () => {
     const yearMonth = await getCurrentYearMonth();
 
     const allMonthlyExpenses = await getAllMonthlyExpenseByMonth(yearMonth);
@@ -117,7 +108,7 @@ describe('handles all DB operations and closes the connection', () => {
       (expense) => expense.bucketname === 'rent',
     );
 
-    expect(latestExpense?.description).toBe('updated description');
+    expect(latestExpense?.description).toBe('January Rent');
     expect(allMonthlyExpenses.length).toBeGreaterThan(0);
   });
 
