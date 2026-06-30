@@ -12,7 +12,7 @@ exports.up = function (knex) {
         table.uuid('id').notNullable().primary();
         table.string('user_role');
         table.timestamp('created_at').defaultTo(knex.fn.now());
-        table.timestamp('updated_at').nullable.defaultTo(knex.fn.now());
+        table.timestamp('updated_at').nullable().defaultTo(knex.fn.now());
         table.timestamp('deleted_at').nullable();
       })
       .createTable('user', function (table) {
