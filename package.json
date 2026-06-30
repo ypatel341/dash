@@ -41,7 +41,7 @@
   "scripts": {
     "analyze": "webpack --profile --json > stats.json && webpack-bundle-analyzer stats.json",
     "build": "webpack --config webpack.config.js",
-    "migrate:prod": "dotenv -e .env.production npx knex migrate:latest --env production",
+    "migrate:prod": "npx knex migrate:latest --env production",
     "migrate:dev": "dotenv -e .env.development npx knex migrate:latest --env development",
     "rollback:prod": "npx knex migrate:rollback --env production",
     "rollback:dev": "npx knex migrate:rollback --env development",

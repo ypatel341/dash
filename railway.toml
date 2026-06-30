@@ -1,0 +1,6 @@
+[build]
+buildCommand = "npm install && npm run build-frontend && npm run build-backend"
+
+[deploy]
+startCommand = "npm run migrate:prod && node dist/server/index.js"
+healthcheckPath = "/health"

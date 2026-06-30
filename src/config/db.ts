@@ -30,11 +30,7 @@ const databaseConfig: DatabaseConfig = {
   production: {
     client: 'postgresql',
     connection: {
-      host: process.env.DB_HOST!,
-      database: process.env.DB_NAME!,
-      user: process.env.DB_USER!,
-      password: process.env.DB_PASSWORD!,
-      port: parseInt(process.env.DB_PORT || '5432'),
+      connectionString: process.env.DATABASE_URL,
       ssl: {
         rejectUnauthorized: false,
       },
@@ -52,15 +48,8 @@ const environment =
   (process.env.NODE_ENV as keyof DatabaseConfig) || 'development';
 const config = databaseConfig[environment];
 
-if (environment === 'production') {
-  const requiredVars = ['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'];
-  const missingVars = requiredVars.filter((varName) => !process.env[varName]);
-
-  if (missingVars.length > 0) {
-    throw new Error(
-      `Missing required environment variables: ${missingVars.join(', ')}`,
-    );
-  }
+if (environment === 'production' && !process.env.DATABASE_URL) {
+  throw new Error('Missing required environment variable: DATABASE_URL');
 }
 
 const db = knex(config);
