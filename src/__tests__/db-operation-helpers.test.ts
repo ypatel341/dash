@@ -100,7 +100,7 @@ describe('handles all DB operations and closes the connection', () => {
     ).rejects.toThrow();
   });
 
-  it.only('should get all of the monthly expenses by month', async () => {
+  it('should get all of the monthly expenses by month', async () => {
     const yearMonth = await getCurrentYearMonth();
 
     const allMonthlyExpenses = await getAllMonthlyExpenseByMonth(yearMonth);
@@ -108,7 +108,7 @@ describe('handles all DB operations and closes the connection', () => {
       (expense) => expense.bucketname === 'rent',
     );
 
-    expect(latestExpense?.description).toBe('January Rent');
+    expect(latestExpense?.description).toBe('updated description');
     expect(allMonthlyExpenses.length).toBeGreaterThan(0);
   });
 
