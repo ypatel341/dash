@@ -1,5 +1,5 @@
 [build]
-buildCommand = "npm install && npm run build-frontend && npx tsc"
+buildCommand = "npm install && npm run build && npx tsc"
 
 [deploy]
 startCommand = "npm run migrate:prod && node dist/server/index.js"
