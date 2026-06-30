@@ -35,3 +35,7 @@ package-lock.json
 
 # Claude
 .claude/
+
+*.dump
+*.sql
+/dbdump/
