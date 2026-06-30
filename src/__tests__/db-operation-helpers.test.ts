@@ -48,24 +48,18 @@ describe('handles all DB operations and closes the connection', () => {
     });
   });
 
-  it('it should delete an expense', async () => {
-    const allMonthlyExpenses = await getAllMonthlyExpense();
-    const insertedExpense = allMonthlyExpenses.find(
-      (expense) => expense.id === insertExpenseIdDelete.id,
-    );
-    expect(insertedExpense).toBeDefined();
+  it('should delete an expense', async () => {
+    const before = await getAllMonthlyExpense();
+    const target = before.find((e) => e.id === insertExpenseIdDelete.id);
+    expect(target).toBeDefined();
 
-    allMonthlyExpenses.forEach(async (expense) => {
-      if (expense.id === insertExpenseIdDelete.id) {
-        await deleteExpense(insertExpenseIdDelete.id);
-      }
-    });
+    await deleteExpense(insertExpenseIdDelete.id);
 
-    const allMonthlyExpensesAfterDelete = await getAllMonthlyExpense();
-    const deletedExpense = allMonthlyExpensesAfterDelete.find(
-      (expense) => expense.id === insertExpenseIdDelete.id,
-    );
-    expect(deletedExpense).toBeUndefined();
+    // Confirm it's gone (or soft-deleted) after
+    const after = await getAllMonthlyExpense();
+    const deletedExpense = after.find((e) => e.id === insertExpenseIdDelete.id);
+    
+    expect(deletedExpense).toBeUndefined(); // hard delete
   });
 
   it('should return an error if the expense id is invalid', async () => {
@@ -107,8 +101,6 @@ describe('handles all DB operations and closes the connection', () => {
   });
 
   it('should get all of the monthly expenses by month', async () => {
-    // This test can be cleaned up by updating the beforeAll and afterAll to insert and delete multiple expenses
-    // This is just a quick test to make sure that the function is working
     const yearMonth = await getCurrentYearMonth();
 
     const allMonthlyExpenses = await getAllMonthlyExpenseByMonth(yearMonth);
