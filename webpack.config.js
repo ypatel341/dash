@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 // const CompressionPlugin = require('compression-webpack-plugin')
@@ -51,6 +52,9 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './public/index.html',
       minify: { collapseWhitespace: true },
+    }),
+    new webpack.DefinePlugin({
+      'process.env.REACT_APP_API_URL': JSON.stringify(process.env.REACT_APP_API_URL || ''),
     }),
     // new BundleAnalyzerPlugin(),
   ],
