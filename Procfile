@@ -1,1 +1,1 @@
-web: npm run start-all-prod
+web: npm run migrate:prod && node dist/server/index.js
