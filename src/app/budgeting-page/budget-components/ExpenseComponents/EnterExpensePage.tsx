@@ -201,8 +201,8 @@ export const EnterExpensePage: React.FC = () => {
       const formattedData = await formatMonthlyExpensesExpenseDate(data);
 
       setData(formattedData);
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : String(error));
     } finally {
       setLoading(false);
     }
