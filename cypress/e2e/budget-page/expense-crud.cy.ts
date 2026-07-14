@@ -33,8 +33,10 @@ describe('Expense CRUD (real backend + database)', () => {
         },
       );
 
+      cy.intercept('GET', '**/budget/info/allmonthexpense').as('getExpenses');
+
       cy.reload();
+      cy.wait('@getExpenses');
       cy.get('[id="expense-table"]').should('not.contain', vendor);
-    });
   });
 });
