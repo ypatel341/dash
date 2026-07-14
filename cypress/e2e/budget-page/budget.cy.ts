@@ -6,6 +6,6 @@ describe('Navigation', () => {
     cy.url().should('include', '/budget');
 
     cy.contains('[id="budget-card"]', 'Date Night').click();
-    cy.url().should('include', '/budget/details/date_night');
+    cy.url().should('match', /\/budget\/details\/\d{4}-\d{2}\/date_night$/);
   });
 });
