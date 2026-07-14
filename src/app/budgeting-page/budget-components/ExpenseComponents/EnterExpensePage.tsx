@@ -171,7 +171,7 @@ export const EnterExpensePage: React.FC = () => {
       data,
     );
     const toastMessageSeverity: ToastMessageOptions = {
-      message: `en.expense.successMessage ${response.data.id}`,
+      message: `${en.expense.successMessage} ${response.data.id}`,
       severity: 'success',
     };
 

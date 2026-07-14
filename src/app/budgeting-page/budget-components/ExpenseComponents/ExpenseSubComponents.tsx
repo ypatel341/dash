@@ -69,7 +69,7 @@ type TypeFieldProps = {
 export const TypeField: React.FC<TypeFieldProps> = ({ type, onChange }) => (
   <FormControl variant="outlined" fullWidth>
     <InputLabel>Type</InputLabel>
-    <Select value={type} onChange={onChange} label="Type">
+    <Select id="type-field" value={type} onChange={onChange} label="Type">
       {expenseTypeOptions.map((option) => (
         <MenuItem key={option} value={option}>
           {transformBucketName(option)}
