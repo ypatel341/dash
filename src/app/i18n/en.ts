@@ -25,6 +25,10 @@ const en = {
   errors: {
     unknownError: 'An unknown error occurred',
   },
+  wordOfTheDay: {
+    loading: 'Loading word of the day...',
+    prefix: 'word of the day',
+  },
 };
 
 export default en;

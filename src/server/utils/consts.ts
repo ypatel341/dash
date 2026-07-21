@@ -1,6 +1,8 @@
 // Error messages
 export const ErrorFetchingBudgetData = 'Error fetching budget data';
 export const ErrorInsertingExpense = 'Error inserting expense';
+export const ErrorFetchingDailyWord = 'Error fetching daily word';
+export const ErrorInsertingDailyWord = 'Error inserting daily word';
 
 // PDF generation constants
 export const monthlyBudgetReportCSS = 'monthlyReportStyleSheet.css';

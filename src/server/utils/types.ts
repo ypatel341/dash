@@ -121,3 +121,62 @@ export type GenerateReportInput = {
   aggregateYearlyData: CurrentYearlyAccumulatedData[];
   YYYYMM: string;
 };
+
+// Wordnik "word of the day" API response shape
+export type WordnikDefinition = {
+  text: string;
+  partOfSpeech: string | null;
+  source: string | null;
+  note: string | null;
+};
+
+export type WordnikExample = {
+  id?: number;
+  url: string | null;
+  text: string;
+  title: string | null;
+};
+
+export type WordnikWordOfTheDayResponse = {
+  _id: string;
+  word: string;
+  publishDate: string;
+  contentProvider: {
+    name: string;
+    id: number;
+  };
+  note: string | null;
+  htmlExtra: string | null;
+  pdd: string;
+  definitions: WordnikDefinition[];
+  examples: WordnikExample[];
+};
+
+export type DailyWordDefinition = {
+  definition: string;
+  partOfSpeech: string | null;
+  source: string | null;
+  note: string | null;
+  displayOrder: number;
+};
+
+export type DailyWordExample = {
+  exampleText: string;
+  title: string | null;
+  sourceUrl: string | null;
+  displayOrder: number;
+};
+
+export type DailyWord = {
+  id: string;
+  wordnikId: string;
+  word: string;
+  displayDate: string;
+  publishDate: string;
+  providerName: string;
+  providerId: number | null;
+  note: string | null;
+  htmlExtra: string | null;
+  definitions: DailyWordDefinition[];
+  examples: DailyWordExample[];
+};

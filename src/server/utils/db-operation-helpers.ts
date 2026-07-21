@@ -1,15 +1,23 @@
+import dayjs from 'dayjs';
 import db from '../../config/db';
 import logger from './logger';
 import {
   BudgetType,
   CurrentYearlyAccumulatedData,
+  DailyWord,
   InsertExpenseType,
   InsertResponseId,
   MonthlyExpense,
   MonthlyExpenseWithReimbursable,
   UpdateExpenseType,
+  WordnikWordOfTheDayResponse,
 } from './types';
-import { ErrorFetchingBudgetData, ErrorInsertingExpense } from './consts';
+import {
+  ErrorFetchingBudgetData,
+  ErrorFetchingDailyWord,
+  ErrorInsertingDailyWord,
+  ErrorInsertingExpense,
+} from './consts';
 import { validateReimbursableExpense } from './utils';
 
 export const getAllBudgetData = async (): Promise<BudgetType[]> => {
@@ -212,6 +220,127 @@ export const simpleSelect = async (): Promise<boolean> => {
     throw error;
   }
 };
+
+export const getDailyWordByDisplayDate = async (
+  displayDate: string,
+): Promise<DailyWord | undefined> => {
+  try {
+    const wordRow = await db('daily_words')
+      .select('*')
+      .where('display_date', displayDate)
+      .first();
+
+    if (!wordRow) {
+      return undefined;
+    }
+
+    const [definitionRows, exampleRows] = await Promise.all([
+      db('daily_word_definitions')
+        .select('*')
+        .where('daily_word_id', wordRow.id)
+        .orderBy('display_order', 'asc'),
+      db('daily_word_examples')
+        .select('*')
+        .where('daily_word_id', wordRow.id)
+        .orderBy('display_order', 'asc'),
+    ]);
+
+    return formatDailyWordRow(wordRow, definitionRows, exampleRows);
+  } catch (error) {
+    logger.error(`${ErrorFetchingDailyWord}: ${error}`);
+    throw error;
+  }
+};
+
+export const insertDailyWord = async (
+  payload: WordnikWordOfTheDayResponse,
+  displayDate: string,
+): Promise<DailyWord> => {
+  try {
+    return await db.transaction(async (trx) => {
+      const [wordRow] = await trx('daily_words')
+        .insert({
+          wordnik_id: payload._id,
+          word: payload.word,
+          display_date: displayDate,
+          publish_date: payload.publishDate,
+          provider_name: payload.contentProvider?.name,
+          provider_id: payload.contentProvider?.id ?? null,
+          note: payload.note ?? null,
+          html_extra: payload.htmlExtra ?? null,
+          raw_payload: JSON.stringify(payload),
+        })
+        .returning('*');
+
+      const definitionRows = payload.definitions?.length
+        ? await trx('daily_word_definitions')
+            .insert(
+              payload.definitions.map((definition, index) => ({
+                daily_word_id: wordRow.id,
+                definition: definition.text,
+                part_of_speech: definition.partOfSpeech ?? null,
+                source: definition.source ?? null,
+                note: definition.note ?? null,
+                display_order: index,
+              })),
+            )
+            .returning('*')
+        : [];
+
+      const exampleRows = payload.examples?.length
+        ? await trx('daily_word_examples')
+            .insert(
+              payload.examples.map((example, index) => ({
+                daily_word_id: wordRow.id,
+                wordnik_example_id: example.id ?? null,
+                example_text: example.text,
+                title: example.title ?? null,
+                source_url: example.url ?? null,
+                display_order: index,
+              })),
+            )
+            .returning('*')
+        : [];
+
+      logger.info(`Inserted daily word ${wordRow.word} for ${displayDate}`);
+
+      return formatDailyWordRow(wordRow, definitionRows, exampleRows);
+    });
+  } catch (error) {
+    logger.error(`${ErrorInsertingDailyWord}: ${error}`);
+    throw error;
+  }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const formatDailyWordRow = (
+  wordRow: any,
+  definitionRows: any[],
+  exampleRows: any[],
+): DailyWord => ({
+  id: wordRow.id,
+  wordnikId: wordRow.wordnik_id,
+  word: wordRow.word,
+  displayDate: dayjs(wordRow.display_date).format('YYYY-MM-DD'),
+  publishDate: dayjs(wordRow.publish_date).toISOString(),
+  providerName: wordRow.provider_name,
+  providerId: wordRow.provider_id,
+  note: wordRow.note,
+  htmlExtra: wordRow.html_extra,
+  definitions: definitionRows.map((row) => ({
+    definition: row.definition,
+    partOfSpeech: row.part_of_speech,
+    source: row.source,
+    note: row.note,
+    displayOrder: row.display_order,
+  })),
+  examples: exampleRows.map((row) => ({
+    exampleText: row.example_text,
+    title: row.title,
+    sourceUrl: row.source_url,
+    displayOrder: row.display_order,
+  })),
+});
 
 export const getAccumulatedYearlyData = async (
   month: string,
