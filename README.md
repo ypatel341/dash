@@ -33,7 +33,7 @@ Several opportunities lie ahead once I get these 3 things up and going. I think 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 Designed to be a monolithic App with the front-end running on port 3000 and the backend running on 5000
-Database is a Postgres DB (currently a production DB is being hosted on heroku)
+Database is a Postgres DB (currently a production DB is being hosted on Railway)
 
 ## Future Proof
 
