@@ -20,7 +20,7 @@ const AppNavBar: React.FC = () => {
     <AppBar position="static">
       <Toolbar>
         <img
-          src={`${process.env.PUBLIC_URL}/logo192.png`}
+          src="/logo192.png"
           alt=""
           width={32}
           height={32}
