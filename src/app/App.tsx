@@ -11,6 +11,7 @@ import BudgetOutlet from './budgeting-page/shared-budget-components/Outlets';
 
 import './App.css';
 import ExpenseDetailsHomePage from './budgeting-page/budget-components/ExpenseDetailsComponents/ExpenseDetailsHomePage';
+import WordOfTheDay from './WordOfTheDay';
 
 function App() {
   return (
@@ -21,9 +22,7 @@ function App() {
             path="/"
             element={
               <header className="App-header">
-                <p>
-                  Edit <code>src/App.tsx</code> and save to reload.
-                </p>
+                <WordOfTheDay />
                 <Button
                   variant="contained"
                   color="primary"
