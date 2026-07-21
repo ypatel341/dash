@@ -4,7 +4,7 @@ export interface WordOfTheDayDetails {
   displayDate?: string;
   note: string | null;
   definitions: Definition[];
-  examples: Examples[];
+  examples: Example[];
 }
 
 type Definition = {
@@ -15,9 +15,9 @@ type Definition = {
   displayOrder: number;
 };
 
-type Examples = {
+type Example = {
   exampleText: string;
-  title: string;
-  sourceUrl: string;
+  title: string | null;
+  sourceUrl: string | null;
   displayOrder: number;
 };

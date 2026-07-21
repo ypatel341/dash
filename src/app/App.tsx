@@ -1,5 +1,4 @@
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import Button from '@mui/material/Button';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import BudgetHomePage from './budgeting-page/BudgetHomePage';
 import HomePage from './home-page/HomePage';
 import TasksHomePage from './tasks-page/TasksHomePage';
@@ -8,6 +7,7 @@ import { MoneyInMonthPage } from './budgeting-page/budget-components/MoneyInMont
 import { NetWorthPage } from './budgeting-page/budget-components/NetWorthPage';
 
 import BudgetOutlet from './budgeting-page/shared-budget-components/Outlets';
+import AppNavBar from './customizations/AppNavBar';
 
 import './App.css';
 import ExpenseDetailsHomePage from './budgeting-page/budget-components/ExpenseDetailsComponents/ExpenseDetailsHomePage';
@@ -16,40 +16,10 @@ import WordOfTheDay from './home-page/components/WordOfTheDay';
 function App() {
   return (
     <Router>
+      <AppNavBar />
       <div className="App">
         <Routes>
-          <Route
-            path="/"
-            element={
-              <header className="App-header">
-                <WordOfTheDay />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  component={Link}
-                  to="/budget"
-                >
-                  Budget
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  component={Link}
-                  to="/home"
-                >
-                  Home
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  component={Link}
-                  to="/tasks"
-                >
-                  Tasks
-                </Button>
-              </header>
-            }
-          />
+          <Route path="/" element={<WordOfTheDay />} />
           <Route path="/budget" element={<BudgetOutlet />}>
             <Route index element={<BudgetHomePage />} />
             <Route path="net-worth" element={<NetWorthPage />} />
