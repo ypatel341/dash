@@ -11,7 +11,7 @@ import BudgetOutlet from './budgeting-page/shared-budget-components/Outlets';
 
 import './App.css';
 import ExpenseDetailsHomePage from './budgeting-page/budget-components/ExpenseDetailsComponents/ExpenseDetailsHomePage';
-import WordOfTheDay from './WordOfTheDay';
+import WordOfTheDay from './home-page/components/WordOfTheDay';
 
 function App() {
   return (
