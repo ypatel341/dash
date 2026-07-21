@@ -93,4 +93,31 @@ describe('getWordOfTheDayService', () => {
     );
     expect(insertDailyWord).not.toHaveBeenCalled();
   });
+
+  it('should read back the winning word if another request inserted it first', async () => {
+    (getDailyWordByDisplayDate as jest.Mock)
+      .mockResolvedValueOnce(undefined) // initial cache check: nothing yet
+      .mockResolvedValueOnce(cachedWord); // re-read after the insert race
+    (fetchWordOfTheDay as jest.Mock).mockResolvedValue(wordnikResponse);
+    (insertDailyWord as jest.Mock).mockRejectedValue(
+      new Error('duplicate key value violates unique constraint'),
+    );
+
+    const result = await getWordOfTheDayService();
+
+    expect(getDailyWordByDisplayDate).toHaveBeenCalledTimes(2);
+    expect(result).toEqual(cachedWord);
+  });
+
+  it('should propagate the insert error if the retry read-back also finds nothing', async () => {
+    (getDailyWordByDisplayDate as jest.Mock).mockResolvedValue(undefined);
+    (fetchWordOfTheDay as jest.Mock).mockResolvedValue(wordnikResponse);
+    (insertDailyWord as jest.Mock).mockRejectedValue(
+      new Error('connection terminated'),
+    );
+
+    await expect(getWordOfTheDayService()).rejects.toThrow(
+      'connection terminated',
+    );
+  });
 });

@@ -27,7 +27,12 @@ const en = {
   },
   wordOfTheDay: {
     loading: 'Loading word of the day...',
-    prefix: 'word of the day',
+    prefix: 'Word of the day',
+    note: 'Note',
+    showDefinitions: 'Show Definitions',
+    hideDefinitions: 'Hide Definitions',
+    showExamples: 'Show Examples',
+    hideExamples: 'Hide Examples',
   },
 };
 
