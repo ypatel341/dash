@@ -13,7 +13,8 @@ if [[ -z "${RAILWAY_DATABASE_PUBLIC_URL:-}" ]]; then
 fi
 
 CURRENT_DATE=$(date +"%m%d%Y")
-DUMP_PATH="./dbdump/prod-snapshot-$CURRENT_DATE.dump"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DUMP_PATH="$SCRIPT_DIR/prod-snapshot-$CURRENT_DATE.dump"
 
 echo "Capturing a new backup to $DUMP_PATH"
 pg_dump \
