@@ -268,7 +268,7 @@ export const insertDailyWord = async (
           provider_id: payload.contentProvider?.id ?? null,
           note: payload.note ?? null,
           html_extra: payload.htmlExtra ?? null,
-          raw_payload: JSON.stringify(payload),
+          raw_payload: payload,
         })
         .returning('*');
 

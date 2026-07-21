@@ -16,5 +16,14 @@ export const getWordOfTheDayService = async (): Promise<DailyWord> => {
 
   const wordnikResponse = await fetchWordOfTheDay();
 
-  return await insertDailyWord(wordnikResponse, today);
+  try {
+    return await insertDailyWord(wordnikResponse, today);
+  } catch (error) {
+    // If another request inserted today's word concurrently, read it back instead of failing.
+    const wordAfterInsertRace = await getDailyWordByDisplayDate(today);
+    if (wordAfterInsertRace) {
+      return wordAfterInsertRace;
+    }
+    throw error;
+  }
 };
