@@ -35,16 +35,25 @@ const AppNavBar: React.FC = () => {
           {en.nav.appName}
         </Typography>
         <IconButton
+          id="app-nav-menu-button"
           size="large"
           edge="end"
           color="inherit"
           aria-label={en.nav.openMenu}
+          aria-controls={anchorEl ? 'app-nav-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={Boolean(anchorEl)}
           onClick={(event) => setAnchorEl(event.currentTarget)}
         >
           <MenuIcon />
         </IconButton>
-        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
-          {NAV_LINKS.map((link) => (
+        <Menu
+          id="app-nav-menu"
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleCloseMenu}
+          MenuListProps={{ 'aria-labelledby': 'app-nav-menu-button' }}
+        >
             <MenuItem
               key={link.to}
               component={Link}
