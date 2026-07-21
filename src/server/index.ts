@@ -17,6 +17,19 @@ const port = process.env.PORT || 5000;
 let app: express.Application;
 let server: any;
 
+const healthCheckHandler = async (
+  _req: express.Request,
+  res: express.Response,
+) => {
+  try {
+    await db.raw('select 1');
+    res.status(200).json({ status: 'ok', uptime: process.uptime() });
+  } catch (error) {
+    logger.error(`Health check failed: ${error}`);
+    res.status(503).json({ status: 'error', uptime: process.uptime() });
+  }
+};
+
 // Disable clustering in test environment
 if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
   app = express();
@@ -31,6 +44,9 @@ if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
 
   // Enable URL-encoded body parsing
   app.use('/budget', budgetRoutes);
+
+  // Health check for uptime monitoring
+  app.get('/health', healthCheckHandler);
 
   // Serve static files from the dist folder
   app.use(express.static(path.join(__dirname, '../../dist')));
@@ -70,6 +86,9 @@ if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
 
   // Enable URL-encoded body parsing
   app.use('/budget', budgetRoutes);
+
+  // Health check for uptime monitoring
+  app.get('/health', healthCheckHandler);
 
   // Serve static files from the dist folder
   app.use(express.static(path.join(__dirname, '../../dist')));

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this project is
 
-DASH (Decentralized Automation System for Home) is a personal life-management monolith with three pillars: **Budget**, **Tasks**, and **Home**. It's a React + Express TypeScript app — frontend on port 3000, backend API on port 5000, backed by PostgreSQL via Knex.
+DASH (Decentralized Automation System for Home) is a personal life-management monolith with three pillars: **Budget**, **Tasks**, and **Home**. It's a React + Express TypeScript app — frontend on port 3000, backend API on port 5000, backed by PostgreSQL via Knex. Production is currently hosted on Railway.
 
 ## First-time setup (new machine)
 
@@ -15,7 +15,7 @@ DASH (Decentralized Automation System for Home) is a personal life-management mo
    ```
    `DATABASE_URL` is used by both the backend (`src/config/db.ts`) and Knex migrations (`knexfile.js`). `REACT_APP_API_URL` is the backend base URL used by all frontend API calls.
 
-2. **Restore the database** from the latest dump in `dbdump/`. The dumps come from Heroku PostgreSQL 15, so you need `postgresql-client-15` or newer — the system `pg_restore` may be too old:
+2. **Restore the database** from the latest dump in `dbdump/`. The dumps come from the production PostgreSQL 15 database (hosted on Railway), so you need `postgresql-client-15` or newer — the system `pg_restore` may be too old:
    ```bash
    # Install if needed (Ubuntu — add pgdg repo first if apt can't find it)
    sudo apt-get install -y postgresql-client-15
@@ -92,7 +92,7 @@ Layer pattern: `routes/ → controllers/ → services/ → db-operation-helpers.
 - `budgetService.ts` — business logic
 - `db-operation-helpers.ts` — raw Knex queries
 
-In dev/test `NODE_ENV`, clustering is disabled (single process). In production, the server forks workers based on `HEROKU_AVAILABLE_PARALLELISM` / `WEB_CONCURRENCY`.
+In dev/test `NODE_ENV`, clustering is disabled (single process). In production, the server forks workers based on `HEROKU_AVAILABLE_PARALLELISM` / `WEB_CONCURRENCY` — `HEROKU_AVAILABLE_PARALLELISM` is a legacy fallback from a prior Heroku deployment; Railway doesn't set it, so this falls through to `WEB_CONCURRENCY` (or a single worker if neither is set).
 
 ### Database (`src/config/db.ts`, `db/migrations/`)
 

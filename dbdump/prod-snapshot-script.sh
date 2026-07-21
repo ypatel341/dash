@@ -1,21 +1,27 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Get the current date in MMDDYYYY format
+# Usage:
+#   export RAILWAY_DATABASE_PUBLIC_URL='postgresql://postgres:<password>@<proxy>.proxy.rlwy.net:<port>/railway'
+#   ./dbdump/prod-snapshot-script.sh
+
+if [[ -z "${RAILWAY_DATABASE_PUBLIC_URL:-}" ]]; then
+  echo "Missing RAILWAY_DATABASE_PUBLIC_URL env var."
+  echo "Example:"
+  echo "  export RAILWAY_DATABASE_PUBLIC_URL='postgresql://postgres:<password>@<proxy>.proxy.rlwy.net:<port>/railway'"
+  exit 1
+fi
+
 CURRENT_DATE=$(date +"%m%d%Y")
-# Set the Heroku app name and the path to save the dump
-HEROKU_APP_NAME="dash-production-app"
-DUMP_PATH="./dbdump/prod-snapshot-$CURRENT_DATE.dump"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DUMP_PATH="$SCRIPT_DIR/prod-snapshot-$CURRENT_DATE.dump"
 
-# Capture a new backup
-echo "Capturing a new backup for Heroku app: $HEROKU_APP_NAME"
-heroku pg:backups:capture --app $HEROKU_APP_NAME
+echo "Capturing a new backup to $DUMP_PATH"
+pg_dump \
+  --format=custom \
+  --no-owner \
+  --no-acl \
+  --file "$DUMP_PATH" \
+  "$RAILWAY_DATABASE_PUBLIC_URL"
 
-# Get the latest backup URL
-echo "Getting the latest backup URL"
-BACKUP_URL=$(heroku pg:backups:url --app $HEROKU_APP_NAME)
-
-# Download the backup
-echo "Downloading the backup to $DUMP_PATH"
-curl -o $DUMP_PATH $BACKUP_URL
-
-echo "Backup downloaded successfully to $DUMP_PATH"
+echo "Backup captured successfully to $DUMP_PATH"
