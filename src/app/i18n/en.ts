@@ -1,6 +1,13 @@
 import { formattedDate } from '../budgeting-page/utils/helpers';
 
 const en = {
+  nav: {
+    appName: 'DASH',
+    openMenu: 'Open navigation menu',
+    budget: 'Budget',
+    home: 'Home',
+    tasks: 'Tasks',
+  },
   budgetHomePage: {
     header: 'Budget Home Page',
     resetMonth: 'Reset Month',

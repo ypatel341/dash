@@ -110,7 +110,9 @@ describe('getWordOfTheDayService', () => {
   });
 
   it('should propagate the insert error if the retry read-back also finds nothing', async () => {
-    (getDailyWordByDisplayDate as jest.Mock).mockResolvedValue(undefined);
+    (getDailyWordByDisplayDate as jest.Mock)
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
     (fetchWordOfTheDay as jest.Mock).mockResolvedValue(wordnikResponse);
     (insertDailyWord as jest.Mock).mockRejectedValue(
       new Error('connection terminated'),
@@ -119,5 +121,6 @@ describe('getWordOfTheDayService', () => {
     await expect(getWordOfTheDayService()).rejects.toThrow(
       'connection terminated',
     );
+    expect(getDailyWordByDisplayDate).toHaveBeenCalledTimes(2);
   });
 });

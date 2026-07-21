@@ -44,19 +44,19 @@ const BudgetCategoryComponent: React.FC<BudgetComponentProps> = ({
         style={{ backgroundColor: cardColor }}
       >
         <CardContent>
-          <Typography variant="h5" component="div">
+          <Typography variant="h5" component="div" sx={{ color: 'rgba(0, 0, 0, 0.87)' }}>
             {transformBucketName(data.bucketname)}
           </Typography>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2" sx={{ color: 'rgba(0, 0, 0, 0.6)' }}>
             Category: {transformCategoryName(data.category)}
           </Typography>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2" sx={{ color: 'rgba(0, 0, 0, 0.6)' }}>
             Amount: ${data.amount}
           </Typography>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2" sx={{ color: 'rgba(0, 0, 0, 0.6)' }}>
             Household: {data.household}
           </Typography>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2" sx={{ color: 'rgba(0, 0, 0, 0.6)' }}>
             Currently-Using: {data.currentamount}
           </Typography>
         </CardContent>
