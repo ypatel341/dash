@@ -54,6 +54,7 @@ const AppNavBar: React.FC = () => {
           onClose={handleCloseMenu}
           MenuListProps={{ 'aria-labelledby': 'app-nav-menu-button' }}
         >
+          {NAV_LINKS.map((link) => (
             <MenuItem
               key={link.to}
               component={Link}
