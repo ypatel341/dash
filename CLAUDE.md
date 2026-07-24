@@ -94,6 +94,8 @@ Layer pattern: `routes/ → controllers/ → services/ → db-operation-helpers.
 
 In dev/test `NODE_ENV`, clustering is disabled (single process). In production, the server forks workers based on `HEROKU_AVAILABLE_PARALLELISM` / `WEB_CONCURRENCY` — `HEROKU_AVAILABLE_PARALLELISM` is a legacy fallback from a prior Heroku deployment; Railway doesn't set it, so this falls through to `WEB_CONCURRENCY` (or a single worker if neither is set).
 
+`dailyWordService.ts` keys `display_date` off Wordnik's own `pdd` field rather than server-local time, since Wordnik's day rollover (US Eastern) doesn't line up with the server's UTC clock.
+
 ### Database (`src/config/db.ts`, `db/migrations/`)
 
 Knex connects to Postgres. Dev DB: `postgres://postgres:@localhost:5432/dash-test`. Config auto-selects `.env.development` or `.env.production` based on `NODE_ENV`.

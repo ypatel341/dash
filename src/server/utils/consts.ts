@@ -3,6 +3,8 @@ export const ErrorFetchingBudgetData = 'Error fetching budget data';
 export const ErrorInsertingExpense = 'Error inserting expense';
 export const ErrorFetchingDailyWord = 'Error fetching daily word';
 export const ErrorInsertingDailyWord = 'Error inserting daily word';
+export const ErrorUnexpectedDailyWordDuplicate =
+  'Unexpected daily word duplicate: wordnik_id already stored under a different display_date';
 
 // PDF generation constants
 export const monthlyBudgetReportCSS = 'monthlyReportStyleSheet.css';
