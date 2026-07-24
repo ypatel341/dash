@@ -5,6 +5,7 @@ import {
   getAllMonthlyExpenses,
   getBucketExpensesController,
   getByMonthExpenseController,
+  getBudgetSummaryController,
   insertExpenseController,
   updateExpenseController,
   healthCheckController,
@@ -23,6 +24,7 @@ router.get(
   '/reports/generateMonthlyReport/:YYYYMM',
   generateMonthlyReportController,
 );
+router.get('/summary', getBudgetSummaryController);
 
 // POSTS
 router.post('/expense', insertExpenseController);

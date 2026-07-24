@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import db from '../../config/db';
 import logger from './logger';
 import {
+  BudgetSummaryResponse,
   BudgetType,
   CurrentYearlyAccumulatedData,
   DailyWord,
@@ -208,6 +209,11 @@ export const updateExpense = async (
     logger.error(`${ErrorInsertingExpense} ${error}`);
     throw error;
   }
+};
+
+export const getBudgetSummary = async (): Promise<BudgetSummaryResponse> => {
+  logger.info('Fetching budget summary');
+  return { message: 'ok' };
 };
 
 export const simpleSelect = async (): Promise<boolean> => {

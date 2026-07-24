@@ -91,6 +91,10 @@ export type InsertResponseId = {
   id: string;
 };
 
+export type BudgetSummaryResponse = {
+  message: string;
+};
+
 export type BucketExpenseMap = Map<string, number>;
 
 export type RenderPDFDataInput = {

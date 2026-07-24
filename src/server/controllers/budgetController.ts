@@ -5,6 +5,7 @@ import {
   getAllMonthlyExpense,
   getAllMonthlyExpensesByMonth,
   getBucketExpenses,
+  getBudgetSummaryService,
   insertExpenseService,
   updateExpenseService,
   dbHealthCheckService,
@@ -157,6 +158,21 @@ export const healthCheckDbController = async (req: Request, res: Response) => {
 export const healthCheckController = async (req: Request, res: Response) => {
   logger.info(`Health check, ${req}`);
   res.status(200).json({ status: 'UP' });
+};
+
+export const getBudgetSummaryController = async (
+  req: Request,
+  res: Response,
+) => {
+  logger.info(`Budget summary requested, ${req}`);
+  try {
+    let response = await getBudgetSummaryService();
+    response = {message: ''};
+    res.status(200).json(response);
+  } catch (error) {
+    logger.error(`Error fetching budget summary: ${error}`);
+    res.status(500).json({ error: `Internal Server Error ${error}` });
+  }
 };
 
 export const generateMonthlyReportController = async (

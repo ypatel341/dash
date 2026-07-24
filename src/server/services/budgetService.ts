@@ -1,4 +1,5 @@
 import {
+  BudgetSummaryResponse,
   BudgetType,
   BudgetTypeWithCurrentAmount,
   CurrentYearlyAccumulatedData,
@@ -14,6 +15,7 @@ import {
   getAllBudgetData,
   getAllMonthlyExpenseByMonth,
   getAllMonthlyExpense as getAllMonthlyExpenseFromDB,
+  getBudgetSummary,
   insertExpense,
   updateExpense,
   simpleSelect,
@@ -121,3 +123,8 @@ export const updateExpenseService = async (
 export const dbHealthCheckService = async (): Promise<boolean> => {
   return await simpleSelect();
 };
+
+export const getBudgetSummaryService =
+  async (): Promise<BudgetSummaryResponse> => {
+    return await getBudgetSummary();
+  };
