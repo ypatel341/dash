@@ -252,6 +252,37 @@ export const getDailyWordByDisplayDate = async (
   }
 };
 
+export const getDailyWordByWordnikId = async (
+  wordnikId: string,
+): Promise<DailyWord | undefined> => {
+  try {
+    const wordRow = await db('daily_words')
+      .select('*')
+      .where('wordnik_id', wordnikId)
+      .first();
+
+    if (!wordRow) {
+      return undefined;
+    }
+
+    const [definitionRows, exampleRows] = await Promise.all([
+      db('daily_word_definitions')
+        .select('*')
+        .where('daily_word_id', wordRow.id)
+        .orderBy('display_order', 'asc'),
+      db('daily_word_examples')
+        .select('*')
+        .where('daily_word_id', wordRow.id)
+        .orderBy('display_order', 'asc'),
+    ]);
+
+    return formatDailyWordRow(wordRow, definitionRows, exampleRows);
+  } catch (error) {
+    logger.error(`${ErrorFetchingDailyWord}: ${error}`);
+    throw error;
+  }
+};
+
 export const insertDailyWord = async (
   payload: WordnikWordOfTheDayResponse,
   displayDate: string,
