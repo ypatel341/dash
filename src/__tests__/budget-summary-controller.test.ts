@@ -17,7 +17,7 @@ afterEach(() => {
 });
 
 const budgetSummary: BudgetSummaryResponse = {
-  message: 'ok',
+  message: "",
 };
 
 describe('GET /budget/summary', () => {
