@@ -14,6 +14,7 @@ import {
   validateCreateCategory,
   validateUpdateCategory,
 } from '../server/services/taskService';
+import { listSeriesService } from '../server/services/seriesService';
 import {
   createTestTask,
   createTestTaskCategory,
@@ -34,6 +35,19 @@ jest.mock('../server/services/taskService', () => ({
   createTaskService: jest.fn(),
   updateTaskService: jest.fn(),
   deleteTaskService: jest.fn(),
+}));
+
+jest.mock('../server/services/seriesService', () => ({
+  validateCreateSeries: jest.fn(),
+  validateUpdateSeries: jest.fn(),
+  listSeriesService: jest.fn(),
+  getSeriesByIdService: jest.fn(),
+  createSeriesService: jest.fn(),
+  updateSeriesService: jest.fn(),
+  pauseSeriesService: jest.fn(),
+  resumeSeriesService: jest.fn(),
+  archiveSeriesService: jest.fn(),
+  ensureOccurrencesForDateRange: jest.fn().mockResolvedValue(undefined),
 }));
 
 afterAll(async () => {
@@ -310,12 +324,14 @@ describe('DELETE /tasks/:id', () => {
   });
 });
 
-// --- Series placeholder ---
+// --- Series listing ---
 
 describe('GET /tasks/series', () => {
-  it('should return 501 Not Implemented', async () => {
+  it('should return a list of active series', async () => {
+    (listSeriesService as jest.Mock).mockResolvedValue([]);
+
     const response = await request(app).get('/tasks/series');
-    expect(response.status).toBe(501);
-    expect(response.body.error).toBe('Not implemented');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
   });
 });

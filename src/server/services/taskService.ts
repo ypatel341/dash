@@ -17,6 +17,7 @@ import {
   updateTaskById,
   softDeleteTask,
 } from '../utils/db-operation-helpers';
+import { ensureOccurrencesForDateRange } from './seriesService';
 import {
   Task,
   TaskCategory,
@@ -301,6 +302,7 @@ export const listTasksService = async (
   status?: string,
   assignedTo?: string,
 ): Promise<Task[]> => {
+  await ensureOccurrencesForDateRange(from, to);
   return await getTasksByDateRange(from, to, status, assignedTo);
 };
 
@@ -395,8 +397,24 @@ export const updateTaskService = async (
 };
 
 export const deleteTaskService = async (id: string): Promise<void> => {
-  const deleted = await softDeleteTask(id);
-  if (!deleted) {
+  const existing = await getTaskById(id);
+  if (!existing) {
     throw new Error('Task not found');
+  }
+
+  if (existing.seriesId) {
+    const updated = await updateTaskById(id, {
+      status: 'canceled',
+      is_exception: true,
+      canceled_at: new Date().toISOString(),
+    });
+    if (!updated) {
+      throw new Error('Task not found');
+    }
+  } else {
+    const deleted = await softDeleteTask(id);
+    if (!deleted) {
+      throw new Error('Task not found');
+    }
   }
 };

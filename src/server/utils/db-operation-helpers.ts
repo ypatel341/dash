@@ -11,6 +11,7 @@ import {
   MonthlyExpenseWithReimbursable,
   Task,
   TaskCategory,
+  TaskSeries,
   UpdateExpenseType,
   WordnikWordOfTheDayResponse,
 } from './types';
@@ -26,6 +27,10 @@ import {
   ErrorUpdatingTask,
   ErrorUpdatingTaskCategory,
   ErrorDeletingTask,
+  ErrorFetchingTaskSeries,
+  ErrorInsertingTaskSeries,
+  ErrorUpdatingTaskSeries,
+  ErrorMaterializingOccurrences,
 } from './consts';
 import { validateReimbursableExpense } from './utils';
 
@@ -628,6 +633,201 @@ export const softDeleteTask = async (id: string): Promise<boolean> => {
     return count > 0;
   } catch (error) {
     logger.error(`${ErrorDeletingTask}: ${error}`);
+    throw error;
+  }
+};
+
+// --- Task Series DB Operations ---
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const formatTaskSeriesRow = (row: any): TaskSeries => ({
+  id: row.id,
+  assignedTo: row.assigned_to,
+  title: row.title,
+  description: row.description,
+  categoryId: row.category_id,
+  kind: row.kind,
+  modality: row.modality,
+  location: row.location,
+  timeMode: row.time_mode,
+  startTime: row.start_time,
+  endTime: row.end_time,
+  startsOn: dayjs(row.starts_on).format('YYYY-MM-DD'),
+  endsOn: row.ends_on ? dayjs(row.ends_on).format('YYYY-MM-DD') : null,
+  recurrenceRule: row.recurrence_rule,
+  status: row.status,
+  generatedThrough: row.generated_through
+    ? dayjs(row.generated_through).format('YYYY-MM-DD')
+    : null,
+  metadata: row.metadata,
+  createdAt: dayjs(row.created_at).toISOString(),
+  updatedAt: dayjs(row.updated_at).toISOString(),
+  deletedAt: row.deleted_at ? dayjs(row.deleted_at).toISOString() : null,
+});
+
+export const getTaskSeriesById = async (
+  id: string,
+): Promise<TaskSeries | undefined> => {
+  try {
+    const row = await db('task_series')
+      .select('*')
+      .where('id', id)
+      .whereNull('deleted_at')
+      .first();
+
+    return row ? formatTaskSeriesRow(row) : undefined;
+  } catch (error) {
+    logger.error(`${ErrorFetchingTaskSeries}: ${error}`);
+    throw error;
+  }
+};
+
+export const getAllActiveTaskSeries = async (): Promise<TaskSeries[]> => {
+  try {
+    const rows = await db('task_series')
+      .select('*')
+      .where('status', 'active')
+      .whereNull('deleted_at')
+      .orderBy('created_at', 'desc');
+
+    return rows.map(formatTaskSeriesRow);
+  } catch (error) {
+    logger.error(`${ErrorFetchingTaskSeries}: ${error}`);
+    throw error;
+  }
+};
+
+export const getSeriesNeedingMaterialization = async (
+  throughDate: string,
+): Promise<TaskSeries[]> => {
+  try {
+    const rows = await db('task_series')
+      .select('*')
+      .where('status', 'active')
+      .where('starts_on', '<=', throughDate)
+      .where(function () {
+        this.whereNull('ends_on').orWhere('ends_on', '>=', throughDate);
+      })
+      .where(function () {
+        this.whereNull('generated_through').orWhere(
+          'generated_through',
+          '<',
+          throughDate,
+        );
+      })
+      .whereNull('deleted_at');
+
+    return rows.map(formatTaskSeriesRow);
+  } catch (error) {
+    logger.error(`${ErrorFetchingTaskSeries}: ${error}`);
+    throw error;
+  }
+};
+
+export const insertTaskSeries = async (
+  data: Record<string, unknown>,
+): Promise<TaskSeries> => {
+  try {
+    const [row] = await db('task_series').insert(data).returning('*');
+
+    logger.info(`Inserted task series ${row.id}`);
+    return formatTaskSeriesRow(row);
+  } catch (error) {
+    logger.error(`${ErrorInsertingTaskSeries}: ${error}`);
+    throw error;
+  }
+};
+
+export const updateTaskSeriesById = async (
+  id: string,
+  data: Record<string, unknown>,
+): Promise<TaskSeries | undefined> => {
+  try {
+    const rows = await db('task_series')
+      .where('id', id)
+      .whereNull('deleted_at')
+      .update({ ...data, updated_at: db.fn.now() })
+      .returning('*');
+
+    if (!rows.length) return undefined;
+
+    logger.info(`Updated task series ${id}`);
+    return formatTaskSeriesRow(rows[0]);
+  } catch (error) {
+    logger.error(`${ErrorUpdatingTaskSeries}: ${error}`);
+    throw error;
+  }
+};
+
+export const getCanceledExceptionDates = async (
+  seriesId: string,
+): Promise<string[]> => {
+  try {
+    const rows = await db('tasks')
+      .select('original_occurrence_date')
+      .where('series_id', seriesId)
+      .where('is_exception', true)
+      .where('status', 'canceled');
+
+    return rows.map((r: { original_occurrence_date: string }) =>
+      dayjs(r.original_occurrence_date).format('YYYY-MM-DD'),
+    );
+  } catch (error) {
+    logger.error(`${ErrorFetchingTask}: ${error}`);
+    throw error;
+  }
+};
+
+export const materializeOccurrences = async (
+  seriesId: string,
+  taskRows: Record<string, unknown>[],
+  throughDate: string,
+): Promise<Task[]> => {
+  try {
+    return await db.transaction(async (trx) => {
+      let insertedTasks: Task[] = [];
+
+      if (taskRows.length > 0) {
+        const columns = Object.keys(taskRows[0]);
+        const valuePlaceholders = taskRows
+          .map(() => `(${columns.map(() => '?').join(', ')})`)
+          .join(', ');
+        const flatValues: (string | number | boolean | null)[] =
+          taskRows.flatMap((row) =>
+            columns.map((col) => {
+              const val = row[col];
+              if (typeof val === 'object' && val !== null)
+                return JSON.stringify(val);
+              return val as string | number | boolean | null;
+            }),
+          );
+
+        const columnList = columns.join(', ');
+        const result = await trx.raw(
+          `INSERT INTO tasks (${columnList}) VALUES ${valuePlaceholders}
+           ON CONFLICT (series_id, original_occurrence_date)
+           WHERE series_id IS NOT NULL
+           DO NOTHING
+           RETURNING *`,
+          flatValues,
+        );
+
+        insertedTasks = result.rows.map(formatTaskRow);
+      }
+
+      await trx('task_series').where('id', seriesId).update({
+        generated_through: throughDate,
+        updated_at: trx.fn.now(),
+      });
+
+      logger.info(
+        `Materialized ${insertedTasks.length} occurrences for series ${seriesId} through ${throughDate}`,
+      );
+
+      return insertedTasks;
+    });
+  } catch (error) {
+    logger.error(`${ErrorMaterializingOccurrences}: ${error}`);
     throw error;
   }
 };
