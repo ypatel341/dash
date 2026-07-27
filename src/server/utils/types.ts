@@ -180,3 +180,90 @@ export type DailyWord = {
   definitions: DailyWordDefinition[];
   examples: DailyWordExample[];
 };
+
+// Task types
+
+export type TaskCategory = {
+  id: string;
+  name: string;
+  slug: string;
+  colorKey: string;
+  iconKey: string | null;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+export type Task = {
+  id: string;
+  assignedTo: string;
+  seriesId: string | null;
+  originalOccurrenceDate: string | null;
+  title: string;
+  description: string | null;
+  categoryId: string;
+  kind: string;
+  modality: string;
+  status: string;
+  taskDate: string;
+  timeMode: string;
+  startTime: string | null;
+  endTime: string | null;
+  location: string | null;
+  isException: boolean;
+  metadata: Record<string, unknown>;
+  completedAt: string | null;
+  canceledAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+export type CreateTaskRequest = {
+  assignedTo: string;
+  title: string;
+  description?: string;
+  categoryId: string;
+  kind: string;
+  modality: string;
+  taskDate: string;
+  timeMode: string;
+  startTime?: string;
+  endTime?: string;
+  location?: string;
+  metadata?: Record<string, unknown>;
+};
+
+export type UpdateTaskRequest = {
+  title?: string;
+  description?: string | null;
+  assignedTo?: string;
+  categoryId?: string;
+  kind?: string;
+  modality?: string;
+  status?: string;
+  taskDate?: string;
+  timeMode?: string;
+  startTime?: string | null;
+  endTime?: string | null;
+  location?: string | null;
+  metadata?: Record<string, unknown>;
+};
+
+export type CreateCategoryRequest = {
+  name: string;
+  slug: string;
+  colorKey: string;
+  iconKey?: string;
+  sortOrder?: number;
+};
+
+export type UpdateCategoryRequest = {
+  name?: string;
+  colorKey?: string;
+  iconKey?: string | null;
+  sortOrder?: number;
+  isActive?: boolean;
+};

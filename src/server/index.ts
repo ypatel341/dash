@@ -5,6 +5,7 @@ import cors from 'cors';
 import logger from './utils/logger';
 import budgetRoutes from './routes/budgetRoutes';
 import dailyWordRoutes from './routes/dailyWordRoutes';
+import taskRoutes from './routes/taskRoutes';
 import compression from 'compression';
 import cluster from 'node:cluster';
 import process from 'node:process';
@@ -46,6 +47,7 @@ if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
   // Enable URL-encoded body parsing
   app.use('/budget', budgetRoutes);
   app.use('/daily-word', dailyWordRoutes);
+  app.use('/tasks', taskRoutes);
 
   // Health check for uptime monitoring
   app.get('/health', healthCheckHandler);
@@ -89,6 +91,7 @@ if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
   // Enable URL-encoded body parsing
   app.use('/budget', budgetRoutes);
   app.use('/daily-word', dailyWordRoutes);
+  app.use('/tasks', taskRoutes);
 
   // Health check for uptime monitoring
   app.get('/health', healthCheckHandler);

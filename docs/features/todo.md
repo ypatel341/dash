@@ -1,0 +1,990 @@
+# DASH Task System V1
+## Engineering Design Document
+
+**Status:** Draft for review — Revision 1.2  
+**Date:** 2026-07-27  
+**Scope:** Task planning, recurring task instances, categories, simple CRUD, calendar projection, and unit testing strategy
+
+---
+
+## 1. Summary
+
+DASH will add a task-planning system focused on meaningful daily commitments rather than micro-task management.
+
+The system will support:
+
+- One-time tasks
+- Recurring task series
+- Stored task occurrences
+- Per-occurrence completion, skipping, cancellation, or deletion behavior
+- Category-based color coding
+- Task kind and modality
+- A simple create/edit form
+- A calendar view derived from tasks
+
+The central design decision is:
+
+> A recurring series is a definition that produces concrete task records. The calendar and dashboard display task records, not series definitions.
+
+This allows one occurrence to be changed or canceled without breaking the remaining series.
+
+---
+
+## 2. Goals
+
+1. Give the user and spouse a shared view of meaningful daily commitments.
+2. Keep `tasks` as the source of truth for individual agenda items.
+3. Support recurring items without making recurrence part of the task category.
+4. Preserve historical task snapshots after a recurring series changes.
+5. Keep the first UI simple enough to learn from real usage.
+6. Avoid schema choices that block future reminders, dependencies, habits, richer recurrence editing, or normalized user identities.
+
+---
+
+## 3. Non-goals for V1
+
+The following are intentionally deferred:
+
+- Habit tracking
+- Micro-task/checklist management
+- Task dependencies
+- Notification and reminder delivery
+- Email digests
+- External calendar synchronization
+- Editing “this and future occurrences”
+- Complex recurrence exceptions
+- Arbitrary user-defined task fields
+- Automated prioritization
+- AI scheduling
+
+These can be layered on later without changing the core task/series relationship.
+
+---
+
+## 4. Product Principles
+
+### 4.1 Tasks represent meaningful commitments
+
+DASH is not intended to replace handwritten micro-task lists.
+
+A task should generally be important enough to affect how the day is planned, including:
+
+- Meetings
+- Interviews
+- Therapy
+- Parties and events
+- Bill due dates
+- Home maintenance
+- Religious events
+- Workouts
+- Other meaningful commitments
+
+Importance is a product guideline, not a database column in V1.
+
+### 4.2 Everything remains a task
+
+The primary entity will continue to be called `task`.
+
+Different behavior is expressed through:
+
+- `kind`
+- `category`
+- `modality`
+- scheduling fields
+- recurrence membership
+
+### 4.3 Calendar is a projection
+
+The calendar does not own separate calendar-event records.
+
+It displays tasks whose dates overlap the selected calendar range.
+
+---
+
+## 5. Domain Model
+
+### 5.1 Task
+
+A concrete agenda item.
+
+A task may be:
+
+- One-time: `series_id IS NULL`
+- Recurring occurrence: `series_id IS NOT NULL`
+
+A recurring task contains a snapshot of the series values at generation time.
+
+### 5.2 Task Series
+
+A recurrence definition that produces concrete tasks.
+
+The series stores:
+
+- Default title and description
+- Default classification
+- Default schedule shape
+- Recurrence rule
+- Series status
+- Generation progress
+
+The series itself is not displayed on the calendar.
+
+### 5.3 Task Category
+
+The area of life represented by the task.
+
+Initial seeded categories:
+
+- Work
+- Social
+- Home
+- Finance
+- Spiritual
+- Fitness
+- Health
+- Other
+
+Category drives primary UI color.
+
+### 5.4 Task Kind
+
+The behavioral shape of the task.
+
+Initial values:
+
+- `event`
+- `deadline`
+- `activity`
+
+Examples:
+
+| Example | Kind |
+|---|---|
+| Party | event |
+| Virtual interview | event |
+| Therapy appointment | event |
+| Bill due date | deadline |
+| HVAC filter replacement | activity |
+| Workout | activity |
+
+### 5.5 Modality
+
+How the task occurs.
+
+Initial values:
+
+- `physical`
+- `virtual`
+- `none`
+
+Modality should be represented through icons or secondary styling rather than the main category color.
+
+---
+
+
+## 5.6 Identity and assignment in V1
+
+DASH does not currently have a normalized identity model. The baseline migration created `user` and `users_roles` tables, but these are unused scaffolding — no application code references them, and no data flows through them. Existing expense records use the string values:
+
+```text
+Yogi
+Riddhi
+Both
+```
+
+The task feature should follow the current application model for V1 instead of blocking delivery on a broader identity migration.
+
+Tasks and task series will therefore use:
+
+```text
+assigned_to VARCHAR
+```
+
+Initial application-supported values:
+
+```text
+Yogi
+Riddhi
+Both
+```
+
+This field represents **who the task is for**, not a foreign key to a user.
+
+`Both` is especially important: it is not a third user and should never be migrated to its own user UUID. In a normalized future model it becomes two assignment rows, one for each user.
+
+Task categories are household-wide in V1 and do not require a `user_id`.
+
+A future identity migration can either extend the existing `user` table or replace it. The decision depends on whether the current schema (email, first/last name, role FK) fits the household model. Either way, the migration path from `assigned_to VARCHAR` remains the same:
+
+```text
+users (new or extended from existing `user` table)
+- id UUID
+- display_name
+- ...
+
+task_assignees
+- task_id UUID
+- user_id UUID
+```
+
+Migration behavior:
+
+```text
+Yogi   -> one task_assignees row for Yogi
+Riddhi -> one task_assignees row for Riddhi
+Both   -> two task_assignees rows
+```
+
+The expense identity migration should be tracked separately because an expense field may mean payer, owner, beneficiary, or shared responsibility rather than task assignment.
+
+This future migration is intentionally not a prerequisite for Task Planning V1.
+
+---
+
+## 6. Recurrence Model
+
+### 6.1 Stored occurrences
+
+Recurring tasks are stored as concrete rows in `tasks`.
+
+```text
+task_series
+  ├── task occurrence
+  ├── task occurrence
+  ├── task occurrence
+  └── task occurrence
+```
+
+This allows an individual occurrence to be completed, skipped, moved, canceled, or hidden without changing the series definition.
+
+### 6.2 Original occurrence identity
+
+Every generated occurrence stores the date it originally represented:
+
+```text
+original_occurrence_date
+```
+
+Example:
+
+- Original occurrence: 2026-08-10
+- User moves it to: 2026-08-11
+
+The task retains:
+
+```text
+original_occurrence_date = 2026-08-10
+task_date = 2026-08-11
+```
+
+This prevents the generator from recreating the August 10 occurrence.
+
+### 6.3 Idempotency
+
+The database must enforce:
+
+```text
+UNIQUE (series_id, original_occurrence_date)
+WHERE series_id IS NOT NULL
+```
+
+Running generation repeatedly must not create duplicates.
+
+### 6.4 Rolling materialization
+
+Do not generate recurring tasks indefinitely.
+
+Recommended initial horizon:
+
+```text
+90 days
+```
+
+The system generates missing occurrences through a target date and records progress in:
+
+```text
+generated_through
+```
+
+Generation can initially run:
+
+- When a series is created
+- When upcoming tasks are requested
+- Through a scheduled job later, if needed
+
+### 6.5 Series and occurrence status
+
+Series status:
+
+- `active`
+- `paused`
+- `ended`
+- `archived`
+
+Task occurrence status:
+
+- `planned`
+- `completed`
+- `skipped`
+- `canceled`
+
+`overdue` should be derived when:
+
+```text
+status = planned
+AND task_date < current_date
+```
+
+It should not be stored as a mutable status.
+
+### 6.6 Deleting one occurrence
+
+For generated recurring tasks, cancellation is safer than physical deletion:
+
+```text
+status = canceled
+is_exception = true
+```
+
+This preserves the original occurrence identity and prevents regeneration.
+
+Hard deletion may remain available for accidental one-time task creation, but recurring occurrences should normally be canceled.
+
+---
+
+## 7. Scheduling Model
+
+V1 should use a date plus optional local times instead of forcing every item into a timestamp.
+
+This supports:
+
+- Timed events
+- Date-only deadlines
+- All-day events
+
+Recommended fields:
+
+```text
+task_date
+time_mode
+start_time
+end_time
+```
+
+Initial `time_mode` values:
+
+- `timed`
+- `all_day`
+- `date_only`
+
+Examples:
+
+| Task | time_mode | task_date | start_time | end_time |
+|---|---|---|---|---|
+| Interview | timed | 2026-08-05 | 14:00 | 15:00 |
+| Diwali | all_day | 2026-11-08 | null | null |
+| Mortgage due | date_only | 2026-08-01 | null | null |
+
+Timezone support can initially default to the user profile. A series-level timezone may be added when recurrence generation or external calendar synchronization requires it.
+
+---
+
+## 8. Proposed Tables
+
+## 8.1 `task_categories`
+
+Stores user-visible life categories and display metadata.
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid | Primary key |
+| `name` | varchar | Display name |
+| `slug` | varchar | Stable identifier |
+| `color_key` | varchar | MUI palette token (e.g. `primary`, `success`) |
+| `icon_key` | varchar, nullable | Optional icon |
+| `sort_order` | integer | Display order |
+| `is_active` | boolean | Hide without deleting |
+| `created_at` | timestamptz | |
+| `updated_at` | timestamptz | |
+| `deleted_at` | timestamptz, nullable | Soft delete (matches existing pattern) |
+
+Constraints:
+
+```text
+UNIQUE (slug)
+```
+
+Seed categories:
+
+```text
+work
+social
+home
+finance
+spiritual
+fitness
+health
+other
+```
+
+---
+
+## 8.2 `task_series`
+
+Stores recurring task definitions and generation state.
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid | Primary key |
+| `assigned_to` | varchar | Yogi, Riddhi, or Both in V1 |
+| `title` | varchar | Default occurrence title |
+| `description` | text, nullable | Default description |
+| `category_id` | foreign key | Default category |
+| `kind` | varchar | event, deadline, activity |
+| `modality` | varchar | physical, virtual, none |
+| `location` | varchar, nullable | Physical or virtual location |
+| `time_mode` | varchar | timed, all_day, date_only |
+| `start_time` | time, nullable | Default local start time |
+| `end_time` | time, nullable | Default local end time |
+| `starts_on` | date | First eligible recurrence date |
+| `ends_on` | date, nullable | Optional series end |
+| `recurrence_rule` | text | RFC 5545-style RRULE |
+| `status` | varchar | active, paused, ended, archived |
+| `generated_through` | date, nullable | Materialization progress |
+| `metadata` | jsonb | See section 9 for V1 contract |
+| `created_at` | timestamptz | |
+| `updated_at` | timestamptz | |
+| `deleted_at` | timestamptz, nullable | Soft delete (matches existing pattern) |
+
+Recommended checks:
+
+```text
+kind IN ('event', 'deadline', 'activity')
+modality IN ('physical', 'virtual', 'none')
+time_mode IN ('timed', 'all_day', 'date_only')
+status IN ('active', 'paused', 'ended', 'archived')
+```
+
+Notes:
+
+- `recurrence_rule` gives long-term flexibility without requiring every recurrence feature in the V1 form.
+- The first UI can generate only simple RRULE patterns such as daily, weekly, monthly, or yearly.
+- The application should validate that timed series have a `start_time`.
+
+---
+
+## 8.3 `tasks`
+
+Stores every concrete agenda item.
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid | Primary key |
+| `assigned_to` | varchar | Yogi, Riddhi, or Both in V1 |
+| `series_id` | foreign key, nullable | Null for one-time tasks |
+| `original_occurrence_date` | date, nullable | Stable recurrence identity |
+| `title` | varchar | Snapshot title |
+| `description` | text, nullable | Snapshot description |
+| `category_id` | foreign key | Snapshot category |
+| `kind` | varchar | event, deadline, activity |
+| `modality` | varchar | physical, virtual, none |
+| `status` | varchar | planned, completed, skipped, canceled |
+| `task_date` | date | Display date |
+| `time_mode` | varchar | timed, all_day, date_only |
+| `start_time` | time, nullable | |
+| `end_time` | time, nullable | |
+| `location` | varchar, nullable | |
+| `is_exception` | boolean | Manually changed recurring occurrence |
+| `metadata` | jsonb | See section 9 for V1 contract |
+| `completed_at` | timestamptz, nullable | |
+| `canceled_at` | timestamptz, nullable | |
+| `created_at` | timestamptz | |
+| `updated_at` | timestamptz | |
+| `deleted_at` | timestamptz, nullable | Soft delete (matches existing pattern) |
+
+Recommended checks:
+
+```text
+kind IN ('event', 'deadline', 'activity')
+modality IN ('physical', 'virtual', 'none')
+status IN ('planned', 'completed', 'skipped', 'canceled')
+time_mode IN ('timed', 'all_day', 'date_only')
+```
+
+Recommended indexes:
+
+```text
+INDEX (task_date)
+INDEX (status, task_date)
+INDEX (assigned_to, task_date)
+INDEX (series_id)
+UNIQUE (series_id, original_occurrence_date)
+  WHERE series_id IS NOT NULL
+```
+
+Recommended integrity rules:
+
+```text
+series_id IS NULL AND original_occurrence_date IS NULL
+OR
+series_id IS NOT NULL AND original_occurrence_date IS NOT NULL
+
+is_exception = false WHERE series_id IS NULL
+```
+
+The `is_exception` flag is only meaningful for recurring occurrences. One-time tasks should always have `is_exception = false`.
+
+---
+
+## 9. Why There Is No Generic `task_details` Table
+
+A generic key/value table would make validation and querying harder.
+
+Instead, V1 uses:
+
+- Concrete columns for commonly queried fields
+- `metadata JSONB` for uncommon or experimental fields
+
+### V1 `metadata` contract
+
+The `metadata` column on `tasks` and `task_series` should default to an empty object `{}` in V1. No application code should read or write to it yet.
+
+Its purpose is to provide a migration-free path for V1.1 experimentation. If a field begins appearing consistently during the usage review (Ticket 6), it should be promoted to a concrete column via migration rather than remaining in JSONB.
+
+The service layer should validate that `metadata` is a plain object (not an array or primitive) on write.
+
+### Future structured extensions
+
+A `task_details`-style table should only be introduced for a clear domain, such as:
+
+- Notes
+- Checklist entries
+- Attachments
+- Activity history
+
+It should not be used as a generic home for arbitrary attributes.
+
+---
+
+## 10. Snapshot Behavior
+
+Generated tasks copy the series defaults at creation time.
+
+This preserves history.
+
+When a series changes in a future release:
+
+- Future planned occurrences may be updated
+- Completed occurrences remain unchanged
+- Manually changed exceptions remain unchanged
+
+V1 does not need a complete series-edit propagation system. It only needs a schema that does not prevent one later.
+
+---
+
+## 11. Minimal API Surface
+
+The first implementation can remain small.
+
+All routes are mounted under `/tasks`, matching the existing convention (`/budget/*`, `/daily-word/*`). A single `taskRoutes.ts` file defines all sub-routes.
+
+### Categories
+
+```text
+GET    /tasks/categories
+POST   /tasks/categories
+PATCH  /tasks/categories/:id
+```
+
+### One-time tasks
+
+```text
+GET    /tasks?from=&to=&status=
+POST   /tasks
+GET    /tasks/:id
+PATCH  /tasks/:id
+DELETE /tasks/:id
+```
+
+### Recurring series
+
+```text
+GET    /tasks/series
+POST   /tasks/series
+GET    /tasks/series/:id
+PATCH  /tasks/series/:id
+POST   /tasks/series/:id/pause
+POST   /tasks/series/:id/resume
+POST   /tasks/series/:id/archive
+```
+
+### Occurrence generation
+
+This can initially remain an internal service:
+
+```text
+ensureTaskOccurrences(throughDate)
+```
+
+The task listing endpoint may call it before querying the requested date range.
+
+---
+
+## 12. Simple V1 UI
+
+UI is intentionally not the architectural focus.
+
+The first version only needs:
+
+### Task form
+
+- Title
+- Description
+- Category
+- Kind
+- Modality
+- Location
+- Date
+- Optional start and end time
+- Recurring toggle
+- Simple recurrence pattern
+- Optional recurrence end date
+
+### Task list
+
+- Upcoming tasks
+- Status update
+- Edit one-time task
+- Cancel or complete recurring occurrence
+
+### Calendar view
+
+- Read-only projection of tasks
+- Category-based colors
+- Modality icons
+- Click-through to task details
+
+---
+
+## 13. Unit Testing Strategy
+
+This section covers unit testing for Task Planning V1. Integration and end-to-end testing strategies are tracked in a separate infrastructure document.
+
+### Recurrence library
+
+V1 will use the [`rrule`](https://www.npmjs.com/package/rrule) npm package for parsing, validating, and expanding RFC 5545 RRULE strings. It is the most widely adopted JS implementation, supports all standard recurrence patterns, and works in both Node and browser contexts. The simple V1 form will generate only `FREQ=DAILY`, `FREQ=WEEKLY`, `FREQ=MONTHLY`, and `FREQ=YEARLY` rules — `rrule` handles these without configuration.
+
+### What to test
+
+Unit tests target the service layer (`taskService.ts`) and utility functions. They should not require a running database — mock the db-operation-helpers layer with Jest.
+
+#### Service layer coverage
+
+| Area | What to assert |
+|---|---|
+| Task creation | Validates required fields; rejects invalid `kind`, `modality`, `time_mode`, `status` |
+| Task creation | Timed tasks require `start_time`; `all_day`/`date_only` ignore times |
+| Task update | Status transitions are valid (e.g. cannot complete a canceled task) |
+| Task deletion | One-time tasks can be hard-deleted; recurring occurrences are canceled, not deleted |
+| Task listing | Filters by date range and status; returns correct shape |
+| Series creation | Validates RRULE via `rrule` library; rejects malformed rules |
+| Series creation | Generates occurrences through the 90-day horizon |
+| Materialization | Idempotent — running twice produces no duplicates |
+| Materialization | Respects `generated_through` and only fills the gap |
+| Materialization | Skips dates with existing canceled exceptions |
+| Series pause | Paused series stop generating future occurrences |
+| Series resume | Resumed series regenerate from where they left off |
+| Snapshot behavior | Generated occurrences copy series defaults at creation time |
+| Metadata | Rejects non-object values (arrays, primitives) |
+
+#### Utility coverage
+
+| Area | What to assert |
+|---|---|
+| RRULE helpers | Simple form values map to valid RRULE strings |
+| Date helpers | Occurrence date calculations respect `starts_on` and `ends_on` |
+| Validation helpers | `assigned_to` rejects values outside `Yogi`, `Riddhi`, `Both` |
+| Integrity | `series_id` and `original_occurrence_date` are both present or both null |
+
+### Conventions
+
+- Test files live in `src/__tests__/` alongside existing tests
+- File naming: `taskService.test.ts`, `taskUtils.test.ts`
+- Run with: `npx jest src/__tests__/taskService.test.ts --detectOpenHandles`
+
+---
+
+## 14. Delivery Plan and Tickets
+
+## Epic: Task Planning V1
+
+### Ticket 1 — Database foundation
+
+**Purpose:** Create the core data model.
+
+**Depends on:** None
+
+Deliverables:
+
+- `task_categories` migration
+- `task_series` migration
+- `tasks` migration
+- All constraints, indexes, and check constraints
+- Seed default categories
+- Migration rollback
+- Basic model documentation
+
+Unit tests:
+
+- Migration applies and rolls back cleanly
+- Constraints reject invalid data (duplicate occurrence dates, invalid enums)
+
+Acceptance criteria:
+
+- One-time tasks can exist without a series
+- Recurring tasks require an original occurrence date
+- Duplicate series occurrences are rejected
+- Categories are shared across the current DASH household
+- Task assignment supports Yogi, Riddhi, and Both without requiring a users table
+- All tables include `deleted_at` for soft delete consistency
+
+---
+
+### Ticket 2 — One-time task CRUD and listing
+
+**Purpose:** Establish the simplest usable vertical slice. This is the heaviest backend ticket — it stands up the full layer stack (`taskRoutes.ts` → `taskController.ts` → `taskService.ts` → db helpers).
+
+**Depends on:** Ticket 1
+
+Deliverables:
+
+- `taskRoutes.ts`, `taskController.ts`, `taskService.ts`, task db helpers
+- Create, read, update, delete for one-time tasks
+- List tasks by date range with status filtering
+- Status transitions (planned → completed, planned → skipped, planned → canceled)
+- Field validation (required fields, enum values, time_mode/start_time consistency)
+- Category CRUD (`GET /tasks/categories`, `POST`, `PATCH`)
+
+Unit tests:
+
+- Service validates required fields and rejects invalid enums
+- Timed tasks require `start_time`; `all_day`/`date_only` ignore times
+- Status transitions are valid (cannot complete a canceled task)
+- Listing filters by date range and status correctly
+- `metadata` rejects non-object values
+- `assigned_to` rejects values outside `Yogi`, `Riddhi`, `Both`
+
+Acceptance criteria:
+
+- User can create a meaningful one-time task
+- Date-only and timed tasks are supported
+- Tasks can be filtered by date and status
+
+---
+
+### Ticket 3 — Recurring series and materialization
+
+**Purpose:** Generate stored task instances from a recurrence definition.
+
+**Depends on:** Ticket 2 (needs the task service layer and db helpers)
+
+Deliverables:
+
+- Series CRUD routes (`/tasks/series/*`)
+- RRULE validation and parsing via the `rrule` library
+- `ensureTaskOccurrences(throughDate)` — generates occurrences through a 90-day horizon
+- Idempotent insertion (respects `original_occurrence_date` uniqueness)
+- Track `generated_through`
+- Pause, resume, and archive series actions
+- Task listing calls `ensureTaskOccurrences` before querying
+
+Unit tests:
+
+- Series creation validates RRULE; rejects malformed rules
+- Generation produces correct occurrence dates for daily/weekly/monthly/yearly
+- Idempotent — running twice produces no duplicates
+- Respects `generated_through` and only fills the gap
+- Skips dates with existing canceled exceptions (`is_exception = true`)
+- Paused series stop generating future occurrences
+- Resumed series regenerate from where they left off
+- Generated occurrences snapshot series defaults at creation time
+
+Acceptance criteria:
+
+- Re-running generation creates no duplicates
+- Each occurrence is independently editable at the task level
+- Paused series stop generating future occurrences
+
+---
+
+### Ticket 4 — Basic task management UI
+
+**Purpose:** Make the feature usable before adding presentation complexity.
+
+**Depends on:** Ticket 3 (the UI includes recurrence controls that require the series API)
+
+Deliverables:
+
+- Task create/edit form
+- Recurrence toggle with simple daily/weekly/monthly/yearly controls
+- Optional recurrence end date
+- Upcoming task list (one-time and generated occurrences together)
+- Complete, skip, and cancel actions
+- Category selector with color indicators
+
+Acceptance criteria:
+
+- User and spouse can enter and manage tasks without database access
+- Generated occurrences appear alongside one-time tasks
+
+---
+
+### Ticket 5 — Dashboard and calendar projection
+
+**Purpose:** Surface tasks through DASH's command-center experience.
+
+**Depends on:** Ticket 4
+
+Deliverables:
+
+- Today's meaningful tasks on the homepage
+- Upcoming section
+- Calendar query and view
+- Category colors (using MUI palette tokens from `color_key`)
+- Modality indicators (icons)
+
+Acceptance criteria:
+
+- Dashboard and calendar read from the same `tasks` source of truth
+- No duplicate calendar-event storage is introduced
+
+---
+
+### Ticket 6 — Usage review and V1.1 decisions
+
+**Purpose:** Learn from real behavior before expanding the schema.
+
+**Depends on:** Tickets 1–5 deployed and used for two to four weeks
+
+Review areas:
+
+- Which categories are actually used?
+- Are kind and modality useful?
+- Are users canceling, skipping, or deleting occurrences?
+- Do tasks need manual ordering?
+- Are date-only and timed modes sufficient?
+- Is “edit this and future” now necessary?
+- Are reminders needed only for rare high-value tasks?
+- Does JSONB contain repeated fields that deserve columns?
+
+The output should be a short V1.1 architecture decision record rather than immediate feature expansion.
+
+---
+
+
+### Separate future ticket — Normalize users and household assignments
+
+**Purpose:** Replace string-based identities across DASH with UUID-backed users after the task feature has been validated through real usage.
+
+Deliverables:
+
+- Create `users` with UUID primary keys
+- Seed/migrate Yogi and Riddhi
+- Create `task_assignees`
+- Migrate task values, expanding `Both` into two rows
+- Define the correct normalized model for expense ownership/payment responsibility
+- Migrate expense strings separately
+- Remove deprecated string identity fields after verification
+
+This ticket is intentionally outside Task Planning V1 and should not block the first usable release.
+
+---
+
+## 15. Suggested Pull Request Boundaries
+
+A practical implementation can be delivered in three pull requests. Ticket 6 (usage review) produces a decision document, not a PR.
+
+| PR | Tickets | Contents |
+|---|---|---|
+| PR 1 | Tickets 1 + 2 | Migrations, seed categories, full task CRUD + listing, category CRUD, unit tests |
+| PR 2 | Ticket 3 | Series CRUD, RRULE handling via `rrule`, occurrence materialization, idempotency tests |
+| PR 3 | Tickets 4 + 5 | Task form, task list, recurrence UI, dashboard integration, calendar projection |
+
+This keeps recurrence complexity from blocking the first usable task flow.
+
+---
+
+## 16. Deferred Extension Points
+
+The design allows later addition of:
+
+### Reminders
+
+```text
+task_notifications
+- task_id
+- channel
+- scheduled_at
+- sent_at
+```
+
+### Dependencies
+
+```text
+task_dependencies
+- task_id
+- depends_on_task_id
+```
+
+### Notes
+
+```text
+task_notes
+- task_id
+- body
+- created_at
+```
+
+### Series splitting
+
+“Edit this and future occurrences” can end the original series and create a new series beginning at the selected occurrence.
+
+### External calendars
+
+External calendar identifiers can be added to tasks without changing the task/series relationship.
+
+### Shared ownership
+
+A future join table can support tasks shared between household members if `user_id` ownership becomes too restrictive.
+
+---
+
+## 17. Open Questions Before Migration
+
+These do not block the EDD, but should be answered before finalizing the migration:
+
+1. Should both spouses see all tasks by default, with assignment used only as a filter or visual indicator?
+2. ~~Does the existing application have a standard soft-delete pattern?~~ **Resolved:** Yes — `deleted_at` columns exist on `budget_monthly_expenses`, `user`, and `users_roles`. Task tables now include `deleted_at`.
+3. Should `location` contain both physical locations and virtual URLs, or should `virtual_url` become a separate column?
+4. Should recurring task occurrences be physically editable in V1, or only completable/skippable/cancelable?
+5. ~~Which recurrence library will parse and generate RRULE values?~~ **Resolved:** `rrule` npm package. See section 13.
+6. Should `assigned_to` remain application-validated only, or use a temporary database check constraint?
+
+---
+
+## 18. Recommendation
+
+The architecture is mature enough to begin table design and ticketing.
+
+The recommended order is:
+
+1. Review and approve this EDD
+2. Confirm V1 assignment behavior for Yogi, Riddhi, and Both
+3. Write UUID-based migrations
+4. Build one-time task CRUD
+5. Add recurrence generation
+6. Add the minimal UI
+7. Use it before expanding the model
+8. Normalize users later through a separate cross-feature migration
+
+The first migration should remain narrow, but the task/series split, original occurrence identity, category separation, snapshot model, and explicit temporary assignment string should be treated as intentional foundational decisions. The string assignment is a migration seam, not the permanent identity model.
