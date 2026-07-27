@@ -18,3 +18,37 @@ export const VALIDATION_RULES = {
     MAX: 10000,
   },
 } as const;
+
+// Task error messages
+export const ErrorFetchingTask = 'Error fetching task data';
+export const ErrorInsertingTask = 'Error inserting task';
+export const ErrorUpdatingTask = 'Error updating task';
+export const ErrorDeletingTask = 'Error deleting task';
+export const ErrorFetchingTaskCategories = 'Error fetching task categories';
+export const ErrorInsertingTaskCategory = 'Error inserting task category';
+export const ErrorUpdatingTaskCategory = 'Error updating task category';
+
+// Task valid values
+export const VALID_TASK_KINDS = ['event', 'deadline', 'activity'] as const;
+export const VALID_TASK_MODALITIES = ['physical', 'virtual', 'none'] as const;
+export const VALID_TASK_TIME_MODES = ['timed', 'all_day', 'date_only'] as const;
+export const VALID_TASK_STATUSES = [
+  'planned',
+  'completed',
+  'skipped',
+  'canceled',
+] as const;
+export const VALID_ASSIGNED_TO = ['Yogi', 'Riddhi', 'Both'] as const;
+export const VALID_SERIES_STATUSES = [
+  'active',
+  'paused',
+  'ended',
+  'archived',
+] as const;
+
+export const VALID_STATUS_TRANSITIONS: Record<string, string[]> = {
+  planned: ['completed', 'skipped', 'canceled'],
+  completed: [],
+  skipped: ['planned'],
+  canceled: [],
+};

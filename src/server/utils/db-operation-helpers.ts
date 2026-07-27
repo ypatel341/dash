@@ -9,14 +9,23 @@ import {
   InsertResponseId,
   MonthlyExpense,
   MonthlyExpenseWithReimbursable,
+  Task,
+  TaskCategory,
   UpdateExpenseType,
   WordnikWordOfTheDayResponse,
 } from './types';
 import {
   ErrorFetchingBudgetData,
   ErrorFetchingDailyWord,
+  ErrorFetchingTask,
+  ErrorFetchingTaskCategories,
   ErrorInsertingDailyWord,
   ErrorInsertingExpense,
+  ErrorInsertingTask,
+  ErrorInsertingTaskCategory,
+  ErrorUpdatingTask,
+  ErrorUpdatingTaskCategory,
+  ErrorDeletingTask,
 } from './consts';
 import { validateReimbursableExpense } from './utils';
 
@@ -152,7 +161,9 @@ export const getAllMonthlyReimbursedExpenseByMonth = async (
 
     logger.info(`Fetching reimbursed expenses for the month: ${yearMonthDay}`);
 
-    const result: MonthlyExpenseWithReimbursable[] = await db('budget_monthly_expenses')
+    const result: MonthlyExpenseWithReimbursable[] = await db(
+      'budget_monthly_expenses',
+    )
       .select(
         'budget_monthly_expenses.*',
         'reimbursable_expenses.company',
@@ -181,7 +192,7 @@ export const getAllMonthlyReimbursedExpenseByMonth = async (
     logger.error(`${ErrorFetchingBudgetData}: ${error}`);
     throw error;
   }
-}
+};
 
 export const deleteExpense = async (id: string): Promise<void> => {
   try {
@@ -397,6 +408,226 @@ export const getAccumulatedYearlyData = async (
     return result as CurrentYearlyAccumulatedData[];
   } catch (error) {
     logger.error(`Error fetching accumulated yearly data: ${error}`);
+    throw error;
+  }
+};
+
+// --- Task Category DB Operations ---
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const formatTaskCategoryRow = (row: any): TaskCategory => ({
+  id: row.id,
+  name: row.name,
+  slug: row.slug,
+  colorKey: row.color_key,
+  iconKey: row.icon_key,
+  sortOrder: row.sort_order,
+  isActive: row.is_active,
+  createdAt: dayjs(row.created_at).toISOString(),
+  updatedAt: dayjs(row.updated_at).toISOString(),
+  deletedAt: row.deleted_at ? dayjs(row.deleted_at).toISOString() : null,
+});
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const formatTaskRow = (row: any): Task => ({
+  id: row.id,
+  assignedTo: row.assigned_to,
+  seriesId: row.series_id,
+  originalOccurrenceDate: row.original_occurrence_date
+    ? dayjs(row.original_occurrence_date).format('YYYY-MM-DD')
+    : null,
+  title: row.title,
+  description: row.description,
+  categoryId: row.category_id,
+  kind: row.kind,
+  modality: row.modality,
+  status: row.status,
+  taskDate: dayjs(row.task_date).format('YYYY-MM-DD'),
+  timeMode: row.time_mode,
+  startTime: row.start_time,
+  endTime: row.end_time,
+  location: row.location,
+  isException: row.is_exception,
+  metadata: row.metadata,
+  completedAt: row.completed_at ? dayjs(row.completed_at).toISOString() : null,
+  canceledAt: row.canceled_at ? dayjs(row.canceled_at).toISOString() : null,
+  createdAt: dayjs(row.created_at).toISOString(),
+  updatedAt: dayjs(row.updated_at).toISOString(),
+  deletedAt: row.deleted_at ? dayjs(row.deleted_at).toISOString() : null,
+});
+
+export const getAllTaskCategories = async (): Promise<TaskCategory[]> => {
+  try {
+    const rows = await db('task_categories')
+      .select('*')
+      .where('is_active', true)
+      .whereNull('deleted_at')
+      .orderBy('sort_order', 'asc');
+
+    return rows.map(formatTaskCategoryRow);
+  } catch (error) {
+    logger.error(`${ErrorFetchingTaskCategories}: ${error}`);
+    throw error;
+  }
+};
+
+export const getTaskCategoryById = async (
+  id: string,
+): Promise<TaskCategory | undefined> => {
+  try {
+    const row = await db('task_categories')
+      .select('*')
+      .where('id', id)
+      .whereNull('deleted_at')
+      .first();
+
+    return row ? formatTaskCategoryRow(row) : undefined;
+  } catch (error) {
+    logger.error(`${ErrorFetchingTaskCategories}: ${error}`);
+    throw error;
+  }
+};
+
+export const insertTaskCategory = async (data: {
+  name: string;
+  slug: string;
+  color_key: string;
+  icon_key?: string;
+  sort_order?: number;
+}): Promise<TaskCategory> => {
+  try {
+    const [row] = await db('task_categories')
+      .insert({
+        name: data.name,
+        slug: data.slug,
+        color_key: data.color_key,
+        icon_key: data.icon_key ?? null,
+        sort_order: data.sort_order ?? 0,
+      })
+      .returning('*');
+
+    logger.info(`Inserted task category ${row.slug}`);
+    return formatTaskCategoryRow(row);
+  } catch (error) {
+    logger.error(`${ErrorInsertingTaskCategory}: ${error}`);
+    throw error;
+  }
+};
+
+export const updateTaskCategory = async (
+  id: string,
+  data: Record<string, unknown>,
+): Promise<TaskCategory | undefined> => {
+  try {
+    const rows = await db('task_categories')
+      .where('id', id)
+      .whereNull('deleted_at')
+      .update({ ...data, updated_at: db.fn.now() })
+      .returning('*');
+
+    if (!rows.length) return undefined;
+
+    logger.info(`Updated task category ${id}`);
+    return formatTaskCategoryRow(rows[0]);
+  } catch (error) {
+    logger.error(`${ErrorUpdatingTaskCategory}: ${error}`);
+    throw error;
+  }
+};
+
+// --- Task DB Operations ---
+
+export const getTaskById = async (id: string): Promise<Task | undefined> => {
+  try {
+    const row = await db('tasks')
+      .select('*')
+      .where('id', id)
+      .whereNull('deleted_at')
+      .first();
+
+    return row ? formatTaskRow(row) : undefined;
+  } catch (error) {
+    logger.error(`${ErrorFetchingTask}: ${error}`);
+    throw error;
+  }
+};
+
+export const getTasksByDateRange = async (
+  from: string,
+  to: string,
+  status?: string,
+  assignedTo?: string,
+): Promise<Task[]> => {
+  try {
+    let query = db('tasks')
+      .select('*')
+      .where('task_date', '>=', from)
+      .where('task_date', '<=', to)
+      .whereNull('deleted_at')
+      .orderBy('task_date', 'asc')
+      .orderBy('start_time', 'asc');
+
+    if (status) {
+      query = query.where('status', status);
+    }
+    if (assignedTo) {
+      query = query.where('assigned_to', assignedTo);
+    }
+
+    const rows = await query;
+    return rows.map(formatTaskRow);
+  } catch (error) {
+    logger.error(`${ErrorFetchingTask}: ${error}`);
+    throw error;
+  }
+};
+
+export const insertTask = async (
+  data: Record<string, unknown>,
+): Promise<Task> => {
+  try {
+    const [row] = await db('tasks').insert(data).returning('*');
+
+    logger.info(`Inserted task ${row.id}`);
+    return formatTaskRow(row);
+  } catch (error) {
+    logger.error(`${ErrorInsertingTask}: ${error}`);
+    throw error;
+  }
+};
+
+export const updateTaskById = async (
+  id: string,
+  data: Record<string, unknown>,
+): Promise<Task | undefined> => {
+  try {
+    const rows = await db('tasks')
+      .where('id', id)
+      .whereNull('deleted_at')
+      .update({ ...data, updated_at: db.fn.now() })
+      .returning('*');
+
+    if (!rows.length) return undefined;
+
+    logger.info(`Updated task ${id}`);
+    return formatTaskRow(rows[0]);
+  } catch (error) {
+    logger.error(`${ErrorUpdatingTask}: ${error}`);
+    throw error;
+  }
+};
+
+export const softDeleteTask = async (id: string): Promise<boolean> => {
+  try {
+    const count = await db('tasks')
+      .where('id', id)
+      .whereNull('deleted_at')
+      .update({ deleted_at: db.fn.now(), updated_at: db.fn.now() });
+
+    logger.info(`Soft-deleted task ${id}`);
+    return count > 0;
+  } catch (error) {
+    logger.error(`${ErrorDeletingTask}: ${error}`);
     throw error;
   }
 };
