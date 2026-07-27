@@ -52,3 +52,27 @@ export const VALID_STATUS_TRANSITIONS: Record<string, string[]> = {
   skipped: ['planned'],
   canceled: [],
 };
+
+// Series error messages
+export const ErrorFetchingTaskSeries = 'Error fetching task series';
+export const ErrorInsertingTaskSeries = 'Error inserting task series';
+export const ErrorUpdatingTaskSeries = 'Error updating task series';
+export const ErrorMaterializingOccurrences =
+  'Error materializing task occurrences';
+
+// Series status transitions
+export const VALID_SERIES_STATUS_TRANSITIONS: Record<string, string[]> = {
+  active: ['paused', 'ended', 'archived'],
+  paused: ['active', 'archived'],
+  ended: ['archived'],
+  archived: [],
+};
+
+// Materialization
+export const DEFAULT_MATERIALIZATION_HORIZON_DAYS = 90;
+export const SUPPORTED_RRULE_FREQUENCIES = [
+  'DAILY',
+  'WEEKLY',
+  'MONTHLY',
+  'YEARLY',
+] as const;

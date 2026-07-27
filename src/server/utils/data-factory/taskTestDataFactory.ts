@@ -1,8 +1,10 @@
 import {
   Task,
   TaskCategory,
+  TaskSeries,
   CreateTaskRequest,
   CreateCategoryRequest,
+  CreateSeriesRequest,
 } from '../types';
 
 export const createTestTaskCategory = (
@@ -67,5 +69,74 @@ export const createTestCreateCategoryRequest = (
   name: 'Custom',
   slug: 'custom',
   colorKey: 'primary',
+  ...overrides,
+});
+
+export const createTestTaskSeries = (
+  overrides: Partial<TaskSeries> = {},
+): TaskSeries => ({
+  id: 'series-1',
+  assignedTo: 'Yogi',
+  title: 'Weekly Standup',
+  description: null,
+  categoryId: 'cat-1',
+  kind: 'event',
+  modality: 'virtual',
+  location: null,
+  timeMode: 'timed',
+  startTime: '09:00:00',
+  endTime: '09:30:00',
+  startsOn: '2026-08-01',
+  endsOn: null,
+  recurrenceRule: 'FREQ=WEEKLY;BYDAY=MO',
+  status: 'active',
+  generatedThrough: null,
+  metadata: {},
+  createdAt: '2026-07-27T00:00:00.000Z',
+  updatedAt: '2026-07-27T00:00:00.000Z',
+  deletedAt: null,
+  ...overrides,
+});
+
+export const createTestCreateSeriesRequest = (
+  overrides: Partial<CreateSeriesRequest> = {},
+): CreateSeriesRequest => ({
+  assignedTo: 'Yogi',
+  title: 'Weekly Standup',
+  categoryId: 'cat-1',
+  kind: 'event',
+  modality: 'virtual',
+  timeMode: 'timed',
+  startTime: '09:00',
+  startsOn: '2026-08-01',
+  recurrenceRule: 'FREQ=WEEKLY;BYDAY=MO',
+  ...overrides,
+});
+
+export const createTestRecurringTask = (
+  overrides: Partial<Task> = {},
+): Task => ({
+  id: 'task-r1',
+  assignedTo: 'Yogi',
+  seriesId: 'series-1',
+  originalOccurrenceDate: '2026-08-04',
+  title: 'Weekly Standup',
+  description: null,
+  categoryId: 'cat-1',
+  kind: 'event',
+  modality: 'virtual',
+  status: 'planned',
+  taskDate: '2026-08-04',
+  timeMode: 'timed',
+  startTime: '09:00:00',
+  endTime: '09:30:00',
+  location: null,
+  isException: false,
+  metadata: {},
+  completedAt: null,
+  canceledAt: null,
+  createdAt: '2026-07-27T00:00:00.000Z',
+  updatedAt: '2026-07-27T00:00:00.000Z',
+  deletedAt: null,
   ...overrides,
 });

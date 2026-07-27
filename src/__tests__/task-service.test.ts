@@ -39,6 +39,11 @@ jest.mock('../server/utils/db-operation-helpers', () => ({
   insertTask: jest.fn(),
   updateTaskById: jest.fn(),
   softDeleteTask: jest.fn(),
+  getSeriesNeedingMaterialization: jest.fn(),
+}));
+
+jest.mock('../server/services/seriesService', () => ({
+  ensureOccurrencesForDateRange: jest.fn().mockResolvedValue(undefined),
 }));
 
 afterEach(() => {
@@ -442,15 +447,35 @@ describe('updateTaskService', () => {
 // --- deleteTaskService ---
 
 describe('deleteTaskService', () => {
-  it('should soft-delete the task', async () => {
+  it('should soft-delete a one-time task', async () => {
+    const task = createTestTask({ seriesId: null });
+    (getTaskById as jest.Mock).mockResolvedValue(task);
     (softDeleteTask as jest.Mock).mockResolvedValue(true);
 
     await deleteTaskService('task-1');
     expect(softDeleteTask).toHaveBeenCalledWith('task-1');
   });
 
+  it('should cancel a recurring occurrence instead of soft-deleting', async () => {
+    const task = createTestTask({ seriesId: 'series-1' });
+    (getTaskById as jest.Mock).mockResolvedValue(task);
+    (updateTaskById as jest.Mock).mockResolvedValue({
+      ...task,
+      status: 'canceled',
+      isException: true,
+    });
+
+    await deleteTaskService('task-1');
+    expect(softDeleteTask).not.toHaveBeenCalled();
+    expect(updateTaskById).toHaveBeenCalledWith('task-1', {
+      status: 'canceled',
+      is_exception: true,
+      canceled_at: expect.any(String),
+    });
+  });
+
   it('should throw if task not found', async () => {
-    (softDeleteTask as jest.Mock).mockResolvedValue(false);
+    (getTaskById as jest.Mock).mockResolvedValue(undefined);
 
     await expect(deleteTaskService('missing')).rejects.toThrow(
       'Task not found',

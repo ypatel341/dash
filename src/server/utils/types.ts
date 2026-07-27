@@ -267,3 +267,61 @@ export type UpdateCategoryRequest = {
   sortOrder?: number;
   isActive?: boolean;
 };
+
+// Series types
+
+export type TaskSeries = {
+  id: string;
+  assignedTo: string;
+  title: string;
+  description: string | null;
+  categoryId: string;
+  kind: string;
+  modality: string;
+  location: string | null;
+  timeMode: string;
+  startTime: string | null;
+  endTime: string | null;
+  startsOn: string;
+  endsOn: string | null;
+  recurrenceRule: string;
+  status: string;
+  generatedThrough: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+export type CreateSeriesRequest = {
+  assignedTo: string;
+  title: string;
+  description?: string;
+  categoryId: string;
+  kind: string;
+  modality: string;
+  location?: string;
+  timeMode: string;
+  startTime?: string;
+  endTime?: string;
+  startsOn: string;
+  endsOn?: string;
+  recurrenceRule: string;
+  metadata?: Record<string, unknown>;
+};
+
+export type UpdateSeriesRequest = {
+  title?: string;
+  description?: string | null;
+  assignedTo?: string;
+  categoryId?: string;
+  kind?: string;
+  modality?: string;
+  location?: string | null;
+  timeMode?: string;
+  startTime?: string | null;
+  endTime?: string | null;
+  endsOn?: string | null;
+  recurrenceRule?: string;
+  metadata?: Record<string, unknown>;
+};
