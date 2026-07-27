@@ -63,7 +63,7 @@ export const updateCategoryController = async (req: Request, res: Response) => {
 export const listTasksController = async (req: Request, res: Response) => {
   const { from, to, status, assignedTo } = req.query;
 
-  if (!from || !to) {
+  if (!from || !to || typeof from !== 'string' || typeof to !== 'string') {
     res
       .status(400)
       .json({ error: 'from and to query parameters are required' });

@@ -127,7 +127,10 @@ export const validateUpdateTask = (body: unknown): UpdateTaskRequest => {
     result.assignedTo = data.assignedTo as string;
   }
   if (data.categoryId !== undefined) {
-    result.categoryId = data.categoryId as string;
+    if (typeof data.categoryId !== 'string' || !data.categoryId) {
+      throw new Error('categoryId must be a non-empty string');
+    }
+    result.categoryId = data.categoryId;
   }
   if (data.kind !== undefined) {
     if (
@@ -278,7 +281,10 @@ export const updateCategoryService = async (
   if (data.isActive !== undefined) dbData.is_active = data.isActive;
 
   const updated = await updateTaskCategory(id, dbData);
-  return updated!;
+  if (!updated) {
+    throw new Error('Category not found');
+  }
+  return updated;
 };
 
 // --- Task Service ---
@@ -372,7 +378,7 @@ export const updateTaskService = async (
   if ('location' in data) dbData.location = data.location ?? null;
   if (data.metadata !== undefined) dbData.metadata = data.metadata;
 
-  if (data.status) {
+  if (data.status && data.status !== existing.status) {
     dbData.status = data.status;
     if (data.status === 'completed') {
       dbData.completed_at = new Date().toISOString();
@@ -382,7 +388,10 @@ export const updateTaskService = async (
   }
 
   const updated = await updateTaskById(id, dbData);
-  return updated!;
+  if (!updated) {
+    throw new Error('Task not found');
+  }
+  return updated;
 };
 
 export const deleteTaskService = async (id: string): Promise<void> => {
