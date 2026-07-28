@@ -50,7 +50,7 @@ const TaskDay: React.FC<TaskDayProps> = ({ taskDates, day, ...other }) => {
 };
 
 type CalendarViewProps = {
-  onDateSelect: (date: string) => void;
+  onDateSelect?: (date: string) => void;
   refreshKey: number;
 };
 
@@ -113,7 +113,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const handleDateChange = (date: Dayjs | null) => {
     if (date) {
       setSelectedDate(date);
-      onDateSelect(date.format('YYYY-MM-DD'));
+      onDateSelect?.(date.format('YYYY-MM-DD'));
     }
   };
 

@@ -44,7 +44,7 @@ const TasksHomePage: React.FC = () => {
           <UpcomingTaskList refreshKey={refreshKey} onToast={handleToast} />
         </Grid>
         <Grid item xs={12} md={4}>
-          <CalendarView onDateSelect={() => {}} refreshKey={refreshKey} />
+          <CalendarView refreshKey={refreshKey} />
         </Grid>
       </Grid>
 
