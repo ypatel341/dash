@@ -7,7 +7,6 @@ import {
   Switch,
   FormControlLabel,
   SelectChangeEvent,
-  Typography,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -341,9 +340,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>
-          <Typography>Cancel</Typography>
-        </Button>
+        <Button onClick={handleClose}>{en.tasksPage.actions.cancel}</Button>
         <Button
           variant="contained"
           onClick={handleSubmit}

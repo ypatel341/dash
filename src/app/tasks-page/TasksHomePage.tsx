@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Container, Box, Typography, Fab } from '@mui/material';
+import { Container, Box, Typography, Fab, Grid } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { ToastSeverityOptions } from '../budgeting-page/types/BudgetCategoryTypes';
 import ToastMessage from '../customizations/ToastMessages';
 import TaskForm from './components/TaskForm';
 import UpcomingTaskList from './components/UpcomingTaskList';
+import CalendarView from './components/CalendarView';
 import en from '../i18n/en';
 
 const TasksHomePage: React.FC = () => {
@@ -26,7 +27,7 @@ const TasksHomePage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 3 }}>
+    <Container maxWidth="lg" sx={{ py: 3 }}>
       <Box
         sx={{
           display: 'flex',
@@ -38,7 +39,14 @@ const TasksHomePage: React.FC = () => {
         <Typography variant="h5">{en.tasksPage.header}</Typography>
       </Box>
 
-      <UpcomingTaskList refreshKey={refreshKey} onToast={handleToast} />
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={8}>
+          <UpcomingTaskList refreshKey={refreshKey} onToast={handleToast} />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <CalendarView refreshKey={refreshKey} />
+        </Grid>
+      </Grid>
 
       <TaskForm
         open={formOpen}
@@ -49,6 +57,7 @@ const TasksHomePage: React.FC = () => {
 
       <Fab
         color="primary"
+        aria-label={en.tasksPage.createTask}
         onClick={() => setFormOpen(true)}
         sx={{ position: 'fixed', bottom: 24, right: 24 }}
       >

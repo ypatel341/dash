@@ -103,6 +103,10 @@ const en = {
     filterByStatus: 'Status',
     allStatuses: 'All',
     allAssignees: 'All',
+    viewAll: 'View all tasks',
+    noTasksToday: 'Nothing planned for today',
+    taskSingular: 'task',
+    taskPlural: 'tasks',
   },
   wordOfTheDay: {
     loading: 'Loading word of the day...',
