@@ -115,6 +115,9 @@ const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
             label={en.tasksPage.filterByAssignee}
             value={assignedToFilter}
             options={ASSIGNED_TO_FILTER}
+            displayMap={{
+               All: en.tasksPage.allAssignees,
+             }}
             onChange={handleAssignedToChange}
           />
         </Box>

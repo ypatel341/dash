@@ -57,6 +57,7 @@ const TasksHomePage: React.FC = () => {
 
       <Fab
         color="primary"
+        aria-label={en.tasksPage.createTask}
         onClick={() => setFormOpen(true)}
         sx={{ position: 'fixed', bottom: 24, right: 24 }}
       >

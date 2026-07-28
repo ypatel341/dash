@@ -176,6 +176,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
           <>
             <Tooltip title={en.tasksPage.actions.complete}>
               <IconButton
+                aria-label={en.tasksPage.actions.complete}
                 size="small"
                 color="success"
                 onClick={() => handleAction('completed')}
@@ -184,12 +185,17 @@ const TaskRow: React.FC<TaskRowProps> = ({
               </IconButton>
             </Tooltip>
             <Tooltip title={en.tasksPage.actions.skip}>
-              <IconButton size="small" onClick={() => handleAction('skipped')}>
+              <IconButton
+                aria-label={en.tasksPage.actions.skip}
+                size="small"
+                onClick={() => handleAction('skipped')}
+              >
                 <SkipNextIcon fontSize="small" />
               </IconButton>
             </Tooltip>
             <Tooltip title={en.tasksPage.actions.cancel}>
               <IconButton
+                aria-label={en.tasksPage.actions.cancel}
                 size="small"
                 color="warning"
                 onClick={() => handleAction('canceled')}
@@ -201,7 +207,11 @@ const TaskRow: React.FC<TaskRowProps> = ({
         )}
         {isSkipped && (
           <Tooltip title={en.tasksPage.actions.unskip}>
-            <IconButton size="small" onClick={() => handleAction('planned')}>
+            <IconButton
+              aria-label={en.tasksPage.actions.unskip}
+              size="small"
+              onClick={() => handleAction('planned')}
+            >
               <UndoIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -209,6 +219,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
         {!isTerminal && (
           <Tooltip title={en.tasksPage.actions.delete}>
             <IconButton
+              aria-label={en.tasksPage.actions.delete}
               size="small"
               color="error"
               onClick={() => handleAction('delete')}

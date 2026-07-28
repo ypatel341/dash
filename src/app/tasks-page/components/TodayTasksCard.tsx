@@ -43,10 +43,10 @@ const TodayTasksCard: React.FC = () => {
       try {
         const today = dayjs().format('YYYY-MM-DD');
         const [taskData, catData] = await Promise.all([
-          fetchTasks(today, today),
+          fetchTasks(today, today, 'planned'),
           fetchCategories(),
         ]);
-        setTasks(taskData.filter((t) => t.status === 'planned'));
+        setTasks(taskData);
         setCategories(catData);
       } catch {
         // Card is non-critical; fail silently
