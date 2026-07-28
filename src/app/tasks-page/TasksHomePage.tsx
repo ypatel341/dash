@@ -1,24 +1,68 @@
-import React from 'react';
-// import Header from './shared-budget-components/Header';
-// import ClothesComponent from './clothes/Clothes';
-
-/**
- * ***************
- * This is a new Tasks Page
- * Consider implementing a new creative header
- * THIS PAGE SHOULD HAVE A LARGE CALENDAR
- * THIS PAGE SHOULD SOME IMPORTANT TASKS TO ACCOMPLISH
- * THIS PAGE SHOULD BILLS, REMINDERS, AND IMPORTANT TASKS -> THINK CAR INSPECTION, INSURANCE, HOME REPAIRS, ETC
- * ***************
- */
+import React, { useState } from 'react';
+import { Container, Box, Typography, Fab } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import { ToastSeverityOptions } from '../budgeting-page/types/BudgetCategoryTypes';
+import ToastMessage from '../customizations/ToastMessages';
+import TaskForm from './components/TaskForm';
+import UpcomingTaskList from './components/UpcomingTaskList';
+import en from '../i18n/en';
 
 const TasksHomePage: React.FC = () => {
+  const [formOpen, setFormOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastSeverity, setToastSeverity] =
+    useState<ToastSeverityOptions>('success');
+  const [showToast, setShowToast] = useState(false);
+
+  const handleToast = (message: string, severity: 'success' | 'error') => {
+    setToastMessage(message);
+    setToastSeverity(severity);
+    setShowToast(true);
+  };
+
+  const handleRefresh = () => {
+    setRefreshKey((k) => k + 1);
+  };
+
   return (
-    <div>
-      {/* <Header /> */}
-      <h1>This will your tasks, todo and calendar page</h1>
-      {/* <ClothesComponent /> */}
-    </div>
+    <Container maxWidth="md" sx={{ py: 3 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 3,
+        }}
+      >
+        <Typography variant="h5">{en.tasksPage.header}</Typography>
+      </Box>
+
+      <UpcomingTaskList refreshKey={refreshKey} onToast={handleToast} />
+
+      <TaskForm
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        onSuccess={handleRefresh}
+        onToast={handleToast}
+      />
+
+      <Fab
+        color="primary"
+        onClick={() => setFormOpen(true)}
+        sx={{ position: 'fixed', bottom: 24, right: 24 }}
+      >
+        <AddIcon />
+      </Fab>
+
+      {showToast && (
+        <ToastMessage
+          message={toastMessage}
+          severity={toastSeverity}
+          onClose={() => setShowToast(false)}
+        />
+      )}
+    </Container>
   );
 };
 
