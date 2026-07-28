@@ -8,6 +8,14 @@ describe('Series flow (real backend + database)', () => {
     const title = `Cypress Series ${Date.now()}`;
     cy.get('[data-testid="task-title-input"]').find('input').type(title);
 
+    // Category is required
+    cy.get('[data-testid="task-form-dialog"]')
+      .contains('label', 'Category')
+      .parent()
+      .find('[role="combobox"]')
+      .click();
+    cy.get('ul[role="listbox"] li').first().click();
+
     // Toggle recurring on
     cy.get('[data-testid="task-recurring-toggle"]').click();
 
@@ -27,12 +35,18 @@ describe('Series flow (real backend + database)', () => {
       // At least one occurrence should appear in the upcoming list
       cy.get('[data-testid="upcoming-task-list"]').should('contain', title);
 
-      // Clean up: archive the series, then delete generated tasks
+      // Clean up: archive the series and cancel generated tasks so they don't leak into other tests
       cy.request(
         'POST',
         `http://localhost:5000/tasks/series/${seriesId}/archive`,
       );
-    });
+
+      const taskIds = (response?.body.tasks ?? []).map((t: { id: string }) => t.id);
+      cy.wrap(taskIds).each((taskId) => {
+        cy.request('DELETE', `http://localhost:5000/tasks/${taskId}`)
+          .its('status')
+          .should('eq', 204);
+      });
   });
 
   it('cancels one occurrence of a recurring series', () => {
@@ -51,9 +65,10 @@ describe('Series flow (real backend + database)', () => {
           modality: 'none',
           timeMode: 'date_only',
           startsOn: today,
-          recurrenceRule: 'FREQ=DAILY',
+          recurrenceRule: 'FREQ=DAILY;COUNT=2',
         }).then(({ body }) => {
           const seriesId = body.series.id;
+          const taskIds = (body.tasks ?? []).map((t: { id: string }) => t.id);
 
           cy.visit('http://localhost:3000/tasks');
           cy.get('[data-testid="upcoming-task-list"]').should('contain', title);
@@ -75,6 +90,12 @@ describe('Series flow (real backend + database)', () => {
             'POST',
             `http://localhost:5000/tasks/series/${seriesId}/archive`,
           );
+
+          cy.wrap(taskIds).each((taskId) => {
+            cy.request('DELETE', `http://localhost:5000/tasks/${taskId}`)
+              .its('status')
+              .should('eq', 204);
+          });
         });
       },
     );

@@ -15,15 +15,22 @@ describe('Homepage tasks card', () => {
     const title = `Cypress Home ${Date.now()}`;
     const today = new Date().toISOString().split('T')[0];
 
-    cy.request('POST', 'http://localhost:5000/tasks', {
-      assignedTo: 'Yogi',
-      title,
-      categoryId: null,
-      kind: 'event',
-      modality: 'none',
-      taskDate: today,
-      timeMode: 'date_only',
-    }).then(({ body }) => {
+    cy.request('GET', 'http://localhost:5000/tasks/categories')
+      .then(({ body: categories }) => {
+        const categoryId = categories[0]?.id;
+        expect(categoryId).to.be.a('string');
+
+        return cy.request('POST', 'http://localhost:5000/tasks', {
+          assignedTo: 'Yogi',
+          title,
+          categoryId,
+          kind: 'event',
+          modality: 'none',
+          taskDate: today,
+          timeMode: 'date_only',
+        });
+      })
+      .then(({ body }) => {
       const taskId = body.id;
 
       cy.visit('http://localhost:3000/');

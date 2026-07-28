@@ -17,6 +17,14 @@ describe('Task CRUD (real backend + database)', () => {
 
     cy.get('[data-testid="task-title-input"]').find('input').type(uniqueTitle);
 
+    // Category is required
+    cy.get('[data-testid="task-form-dialog"]')
+      .contains('label', 'Category')
+      .parent()
+      .find('[role="combobox"]')
+      .click();
+    cy.get('ul[role="listbox"] li').first().click();
+
     cy.intercept('POST', '**/tasks').as('createTask');
     cy.get('[data-testid="task-form-submit"]').click();
 
@@ -36,7 +44,7 @@ describe('Task CRUD (real backend + database)', () => {
       // Clean up
       cy.request('DELETE', `http://localhost:5000/tasks/${taskId}`).then(
         (deleteResponse) => {
-          expect(deleteResponse.status).to.eq(200);
+          expect(deleteResponse.status).to.eq(204);
         },
       );
     });
@@ -45,15 +53,22 @@ describe('Task CRUD (real backend + database)', () => {
   it('completes a task and verifies the status updates', () => {
     // Create a task to act on
     const title = `Cypress Complete ${Date.now()}`;
-    cy.request('POST', 'http://localhost:5000/tasks', {
-      assignedTo: 'Yogi',
-      title,
-      categoryId: null,
-      kind: 'event',
-      modality: 'none',
-      taskDate: new Date().toISOString().split('T')[0],
-      timeMode: 'date_only',
-    }).then(({ body }) => {
+    cy.request('GET', 'http://localhost:5000/tasks/categories')
+      .then(({ body: categories }) => {
+        const categoryId = categories[0]?.id;
+        expect(categoryId).to.be.a('string');
+
+        return cy.request('POST', 'http://localhost:5000/tasks', {
+          assignedTo: 'Yogi',
+          title,
+          categoryId,
+          kind: 'event',
+          modality: 'none',
+          taskDate: new Date().toISOString().split('T')[0],
+          timeMode: 'date_only',
+        });
+      })
+      .then(({ body }) => {
       const taskId = body.id;
 
       cy.reload();
@@ -218,8 +233,11 @@ describe('Task CRUD (real backend + database)', () => {
     }).then(({ body }) => {
       const taskId = body.id;
 
-      cy.reload();
+      cy.request('PATCH', `http://localhost:5000/tasks/${taskId}`, {
+        status: 'completed',
+      });
 
+      cy.reload();
       // Default filter should show planned tasks; completed task may not appear
       // Switch status filter to "All"
       cy.get('[data-testid="upcoming-task-list"]')
