@@ -11,7 +11,7 @@ import AppNavBar from './customizations/AppNavBar';
 
 import './App.css';
 import ExpenseDetailsHomePage from './budgeting-page/budget-components/ExpenseDetailsComponents/ExpenseDetailsHomePage';
-import WordOfTheDay from './home-page/components/WordOfTheDay';
+import LandingPage from './home-page/components/LandingPage';
 
 function App() {
   return (
@@ -19,7 +19,7 @@ function App() {
       <AppNavBar />
       <div className="App">
         <Routes>
-          <Route path="/" element={<WordOfTheDay />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/budget" element={<BudgetOutlet />}>
             <Route index element={<BudgetHomePage />} />
             <Route path="net-worth" element={<NetWorthPage />} />
