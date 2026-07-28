@@ -9,13 +9,16 @@ DASH (Decentralized Automation System for Home) is a personal life-management mo
 ## First-time setup (new machine)
 
 1. **Create `.env.development`** in the project root — this file is not committed:
+
    ```
    DATABASE_URL=postgres://postgres:<your-pg-password>@localhost:5432/dash-test
    REACT_APP_API_URL=http://localhost:5000
    ```
+
    `DATABASE_URL` is used by both the backend (`src/config/db.ts`) and Knex migrations (`knexfile.js`). `REACT_APP_API_URL` is the backend base URL used by all frontend API calls.
 
 2. **Restore the database** from the latest dump in `dbdump/`. The dumps come from the production PostgreSQL 15 database (hosted on Railway), so you need `postgresql-client-15` or newer — the system `pg_restore` may be too old:
+
    ```bash
    # Install if needed (Ubuntu — add pgdg repo first if apt can't find it)
    sudo apt-get install -y postgresql-client-15
@@ -25,6 +28,7 @@ DASH (Decentralized Automation System for Home) is a personal life-management mo
      -U postgres -h localhost -d dash-test --no-owner --no-acl \
      dbdump/prod-snapshot-<latest>.dump
    ```
+
    The `restore-from-backup.sh` script builds the filename from today's date, so it only works if you captured a snapshot today. Use the manual command above for existing dumps.
 
 3. **Run migrations**, then start:
@@ -72,6 +76,7 @@ npm run prettier
 React SPA with React Router v6. Entry at `src/index.tsx`, root component at `src/app/App.tsx`.
 
 Routes:
+
 - `/` — nav hub
 - `/budget` — nested budget routes via `BudgetOutlet` (an `<Outlet />` wrapper)
   - `/budget/enter-expense`, `/budget/net-worth`, `/budget/money-in-month`

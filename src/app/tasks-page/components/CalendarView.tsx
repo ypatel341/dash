@@ -118,7 +118,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   };
 
   return (
-    <Box>
+    <Box data-testid="calendar-view">
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DateCalendar
           value={selectedDate}
@@ -137,19 +137,20 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         />
       </LocalizationProvider>
 
-      {dayTasks.length > 0 && (
-        <Box sx={{ px: 2, pb: 1 }}>
-          <Typography
-            variant="subtitle2"
-            color="text.secondary"
-            sx={{ mb: 0.5 }}
-          >
-            {selectedDate.format('ddd, MMM D')}
+      <Box data-testid="calendar-day-detail" sx={{ px: 2, pb: 1 }}>
+        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
+          {selectedDate.format('ddd, MMM D')}
+        </Typography>
+        {dayTasks.length === 0 ? (
+          <Typography variant="body2" color="text.secondary">
+            {en.tasksPage.noTasksOnDay}
           </Typography>
+        ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
             {dayTasks.map((task) => (
               <Box
                 key={task.id}
+                data-testid="calendar-day-task"
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
@@ -189,8 +190,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               </Box>
             ))}
           </Box>
-        </Box>
-      )}
+        )}
+      </Box>
     </Box>
   );
 };

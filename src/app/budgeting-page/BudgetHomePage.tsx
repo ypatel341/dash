@@ -33,7 +33,7 @@ const BudgetHomePage: React.FC = () => {
       );
 
       const { data } = response;
-      
+
       const { monthlyTotalBudget, currentMonthlyUsage } =
         await calculateSurplus(data);
 
@@ -47,7 +47,7 @@ const BudgetHomePage: React.FC = () => {
         category: 'reimbursement',
         currentamount: 0,
         household: 'domus',
-        id: '1234'
+        id: '1234',
       });
 
       setBudgetData(data);

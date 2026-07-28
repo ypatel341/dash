@@ -12,8 +12,14 @@ exports.up = async function up(knex) {
     table.string('icon_key').nullable();
     table.integer('sort_order').notNullable().defaultTo(0);
     table.boolean('is_active').notNullable().defaultTo(true);
-    table.timestamp('created_at', { useTz: true }).notNullable().defaultTo(knex.fn.now());
-    table.timestamp('updated_at', { useTz: true }).notNullable().defaultTo(knex.fn.now());
+    table
+      .timestamp('created_at', { useTz: true })
+      .notNullable()
+      .defaultTo(knex.fn.now());
+    table
+      .timestamp('updated_at', { useTz: true })
+      .notNullable()
+      .defaultTo(knex.fn.now());
     table.timestamp('deleted_at', { useTz: true }).nullable();
   });
 
@@ -39,8 +45,14 @@ exports.up = async function up(knex) {
     table.string('status').notNullable().defaultTo('active');
     table.date('generated_through').nullable();
     table.jsonb('metadata').notNullable().defaultTo('{}');
-    table.timestamp('created_at', { useTz: true }).notNullable().defaultTo(knex.fn.now());
-    table.timestamp('updated_at', { useTz: true }).notNullable().defaultTo(knex.fn.now());
+    table
+      .timestamp('created_at', { useTz: true })
+      .notNullable()
+      .defaultTo(knex.fn.now());
+    table
+      .timestamp('updated_at', { useTz: true })
+      .notNullable()
+      .defaultTo(knex.fn.now());
     table.timestamp('deleted_at', { useTz: true }).nullable();
   });
 
@@ -61,11 +73,7 @@ exports.up = async function up(knex) {
   await knex.schema.createTable('tasks', (table) => {
     table.uuid('id').primary().defaultTo(knex.raw('uuid_generate_v4()'));
     table.string('assigned_to').notNullable();
-    table
-      .uuid('series_id')
-      .nullable()
-      .references('id')
-      .inTable('task_series');
+    table.uuid('series_id').nullable().references('id').inTable('task_series');
     table.date('original_occurrence_date').nullable();
     table.string('title').notNullable();
     table.text('description').nullable();
@@ -86,8 +94,14 @@ exports.up = async function up(knex) {
     table.jsonb('metadata').notNullable().defaultTo('{}');
     table.timestamp('completed_at', { useTz: true }).nullable();
     table.timestamp('canceled_at', { useTz: true }).nullable();
-    table.timestamp('created_at', { useTz: true }).notNullable().defaultTo(knex.fn.now());
-    table.timestamp('updated_at', { useTz: true }).notNullable().defaultTo(knex.fn.now());
+    table
+      .timestamp('created_at', { useTz: true })
+      .notNullable()
+      .defaultTo(knex.fn.now());
+    table
+      .timestamp('updated_at', { useTz: true })
+      .notNullable()
+      .defaultTo(knex.fn.now());
     table.timestamp('deleted_at', { useTz: true }).nullable();
   });
 

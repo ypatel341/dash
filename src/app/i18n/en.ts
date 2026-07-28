@@ -89,6 +89,14 @@ const en = {
       unskip: 'Undo Skip',
       delete: 'Delete',
     },
+    confirm: {
+      deleteTitle: 'Delete task?',
+      deleteMessage: 'This action cannot be undone.',
+      cancelTitle: 'Cancel task?',
+      cancelMessage: 'Canceled tasks cannot be reopened.',
+      confirm: 'Confirm',
+      goBack: 'Go Back',
+    },
     toast: {
       createSuccess: 'Task created successfully',
       createError: 'Failed to create task',
@@ -107,6 +115,8 @@ const en = {
     noTasksToday: 'Nothing planned for today',
     taskSingular: 'task',
     taskPlural: 'tasks',
+    moreCount: (n: number) => `+${n} more`,
+    noTasksOnDay: 'No tasks on this day',
   },
   wordOfTheDay: {
     loading: 'Loading word of the day...',

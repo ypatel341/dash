@@ -58,7 +58,7 @@ describe('handles all DB operations and closes the connection', () => {
     // Confirm it's gone (or soft-deleted) after
     const after = await getAllMonthlyExpense();
     const deletedExpense = after.find((e) => e.id === insertExpenseIdDelete.id);
-    
+
     expect(deletedExpense).toBeUndefined(); // hard delete
   });
 

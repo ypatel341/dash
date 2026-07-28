@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Button,
   Box,
+  CircularProgress,
   Grid,
   TextField,
   Switch,
@@ -200,7 +201,13 @@ const TaskForm: React.FC<TaskFormProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="sm"
+      fullWidth
+      data-testid="task-form-dialog"
+    >
       <DialogTitle>{en.tasksPage.createTask}</DialogTitle>
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
@@ -210,6 +217,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
             onChange={handleInputChange('title')}
             fullWidth
             required
+            data-testid="task-title-input"
           />
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
@@ -281,6 +289,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
             control={
               <Switch
                 checked={formData.recurring}
+                data-testid="task-recurring-toggle"
                 onChange={(e) =>
                   setFormData({ ...formData, recurring: e.target.checked })
                 }
@@ -328,6 +337,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
             value={formData.location}
             onChange={handleInputChange('location')}
             fullWidth
+            data-testid="task-location-input"
           />
           <TextField
             label={en.tasksPage.form.description}
@@ -336,15 +346,22 @@ const TaskForm: React.FC<TaskFormProps> = ({
             fullWidth
             multiline
             minRows={2}
+            data-testid="task-description-input"
           />
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>{en.tasksPage.actions.cancel}</Button>
+        <Button data-testid="task-form-cancel" onClick={handleClose}>
+          {en.tasksPage.actions.cancel}
+        </Button>
         <Button
           variant="contained"
           onClick={handleSubmit}
           disabled={!canSubmit}
+          data-testid="task-form-submit"
+          startIcon={
+            submitting ? <CircularProgress size={16} color="inherit" /> : null
+          }
         >
           {en.tasksPage.form.submit}
         </Button>

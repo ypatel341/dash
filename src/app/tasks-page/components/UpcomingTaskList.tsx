@@ -108,7 +108,7 @@ const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
   }
 
   return (
-    <Box>
+    <Box data-testid="upcoming-task-list">
       <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
         <Box sx={{ minWidth: 130 }}>
           <SelectField
@@ -116,8 +116,8 @@ const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
             value={assignedToFilter}
             options={ASSIGNED_TO_FILTER}
             displayMap={{
-               All: en.tasksPage.allAssignees,
-             }}
+              All: en.tasksPage.allAssignees,
+            }}
             onChange={handleAssignedToChange}
           />
         </Box>
@@ -136,7 +136,11 @@ const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
       </Box>
 
       {sortedDates.length === 0 ? (
-        <Typography color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
+        <Typography
+          data-testid="no-tasks-message"
+          color="text.secondary"
+          sx={{ py: 4, textAlign: 'center' }}
+        >
           {en.tasksPage.noTasks}
         </Typography>
       ) : (

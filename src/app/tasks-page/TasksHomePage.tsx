@@ -27,7 +27,7 @@ const TasksHomePage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 3 }}>
+    <Container maxWidth="lg" sx={{ py: 3 }} data-testid="tasks-home-page">
       <Box
         sx={{
           display: 'flex',
@@ -58,6 +58,7 @@ const TasksHomePage: React.FC = () => {
       <Fab
         color="primary"
         aria-label={en.tasksPage.createTask}
+        data-testid="create-task-fab"
         onClick={() => setFormOpen(true)}
         sx={{ position: 'fixed', bottom: 24, right: 24 }}
       >
