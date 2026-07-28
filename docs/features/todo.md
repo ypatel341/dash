@@ -1,4 +1,5 @@
 # DASH Task System V1
+
 ## Engineering Design Document
 
 **Status:** Draft for review — Revision 1.2  
@@ -158,14 +159,14 @@ Initial values:
 
 Examples:
 
-| Example | Kind |
-|---|---|
-| Party | event |
-| Virtual interview | event |
-| Therapy appointment | event |
-| Bill due date | deadline |
+| Example                 | Kind     |
+| ----------------------- | -------- |
+| Party                   | event    |
+| Virtual interview       | event    |
+| Therapy appointment     | event    |
+| Bill due date           | deadline |
 | HVAC filter replacement | activity |
-| Workout | activity |
+| Workout                 | activity |
 
 ### 5.5 Modality
 
@@ -180,7 +181,6 @@ Initial values:
 Modality should be represented through icons or secondary styling rather than the main category color.
 
 ---
-
 
 ## 5.6 Identity and assignment in V1
 
@@ -379,11 +379,11 @@ Initial `time_mode` values:
 
 Examples:
 
-| Task | time_mode | task_date | start_time | end_time |
-|---|---|---|---|---|
-| Interview | timed | 2026-08-05 | 14:00 | 15:00 |
-| Diwali | all_day | 2026-11-08 | null | null |
-| Mortgage due | date_only | 2026-08-01 | null | null |
+| Task         | time_mode | task_date  | start_time | end_time |
+| ------------ | --------- | ---------- | ---------- | -------- |
+| Interview    | timed     | 2026-08-05 | 14:00      | 15:00    |
+| Diwali       | all_day   | 2026-11-08 | null       | null     |
+| Mortgage due | date_only | 2026-08-01 | null       | null     |
 
 Timezone support can initially default to the user profile. A series-level timezone may be added when recurrence generation or external calendar synchronization requires it.
 
@@ -395,18 +395,18 @@ Timezone support can initially default to the user profile. A series-level timez
 
 Stores user-visible life categories and display metadata.
 
-| Column | Type | Notes |
-|---|---|---|
-| `id` | uuid | Primary key |
-| `name` | varchar | Display name |
-| `slug` | varchar | Stable identifier |
-| `color_key` | varchar | MUI palette token (e.g. `primary`, `success`) |
-| `icon_key` | varchar, nullable | Optional icon |
-| `sort_order` | integer | Display order |
-| `is_active` | boolean | Hide without deleting |
-| `created_at` | timestamptz | |
-| `updated_at` | timestamptz | |
-| `deleted_at` | timestamptz, nullable | Soft delete (matches existing pattern) |
+| Column       | Type                  | Notes                                         |
+| ------------ | --------------------- | --------------------------------------------- |
+| `id`         | uuid                  | Primary key                                   |
+| `name`       | varchar               | Display name                                  |
+| `slug`       | varchar               | Stable identifier                             |
+| `color_key`  | varchar               | MUI palette token (e.g. `primary`, `success`) |
+| `icon_key`   | varchar, nullable     | Optional icon                                 |
+| `sort_order` | integer               | Display order                                 |
+| `is_active`  | boolean               | Hide without deleting                         |
+| `created_at` | timestamptz           |                                               |
+| `updated_at` | timestamptz           |                                               |
+| `deleted_at` | timestamptz, nullable | Soft delete (matches existing pattern)        |
 
 Constraints:
 
@@ -433,28 +433,28 @@ other
 
 Stores recurring task definitions and generation state.
 
-| Column | Type | Notes |
-|---|---|---|
-| `id` | uuid | Primary key |
-| `assigned_to` | varchar | Yogi, Riddhi, or Both in V1 |
-| `title` | varchar | Default occurrence title |
-| `description` | text, nullable | Default description |
-| `category_id` | foreign key | Default category |
-| `kind` | varchar | event, deadline, activity |
-| `modality` | varchar | physical, virtual, none |
-| `location` | varchar, nullable | Physical or virtual location |
-| `time_mode` | varchar | timed, all_day, date_only |
-| `start_time` | time, nullable | Default local start time |
-| `end_time` | time, nullable | Default local end time |
-| `starts_on` | date | First eligible recurrence date |
-| `ends_on` | date, nullable | Optional series end |
-| `recurrence_rule` | text | RFC 5545-style RRULE |
-| `status` | varchar | active, paused, ended, archived |
-| `generated_through` | date, nullable | Materialization progress |
-| `metadata` | jsonb | See section 9 for V1 contract |
-| `created_at` | timestamptz | |
-| `updated_at` | timestamptz | |
-| `deleted_at` | timestamptz, nullable | Soft delete (matches existing pattern) |
+| Column              | Type                  | Notes                                  |
+| ------------------- | --------------------- | -------------------------------------- |
+| `id`                | uuid                  | Primary key                            |
+| `assigned_to`       | varchar               | Yogi, Riddhi, or Both in V1            |
+| `title`             | varchar               | Default occurrence title               |
+| `description`       | text, nullable        | Default description                    |
+| `category_id`       | foreign key           | Default category                       |
+| `kind`              | varchar               | event, deadline, activity              |
+| `modality`          | varchar               | physical, virtual, none                |
+| `location`          | varchar, nullable     | Physical or virtual location           |
+| `time_mode`         | varchar               | timed, all_day, date_only              |
+| `start_time`        | time, nullable        | Default local start time               |
+| `end_time`          | time, nullable        | Default local end time                 |
+| `starts_on`         | date                  | First eligible recurrence date         |
+| `ends_on`           | date, nullable        | Optional series end                    |
+| `recurrence_rule`   | text                  | RFC 5545-style RRULE                   |
+| `status`            | varchar               | active, paused, ended, archived        |
+| `generated_through` | date, nullable        | Materialization progress               |
+| `metadata`          | jsonb                 | See section 9 for V1 contract          |
+| `created_at`        | timestamptz           |                                        |
+| `updated_at`        | timestamptz           |                                        |
+| `deleted_at`        | timestamptz, nullable | Soft delete (matches existing pattern) |
 
 Recommended checks:
 
@@ -477,30 +477,30 @@ Notes:
 
 Stores every concrete agenda item.
 
-| Column | Type | Notes |
-|---|---|---|
-| `id` | uuid | Primary key |
-| `assigned_to` | varchar | Yogi, Riddhi, or Both in V1 |
-| `series_id` | foreign key, nullable | Null for one-time tasks |
-| `original_occurrence_date` | date, nullable | Stable recurrence identity |
-| `title` | varchar | Snapshot title |
-| `description` | text, nullable | Snapshot description |
-| `category_id` | foreign key | Snapshot category |
-| `kind` | varchar | event, deadline, activity |
-| `modality` | varchar | physical, virtual, none |
-| `status` | varchar | planned, completed, skipped, canceled |
-| `task_date` | date | Display date |
-| `time_mode` | varchar | timed, all_day, date_only |
-| `start_time` | time, nullable | |
-| `end_time` | time, nullable | |
-| `location` | varchar, nullable | |
-| `is_exception` | boolean | Manually changed recurring occurrence |
-| `metadata` | jsonb | See section 9 for V1 contract |
-| `completed_at` | timestamptz, nullable | |
-| `canceled_at` | timestamptz, nullable | |
-| `created_at` | timestamptz | |
-| `updated_at` | timestamptz | |
-| `deleted_at` | timestamptz, nullable | Soft delete (matches existing pattern) |
+| Column                     | Type                  | Notes                                  |
+| -------------------------- | --------------------- | -------------------------------------- |
+| `id`                       | uuid                  | Primary key                            |
+| `assigned_to`              | varchar               | Yogi, Riddhi, or Both in V1            |
+| `series_id`                | foreign key, nullable | Null for one-time tasks                |
+| `original_occurrence_date` | date, nullable        | Stable recurrence identity             |
+| `title`                    | varchar               | Snapshot title                         |
+| `description`              | text, nullable        | Snapshot description                   |
+| `category_id`              | foreign key           | Snapshot category                      |
+| `kind`                     | varchar               | event, deadline, activity              |
+| `modality`                 | varchar               | physical, virtual, none                |
+| `status`                   | varchar               | planned, completed, skipped, canceled  |
+| `task_date`                | date                  | Display date                           |
+| `time_mode`                | varchar               | timed, all_day, date_only              |
+| `start_time`               | time, nullable        |                                        |
+| `end_time`                 | time, nullable        |                                        |
+| `location`                 | varchar, nullable     |                                        |
+| `is_exception`             | boolean               | Manually changed recurring occurrence  |
+| `metadata`                 | jsonb                 | See section 9 for V1 contract          |
+| `completed_at`             | timestamptz, nullable |                                        |
+| `canceled_at`              | timestamptz, nullable |                                        |
+| `created_at`               | timestamptz           |                                        |
+| `updated_at`               | timestamptz           |                                        |
+| `deleted_at`               | timestamptz, nullable | Soft delete (matches existing pattern) |
 
 Recommended checks:
 
@@ -680,31 +680,31 @@ Unit tests target the service layer (`taskService.ts`) and utility functions. Th
 
 #### Service layer coverage
 
-| Area | What to assert |
-|---|---|
-| Task creation | Validates required fields; rejects invalid `kind`, `modality`, `time_mode`, `status` |
-| Task creation | Timed tasks require `start_time`; `all_day`/`date_only` ignore times |
-| Task update | Status transitions are valid (e.g. cannot complete a canceled task) |
-| Task deletion | One-time tasks can be hard-deleted; recurring occurrences are canceled, not deleted |
-| Task listing | Filters by date range and status; returns correct shape |
-| Series creation | Validates RRULE via `rrule` library; rejects malformed rules |
-| Series creation | Generates occurrences through the 90-day horizon |
-| Materialization | Idempotent — running twice produces no duplicates |
-| Materialization | Respects `generated_through` and only fills the gap |
-| Materialization | Skips dates with existing canceled exceptions |
-| Series pause | Paused series stop generating future occurrences |
-| Series resume | Resumed series regenerate from where they left off |
-| Snapshot behavior | Generated occurrences copy series defaults at creation time |
-| Metadata | Rejects non-object values (arrays, primitives) |
+| Area              | What to assert                                                                       |
+| ----------------- | ------------------------------------------------------------------------------------ |
+| Task creation     | Validates required fields; rejects invalid `kind`, `modality`, `time_mode`, `status` |
+| Task creation     | Timed tasks require `start_time`; `all_day`/`date_only` ignore times                 |
+| Task update       | Status transitions are valid (e.g. cannot complete a canceled task)                  |
+| Task deletion     | One-time tasks can be hard-deleted; recurring occurrences are canceled, not deleted  |
+| Task listing      | Filters by date range and status; returns correct shape                              |
+| Series creation   | Validates RRULE via `rrule` library; rejects malformed rules                         |
+| Series creation   | Generates occurrences through the 90-day horizon                                     |
+| Materialization   | Idempotent — running twice produces no duplicates                                    |
+| Materialization   | Respects `generated_through` and only fills the gap                                  |
+| Materialization   | Skips dates with existing canceled exceptions                                        |
+| Series pause      | Paused series stop generating future occurrences                                     |
+| Series resume     | Resumed series regenerate from where they left off                                   |
+| Snapshot behavior | Generated occurrences copy series defaults at creation time                          |
+| Metadata          | Rejects non-object values (arrays, primitives)                                       |
 
 #### Utility coverage
 
-| Area | What to assert |
-|---|---|
-| RRULE helpers | Simple form values map to valid RRULE strings |
-| Date helpers | Occurrence date calculations respect `starts_on` and `ends_on` |
-| Validation helpers | `assigned_to` rejects values outside `Yogi`, `Riddhi`, `Both` |
-| Integrity | `series_id` and `original_occurrence_date` are both present or both null |
+| Area               | What to assert                                                           |
+| ------------------ | ------------------------------------------------------------------------ |
+| RRULE helpers      | Simple form values map to valid RRULE strings                            |
+| Date helpers       | Occurrence date calculations respect `starts_on` and `ends_on`           |
+| Validation helpers | `assigned_to` rejects values outside `Yogi`, `Riddhi`, `Both`            |
+| Integrity          | `series_id` and `original_occurrence_date` are both present or both null |
 
 ### Conventions
 
@@ -881,7 +881,6 @@ The output should be a short V1.1 architecture decision record rather than immed
 
 ---
 
-
 ### Separate future ticket — Normalize users and household assignments
 
 **Purpose:** Replace string-based identities across DASH with UUID-backed users after the task feature has been validated through real usage.
@@ -904,11 +903,11 @@ This ticket is intentionally outside Task Planning V1 and should not block the f
 
 A practical implementation can be delivered in three pull requests. Ticket 6 (usage review) produces a decision document, not a PR.
 
-| PR | Tickets | Contents |
-|---|---|---|
-| PR 1 | Tickets 1 + 2 | Migrations, seed categories, full task CRUD + listing, category CRUD, unit tests |
-| PR 2 | Ticket 3 | Series CRUD, RRULE handling via `rrule`, occurrence materialization, idempotency tests |
-| PR 3 | Tickets 4 + 5 | Task form, task list, recurrence UI, dashboard integration, calendar projection |
+| PR   | Tickets       | Contents                                                                               |
+| ---- | ------------- | -------------------------------------------------------------------------------------- |
+| PR 1 | Tickets 1 + 2 | Migrations, seed categories, full task CRUD + listing, category CRUD, unit tests       |
+| PR 2 | Ticket 3      | Series CRUD, RRULE handling via `rrule`, occurrence materialization, idempotency tests |
+| PR 3 | Tickets 4 + 5 | Task form, task list, recurrence UI, dashboard integration, calendar projection        |
 
 This keeps recurrence complexity from blocking the first usable task flow.
 
@@ -988,3 +987,53 @@ The recommended order is:
 8. Normalize users later through a separate cross-feature migration
 
 The first migration should remain narrow, but the task/series split, original occurrence identity, category separation, snapshot model, and explicit temporary assignment string should be treated as intentional foundational decisions. The string assignment is a migration seam, not the permanent identity model.
+
+---
+
+## Appendix A: UI Implementation Notes (PR 3A-C)
+
+### Frontend file inventory
+
+| File                                                 | Purpose                                                                   |
+| ---------------------------------------------------- | ------------------------------------------------------------------------- |
+| `src/app/tasks-page/TasksHomePage.tsx`               | Top-level route: 2-column Grid (list + calendar), FAB, toast              |
+| `src/app/tasks-page/components/TaskForm.tsx`         | Dialog-based create form with recurrence toggle                           |
+| `src/app/tasks-page/components/TaskFormFields.tsx`   | Reusable field wrappers: SelectField, CategoryField, DateField, TimeField |
+| `src/app/tasks-page/components/TaskRow.tsx`          | Task row with status actions, confirm dialog for delete/cancel            |
+| `src/app/tasks-page/components/UpcomingTaskList.tsx` | Fetches tasks for today+14 days, groups by date, assignee/status filters  |
+| `src/app/tasks-page/components/CalendarView.tsx`     | MUI DateCalendar with category-colored badge dots, day detail panel       |
+| `src/app/tasks-page/components/TodayTasksCard.tsx`   | Landing page card showing today's planned tasks                           |
+| `src/app/tasks-page/utils/taskApi.ts`                | Typed axios helpers for all task/series/category endpoints                |
+| `src/app/home-page/components/LandingPage.tsx`       | Landing page wrapper: WordOfTheDay + TodayTasksCard                       |
+| `src/app/i18n/en.ts`                                 | `tasksPage` block with all UI strings                                     |
+
+### Patterns
+
+- **MUI `sx` prop** for all styling; no Tachyons
+- **`data-testid` attributes** on all key elements for Cypress selectors
+- **`aria-label`** on all action IconButtons and the FAB
+- **Confirm dialog** gates delete and cancel actions (not skip/complete)
+- **Server-side filtering** via query params (`status`, `assignedTo`) rather than client-side
+- **Trailing-slash defense** on `REACT_APP_API_URL` in taskApi.ts
+- **`displayMap`** on SelectField for translating enum values to human labels
+- **Category colors** mapped via `colorKey` → MUI palette tokens (`primary.main`, etc.)
+
+### Cypress E2E tests
+
+Located in `cypress/e2e/tasks-page/`:
+
+| File                      | Coverage                                                                                                           |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `task-crud.cy.ts`         | Create task, complete, skip/unskip, cancel with confirm, delete with confirm, dismiss confirm, validation, filters |
+| `series-flow.cy.ts`       | Create recurring series via form, cancel single occurrence                                                         |
+| `homepage-calendar.cy.ts` | Today card on landing page, "View all" navigation, calendar day detail, empty day state                            |
+
+Tests use the **real backend** pattern: `cy.request` for setup/cleanup, `cy.intercept` as spies to capture response data.
+
+### Known limitations (V1)
+
+- No task edit UI (only create + status actions)
+- No series management UI (pause/resume/archive only via API)
+- Calendar shows first category color only when multiple categories exist on a day
+- Filter selectors use MUI Select which requires `[role="combobox"]` targeting in Cypress
+- No drag-and-drop or reordering

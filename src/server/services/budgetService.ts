@@ -45,9 +45,8 @@ export const getAllMonthlyExpensesByMonth = async (
   const rawMonthlyData: MonthlyExpense[] =
     await getAllMonthlyExpenseByMonth(month);
 
-  const reimbursedMonthlyData: MonthlyExpenseWithReimbursable[] = await getAllMonthlyReimbursedExpenseByMonth(
-    month,
-  );
+  const reimbursedMonthlyData: MonthlyExpenseWithReimbursable[] =
+    await getAllMonthlyReimbursedExpenseByMonth(month);
 
   reimbursedMonthlyData.forEach((expense) => {
     expense.bucketname = 'reimbursement';

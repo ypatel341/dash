@@ -80,7 +80,7 @@ const TodayTasksCard: React.FC = () => {
   }
 
   return (
-    <Card sx={{ maxWidth: 480, mx: 'auto' }}>
+    <Card data-testid="today-tasks-card" sx={{ maxWidth: 480, mx: 'auto' }}>
       <CardContent>
         <Box
           sx={{
@@ -171,13 +171,17 @@ const TodayTasksCard: React.FC = () => {
                 color="text.secondary"
                 sx={{ pl: 1 }}
               >
-                +{tasks.length - 4} more
+                {en.tasksPage.moreCount(tasks.length - 4)}
               </Typography>
             )}
           </Box>
         )}
       </CardContent>
-      <CardActionArea onClick={() => navigate('/tasks')} sx={{ py: 1 }}>
+      <CardActionArea
+        data-testid="today-tasks-view-all"
+        onClick={() => navigate('/tasks')}
+        sx={{ py: 1 }}
+      >
         <Box
           sx={{
             display: 'flex',

@@ -209,18 +209,19 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({
                   row.description
                 )}
               </TableCell>
-              {bucketNameHomePage === 'reimbursement' && (<TableCell>
-                {editMode[row.id] ? (
-                  <TextField
-                    value={editedData?.amount || ''}
-                    onChange={(e) =>
-                      handleInputChange('amount', e.target.value)
-                    }
-                  />
-                ) : (
-                  'update here'
-                )}
-              </TableCell>
+              {bucketNameHomePage === 'reimbursement' && (
+                <TableCell>
+                  {editMode[row.id] ? (
+                    <TextField
+                      value={editedData?.amount || ''}
+                      onChange={(e) =>
+                        handleInputChange('amount', e.target.value)
+                      }
+                    />
+                  ) : (
+                    'update here'
+                  )}
+                </TableCell>
               )}
               <TableCell>
                 {editMode[row.id] ? (

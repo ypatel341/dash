@@ -47,7 +47,7 @@ export const EnterExpensePage: React.FC = () => {
     expensable: false,
     reimbursement: {
       company: '',
-      description: ''
+      description: '',
     },
   });
   const [toastMessage, setToastMessage] = useState<string>('');

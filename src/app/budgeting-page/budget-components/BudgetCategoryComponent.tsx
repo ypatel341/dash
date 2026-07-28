@@ -44,7 +44,11 @@ const BudgetCategoryComponent: React.FC<BudgetComponentProps> = ({
         style={{ backgroundColor: cardColor }}
       >
         <CardContent>
-          <Typography variant="h5" component="div" sx={{ color: 'rgba(0, 0, 0, 0.87)' }}>
+          <Typography
+            variant="h5"
+            component="div"
+            sx={{ color: 'rgba(0, 0, 0, 0.87)' }}
+          >
             {transformBucketName(data.bucketname)}
           </Typography>
           <Typography variant="body2" sx={{ color: 'rgba(0, 0, 0, 0.6)' }}>
