@@ -43,10 +43,13 @@ describe('Task page routing and recovery', () => {
 
     cy.request('GET', 'http://localhost:5000/api/tasks/categories')
       .then(({ body: categories }) => {
+        expect(categories).to.be.an('array').and.to.have.length.greaterThan(0);
+        const categoryId = categories[0].id;
+
         return cy.request('POST', 'http://localhost:5000/api/tasks', {
           assignedTo: 'Yogi',
           title,
-          categoryId: categories[0]?.id,
+          categoryId,
           kind: 'event',
           modality: 'none',
           taskDate: new Date().toISOString().split('T')[0],
