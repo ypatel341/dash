@@ -39,3 +39,7 @@ package-lock.json
 *.dump
 *.sql
 /dbdump/
+
+docs/handoffs
+docs/usage-notes
+docs/retros

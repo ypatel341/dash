@@ -1,48 +1,48 @@
-# Personal Scripts and hacks (DASH)
+# Database Backup & Restore
 
-1. Create a prod snapshot by running `prod-snapshot-script.sh`
-   1. If this doesn't work, might need to check to see if the prod tables are set correctly in the respective paths
-   2. this will create a new snapshot in the `dbdumps` folder
-2. To restore run `restore-from-backup.sh`
-   1. Will need to take the snapshot first as this is dependent on the day
-3. KNEX
-   1. The original baseline_schema should not be run in production only because the tables were created first the purpose of the baseline_schema is for a new developer or machine
-   2. preferably run the steps above to get a snapshot of some sorts
-   3. run `npm run start` and should trigger the knex tables after
-   4. run `npx knex migrate:make migration_name` for a new knex migration
+## Scripts
 
-## USEFUL COMMANDS:
+### 1. Take a prod snapshot
 
-1. Create new migration
-   npx knex migrate:make migration_name
+Captures the Railway production database into a timestamped `.dump` file.
 
-2. Run pending migrations
-   npx knex migrate:latest
-
-3. Rollback last migration
-   npx knex migrate:rollback
-
-4. Check migration status
-   npx knex migrate:currentVersion
-
-5. List all migrations
-   npx knex migrate:list
-
-6. Create with specific environment
-   npx knex migrate:make migration_name --env production
-
-7. Useful script below
-
+```bash
+export RAILWAY_DATABASE_PUBLIC_URL='postgresql://postgres:<password>@<proxy>.proxy.rlwy.net:<port>/railway'
+./dbdump/prod-snapshot-script.sh
 ```
-const knex = require('knex')(require('./knexfile').development);
-knex
-  .raw('SELECT 1')
-  .then(() => {
-    console.log('Database connection successful');
-    process.exit(0);
-  })
-  .catch((err) => {
-    console.error('Database connection failed:', err);
-    process.exit(1);
-  });
+
+Creates `dbdump/prod-snapshot-MMDDYYYY.dump`.
+
+### 2. Restore locally
+
+Restores a dump file into the local `dash-test` database. Reads connection details from `.env.development` if present, otherwise defaults to `postgres://postgres:postgres@localhost:5432/dash-test`.
+
+```bash
+# Restore the latest dump (by modification time)
+./dbdump/restore-from-backup.sh
+
+# Restore a specific dump
+./dbdump/restore-from-backup.sh ./dbdump/prod-snapshot-10252025.dump
 ```
+
+After restoring, run migrations and start the app:
+
+```bash
+npm run migrate:dev
+npm run start-all
+```
+
+### 3. Restore to Railway prod (rare)
+
+`restore-railway-db.sh` restores a dump file into the Railway production database. It creates a safety backup first and requires typing `RESTORE` to confirm.
+
+```bash
+export RAILWAY_DATABASE_PUBLIC_URL='postgresql://postgres:<password>@<proxy>.proxy.rlwy.net:<port>/railway'
+./dbdump/restore-railway-db.sh ./dbdump/prod-snapshot-10252025.dump
+```
+
+## Knex Migrations
+
+- The baseline schema migration is for new dev machines only — production tables were created separately
+- Run `npx knex migrate:make migration_name` to create a new migration
+- Run `npm run migrate:dev` to apply pending migrations locally

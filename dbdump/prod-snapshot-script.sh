@@ -17,11 +17,17 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DUMP_PATH="$SCRIPT_DIR/prod-snapshot-$CURRENT_DATE.dump"
 
 echo "Capturing a new backup to $DUMP_PATH"
-pg_dump \
+PG_DUMP="/usr/lib/postgresql/18/bin/pg_dump"
+if [[ ! -x "$PG_DUMP" ]]; then
+  PG_DUMP="pg_dump"
+fi
+
+"$PG_DUMP" \
   --format=custom \
   --no-owner \
   --no-acl \
   --file "$DUMP_PATH" \
   "$RAILWAY_DATABASE_PUBLIC_URL"
 
-echo "Backup captured successfully to $DUMP_PATH"
+FILE_SIZE=$(du -h "$DUMP_PATH" | cut -f1)
+echo "Backup captured successfully to $DUMP_PATH ($FILE_SIZE)"
