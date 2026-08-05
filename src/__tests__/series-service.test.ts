@@ -38,6 +38,8 @@ jest.mock('../server/utils/db-operation-helpers', () => ({
   updateTaskSeriesById: jest.fn(),
   getCanceledExceptionDates: jest.fn(),
   materializeOccurrences: jest.fn(),
+  updateFuturePlannedOccurrences: jest.fn().mockResolvedValue(0),
+  deleteFuturePlannedOccurrences: jest.fn().mockResolvedValue(0),
 }));
 
 jest.mock('../server/utils/rruleHelper', () => ({
@@ -173,9 +175,14 @@ describe('validateUpdateSeries', () => {
     );
   });
 
-  it('should reject startsOn field', () => {
-    expect(() => validateUpdateSeries({ startsOn: '2026-09-01' })).toThrow(
-      'startsOn cannot be changed after creation',
+  it('should accept startsOn field', () => {
+    const result = validateUpdateSeries({ startsOn: '2026-09-01' });
+    expect(result.startsOn).toBe('2026-09-01');
+  });
+
+  it('should reject empty startsOn', () => {
+    expect(() => validateUpdateSeries({ startsOn: '' })).toThrow(
+      'startsOn must be a non-empty date string',
     );
   });
 
@@ -367,6 +374,7 @@ describe('updateSeriesService', () => {
     const series = createTestTaskSeries();
     (getTaskSeriesById as jest.Mock).mockResolvedValue(series);
     (updateTaskSeriesById as jest.Mock).mockResolvedValue(series);
+    (getSeriesNeedingMaterialization as jest.Mock).mockResolvedValue([]);
 
     await updateSeriesService('series-1', {
       recurrenceRule: 'FREQ=DAILY',
@@ -376,6 +384,39 @@ describe('updateSeriesService', () => {
     expect(updateTaskSeriesById).toHaveBeenCalledWith('series-1', {
       recurrence_rule: 'FREQ=DAILY',
       end_time: null,
+    });
+  });
+
+  it('should reconcile future occurrences on field update', async () => {
+    const series = createTestTaskSeries();
+    (getTaskSeriesById as jest.Mock).mockResolvedValue(series);
+    (updateTaskSeriesById as jest.Mock).mockResolvedValue({
+      ...series,
+      title: 'Updated',
+    });
+
+    await updateSeriesService('series-1', { title: 'Updated' });
+
+    const { updateFuturePlannedOccurrences } =
+      jest.requireMock('../server/utils/db-operation-helpers');
+    expect(updateFuturePlannedOccurrences).toHaveBeenCalledWith('series-1', {
+      title: 'Updated',
+    });
+  });
+
+  it('should delete and re-materialize on schedule change', async () => {
+    const series = createTestTaskSeries();
+    (getTaskSeriesById as jest.Mock).mockResolvedValue(series);
+    (updateTaskSeriesById as jest.Mock).mockResolvedValue(series);
+    (getSeriesNeedingMaterialization as jest.Mock).mockResolvedValue([]);
+
+    await updateSeriesService('series-1', { startsOn: '2026-09-01' });
+
+    const { deleteFuturePlannedOccurrences } =
+      jest.requireMock('../server/utils/db-operation-helpers');
+    expect(deleteFuturePlannedOccurrences).toHaveBeenCalledWith('series-1');
+    expect(updateTaskSeriesById).toHaveBeenCalledWith('series-1', {
+      generated_through: null,
     });
   });
 });

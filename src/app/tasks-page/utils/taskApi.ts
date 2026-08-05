@@ -127,3 +127,37 @@ export const createSeries = async (
   const response = await axios.post(`${API_URL}/api/tasks/series`, data);
   return response.data;
 };
+
+export const updateSeries = async (
+  id: string,
+  data: Partial<Omit<TaskSeries, 'id' | 'status' | 'generatedThrough'>>,
+): Promise<TaskSeries> => {
+  const response = await axios.patch(`${API_URL}/api/tasks/series/${id}`, data);
+  return response.data;
+};
+
+export const pauseSeries = async (id: string): Promise<TaskSeries> => {
+  const response = await axios.post(
+    `${API_URL}/api/tasks/series/${id}/pause`,
+  );
+  return response.data;
+};
+
+export const resumeSeries = async (id: string): Promise<TaskSeries> => {
+  const response = await axios.post(
+    `${API_URL}/api/tasks/series/${id}/resume`,
+  );
+  return response.data;
+};
+
+export const archiveSeries = async (id: string): Promise<TaskSeries> => {
+  const response = await axios.post(
+    `${API_URL}/api/tasks/series/${id}/archive`,
+  );
+  return response.data;
+};
+
+export const fetchSeries = async (id: string): Promise<TaskSeries> => {
+  const response = await axios.get(`${API_URL}/api/tasks/series/${id}`);
+  return response.data;
+};

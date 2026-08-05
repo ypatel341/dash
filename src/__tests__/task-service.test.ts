@@ -25,6 +25,7 @@ import {
 } from '../server/utils/db-operation-helpers';
 import {
   createTestTask,
+  createTestRecurringTask,
   createTestTaskCategory,
   createTestCreateTaskRequest,
 } from '../server/utils/data-factory/taskTestDataFactory';
@@ -441,6 +442,54 @@ describe('updateTaskService', () => {
     await expect(
       updateTaskService('task-1', { startTime: null }),
     ).rejects.toThrow('startTime is required when timeMode is timed');
+  });
+
+  it('should set is_exception when editing data fields on a recurring task', async () => {
+    const recurringTask = createTestRecurringTask();
+    (getTaskById as jest.Mock).mockResolvedValue(recurringTask);
+    (updateTaskById as jest.Mock).mockResolvedValue({
+      ...recurringTask,
+      title: 'Updated Standup',
+      isException: true,
+    });
+
+    await updateTaskService('task-r1', { title: 'Updated Standup' });
+
+    expect(updateTaskById).toHaveBeenCalledWith(
+      'task-r1',
+      expect.objectContaining({ title: 'Updated Standup', is_exception: true }),
+    );
+  });
+
+  it('should NOT set is_exception for status-only changes on a recurring task', async () => {
+    const recurringTask = createTestRecurringTask();
+    (getTaskById as jest.Mock).mockResolvedValue(recurringTask);
+    (updateTaskById as jest.Mock).mockResolvedValue({
+      ...recurringTask,
+      status: 'completed',
+    });
+
+    await updateTaskService('task-r1', { status: 'completed' });
+
+    expect(updateTaskById).toHaveBeenCalledWith(
+      'task-r1',
+      expect.not.objectContaining({ is_exception: true }),
+    );
+  });
+
+  it('should NOT set is_exception when editing a one-time task', async () => {
+    (getTaskById as jest.Mock).mockResolvedValue(existingTask);
+    (updateTaskById as jest.Mock).mockResolvedValue({
+      ...existingTask,
+      title: 'Updated',
+    });
+
+    await updateTaskService('task-1', { title: 'Updated' });
+
+    expect(updateTaskById).toHaveBeenCalledWith(
+      'task-1',
+      expect.not.objectContaining({ is_exception: true }),
+    );
   });
 });
 

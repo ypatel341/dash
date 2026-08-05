@@ -831,3 +831,50 @@ export const materializeOccurrences = async (
     throw error;
   }
 };
+
+export const updateFuturePlannedOccurrences = async (
+  seriesId: string,
+  data: Record<string, unknown>,
+): Promise<number> => {
+  try {
+    const today = dayjs().format('YYYY-MM-DD');
+    const count = await db('tasks')
+      .where('series_id', seriesId)
+      .where('status', 'planned')
+      .where('is_exception', false)
+      .where('task_date', '>=', today)
+      .whereNull('deleted_at')
+      .update({ ...data, updated_at: db.fn.now() });
+
+    logger.info(
+      `Reconciled ${count} future occurrences for series ${seriesId}`,
+    );
+    return count;
+  } catch (error) {
+    logger.error(`Error reconciling future occurrences: ${error}`);
+    throw error;
+  }
+};
+
+export const deleteFuturePlannedOccurrences = async (
+  seriesId: string,
+): Promise<number> => {
+  try {
+    const today = dayjs().format('YYYY-MM-DD');
+    const count = await db('tasks')
+      .where('series_id', seriesId)
+      .where('status', 'planned')
+      .where('is_exception', false)
+      .where('task_date', '>=', today)
+      .whereNull('deleted_at')
+      .delete();
+
+    logger.info(
+      `Deleted ${count} future planned occurrences for series ${seriesId}`,
+    );
+    return count;
+  } catch (error) {
+    logger.error(`Error deleting future occurrences: ${error}`);
+    throw error;
+  }
+};

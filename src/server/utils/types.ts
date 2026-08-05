@@ -321,6 +321,7 @@ export type UpdateSeriesRequest = {
   timeMode?: string;
   startTime?: string | null;
   endTime?: string | null;
+  startsOn?: string;
   endsOn?: string | null;
   recurrenceRule?: string;
   metadata?: Record<string, unknown>;

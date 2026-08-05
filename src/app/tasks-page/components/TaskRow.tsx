@@ -8,7 +8,12 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Divider,
   IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -17,10 +22,23 @@ import SkipNextIcon from '@mui/icons-material/SkipNext';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import UndoIcon from '@mui/icons-material/Undo';
+import EditIcon from '@mui/icons-material/Edit';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+import ArchiveIcon from '@mui/icons-material/Archive';
 import PlaceIcon from '@mui/icons-material/Place';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import RepeatIcon from '@mui/icons-material/Repeat';
-import { Task, TaskCategory, updateTask, deleteTask } from '../utils/taskApi';
+import {
+  Task,
+  TaskCategory,
+  updateTask,
+  deleteTask,
+  pauseSeries,
+  resumeSeries,
+  archiveSeries,
+} from '../utils/taskApi';
 import en from '../../i18n/en';
 import dayjs from 'dayjs';
 
@@ -38,6 +56,7 @@ type TaskRowProps = {
   task: Task;
   categories: TaskCategory[];
   onUpdate: () => void;
+  onEdit: (task: Task) => void;
   onToast: (message: string, severity: 'success' | 'error') => void;
 };
 
@@ -45,9 +64,11 @@ const TaskRow: React.FC<TaskRowProps> = ({
   task,
   categories,
   onUpdate,
+  onEdit,
   onToast,
 }) => {
   const [pendingAction, setPendingAction] = useState<string | null>(null);
+  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
 
   const category = categories.find((c) => c.id === task.categoryId);
   const isOverdue =
@@ -56,8 +77,12 @@ const TaskRow: React.FC<TaskRowProps> = ({
   const isCanceled = task.status === 'canceled';
   const isSkipped = task.status === 'skipped';
   const isTerminal = isCompleted || isCanceled;
+  const isRecurring = !!task.seriesId;
+
+  const closeMenu = () => setMenuAnchor(null);
 
   const requestAction = (action: string) => {
+    closeMenu();
     if (action === 'delete' || action === 'canceled') {
       setPendingAction(action);
     } else {
@@ -83,6 +108,27 @@ const TaskRow: React.FC<TaskRowProps> = ({
         'error',
       );
     }
+  };
+
+  const handleSeriesAction = async (
+    action: 'pause' | 'resume' | 'archive',
+  ) => {
+    closeMenu();
+    if (!task.seriesId) return;
+    try {
+      if (action === 'pause') await pauseSeries(task.seriesId);
+      else if (action === 'resume') await resumeSeries(task.seriesId);
+      else await archiveSeries(task.seriesId);
+      onToast(en.tasksPage.toast.seriesActionSuccess, 'success');
+      onUpdate();
+    } catch {
+      onToast(en.tasksPage.toast.seriesError, 'error');
+    }
+  };
+
+  const handleEditClick = () => {
+    closeMenu();
+    onEdit(task);
   };
 
   return (
@@ -126,7 +172,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
           >
             {task.title}
           </Typography>
-          {task.seriesId && (
+          {isRecurring && (
             <RepeatIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
           )}
         </Box>
@@ -196,40 +242,17 @@ const TaskRow: React.FC<TaskRowProps> = ({
 
       <Box sx={{ display: 'flex', gap: 0.25 }}>
         {task.status === 'planned' && (
-          <>
-            <Tooltip title={en.tasksPage.actions.complete}>
-              <IconButton
-                aria-label={en.tasksPage.actions.complete}
-                data-testid="task-action-complete"
-                size="small"
-                color="success"
-                onClick={() => requestAction('completed')}
-              >
-                <CheckCircleOutlineIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={en.tasksPage.actions.skip}>
-              <IconButton
-                aria-label={en.tasksPage.actions.skip}
-                data-testid="task-action-skip"
-                size="small"
-                onClick={() => requestAction('skipped')}
-              >
-                <SkipNextIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={en.tasksPage.actions.cancel}>
-              <IconButton
-                aria-label={en.tasksPage.actions.cancel}
-                data-testid="task-action-cancel"
-                size="small"
-                color="warning"
-                onClick={() => requestAction('canceled')}
-              >
-                <CancelOutlinedIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </>
+          <Tooltip title={en.tasksPage.actions.complete}>
+            <IconButton
+              aria-label={en.tasksPage.actions.complete}
+              data-testid="task-action-complete"
+              size="small"
+              color="success"
+              onClick={() => requestAction('completed')}
+            >
+              <CheckCircleOutlineIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         )}
         {isSkipped && (
           <Tooltip title={en.tasksPage.actions.unskip}>
@@ -244,19 +267,100 @@ const TaskRow: React.FC<TaskRowProps> = ({
           </Tooltip>
         )}
         {!isTerminal && (
-          <Tooltip title={en.tasksPage.actions.delete}>
-            <IconButton
-              aria-label={en.tasksPage.actions.delete}
-              data-testid="task-action-delete"
-              size="small"
-              color="error"
-              onClick={() => requestAction('delete')}
-            >
-              <DeleteOutlineIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
+          <IconButton
+            aria-label={en.tasksPage.actions.more}
+            data-testid="task-action-more"
+            size="small"
+            onClick={(e) => setMenuAnchor(e.currentTarget)}
+          >
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
         )}
       </Box>
+
+      <Menu
+        anchorEl={menuAnchor}
+        open={Boolean(menuAnchor)}
+        onClose={closeMenu}
+        data-testid="task-overflow-menu"
+      >
+        <MenuItem
+          data-testid="task-menu-edit"
+          onClick={handleEditClick}
+        >
+          <ListItemIcon>
+            <EditIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>{en.tasksPage.actions.edit}</ListItemText>
+        </MenuItem>
+        {task.status === 'planned' && (
+          <MenuItem
+            data-testid="task-action-skip"
+            onClick={() => requestAction('skipped')}
+          >
+            <ListItemIcon>
+              <SkipNextIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>{en.tasksPage.actions.skip}</ListItemText>
+          </MenuItem>
+        )}
+        {task.status === 'planned' && (
+          <MenuItem
+            data-testid="task-action-cancel"
+            onClick={() => requestAction('canceled')}
+          >
+            <ListItemIcon>
+              <CancelOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>{en.tasksPage.actions.cancel}</ListItemText>
+          </MenuItem>
+        )}
+        <MenuItem
+          data-testid="task-action-delete"
+          onClick={() => requestAction('delete')}
+        >
+          <ListItemIcon>
+            <DeleteOutlineIcon fontSize="small" color="error" />
+          </ListItemIcon>
+          <ListItemText sx={{ color: 'error.main' }}>
+            {en.tasksPage.actions.delete}
+          </ListItemText>
+        </MenuItem>
+        {isRecurring && <Divider />}
+        {isRecurring && (
+          <MenuItem
+            data-testid="task-menu-pause-series"
+            onClick={() => handleSeriesAction('pause')}
+          >
+            <ListItemIcon>
+              <PauseCircleOutlineIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>{en.tasksPage.actions.pauseSeries}</ListItemText>
+          </MenuItem>
+        )}
+        {isRecurring && (
+          <MenuItem
+            data-testid="task-menu-resume-series"
+            onClick={() => handleSeriesAction('resume')}
+          >
+            <ListItemIcon>
+              <PlayCircleOutlineIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>{en.tasksPage.actions.resumeSeries}</ListItemText>
+          </MenuItem>
+        )}
+        {isRecurring && (
+          <MenuItem
+            data-testid="task-menu-archive-series"
+            onClick={() => handleSeriesAction('archive')}
+          >
+            <ListItemIcon>
+              <ArchiveIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>{en.tasksPage.actions.archiveSeries}</ListItemText>
+          </MenuItem>
+        )}
+      </Menu>
 
       <Dialog
         open={pendingAction !== null}
