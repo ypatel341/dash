@@ -66,7 +66,7 @@ describe('GET /tasks/categories', () => {
     const categories = [createTestTaskCategory()];
     (listCategoriesService as jest.Mock).mockResolvedValue(categories);
 
-    const response = await request(app).get('/tasks/categories');
+    const response = await request(app).get('/api/tasks/categories');
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual(categories);
@@ -77,7 +77,7 @@ describe('GET /tasks/categories', () => {
       new Error('DB error'),
     );
 
-    const response = await request(app).get('/tasks/categories');
+    const response = await request(app).get('/api/tasks/categories');
     expect(response.status).toBe(500);
     expect(response.body.error).toContain('Internal Server Error');
   });
@@ -91,7 +91,7 @@ describe('POST /tasks/categories', () => {
     (createCategoryService as jest.Mock).mockResolvedValue(category);
 
     const response = await request(app)
-      .post('/tasks/categories')
+      .post('/api/tasks/categories')
       .send(categoryReq);
 
     expect(response.status).toBe(201);
@@ -103,7 +103,7 @@ describe('POST /tasks/categories', () => {
       throw new Error('name is required');
     });
 
-    const response = await request(app).post('/tasks/categories').send({});
+    const response = await request(app).post('/api/tasks/categories').send({});
 
     expect(response.status).toBe(400);
     expect(response.body.error).toContain('name is required');
@@ -117,7 +117,7 @@ describe('PATCH /tasks/categories/:id', () => {
     (updateCategoryService as jest.Mock).mockResolvedValue(category);
 
     const response = await request(app)
-      .patch('/tasks/categories/cat-1')
+      .patch('/api/tasks/categories/cat-1')
       .send({ name: 'Updated' });
 
     expect(response.status).toBe(200);
@@ -131,7 +131,7 @@ describe('PATCH /tasks/categories/:id', () => {
     );
 
     const response = await request(app)
-      .patch('/tasks/categories/missing')
+      .patch('/api/tasks/categories/missing')
       .send({ name: 'X' });
 
     expect(response.status).toBe(404);
@@ -146,7 +146,7 @@ describe('GET /tasks', () => {
     (listTasksService as jest.Mock).mockResolvedValue(tasks);
 
     const response = await request(app).get(
-      '/tasks?from=2026-08-01&to=2026-08-31',
+      '/api/tasks?from=2026-08-01&to=2026-08-31',
     );
 
     expect(response.status).toBe(200);
@@ -163,7 +163,7 @@ describe('GET /tasks', () => {
     (listTasksService as jest.Mock).mockResolvedValue([]);
 
     await request(app).get(
-      '/tasks?from=2026-08-01&to=2026-08-31&status=planned&assignedTo=Yogi',
+      '/api/tasks?from=2026-08-01&to=2026-08-31&status=planned&assignedTo=Yogi',
     );
 
     expect(listTasksService).toHaveBeenCalledWith(
@@ -175,14 +175,14 @@ describe('GET /tasks', () => {
   });
 
   it('should return 400 when from/to are missing', async () => {
-    const response = await request(app).get('/tasks');
+    const response = await request(app).get('/api/tasks');
     expect(response.status).toBe(400);
     expect(response.body.error).toContain('from and to');
   });
 
   it('should return 400 for invalid status', async () => {
     const response = await request(app).get(
-      '/tasks?from=2026-08-01&to=2026-08-31&status=overdue',
+      '/api/tasks?from=2026-08-01&to=2026-08-31&status=overdue',
     );
     expect(response.status).toBe(400);
     expect(response.body.error).toContain('Invalid status');
@@ -190,7 +190,7 @@ describe('GET /tasks', () => {
 
   it('should return 400 for invalid assignedTo', async () => {
     const response = await request(app).get(
-      '/tasks?from=2026-08-01&to=2026-08-31&assignedTo=Nobody',
+      '/api/tasks?from=2026-08-01&to=2026-08-31&assignedTo=Nobody',
     );
     expect(response.status).toBe(400);
     expect(response.body.error).toContain('Invalid assignedTo');
@@ -202,7 +202,7 @@ describe('GET /tasks/:id', () => {
     const task = createTestTask();
     (getTaskByIdService as jest.Mock).mockResolvedValue(task);
 
-    const response = await request(app).get('/tasks/task-1');
+    const response = await request(app).get('/api/tasks/task-1');
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual(task);
@@ -211,7 +211,7 @@ describe('GET /tasks/:id', () => {
   it('should return 404 if task not found', async () => {
     (getTaskByIdService as jest.Mock).mockResolvedValue(undefined);
 
-    const response = await request(app).get('/tasks/missing');
+    const response = await request(app).get('/api/tasks/missing');
     expect(response.status).toBe(404);
     expect(response.body.error).toBe('Task not found');
   });
@@ -219,7 +219,7 @@ describe('GET /tasks/:id', () => {
   it('should return 500 on service error', async () => {
     (getTaskByIdService as jest.Mock).mockRejectedValue(new Error('DB error'));
 
-    const response = await request(app).get('/tasks/task-1');
+    const response = await request(app).get('/api/tasks/task-1');
     expect(response.status).toBe(500);
   });
 });
@@ -231,7 +231,7 @@ describe('POST /tasks', () => {
     (validateCreateTask as jest.Mock).mockReturnValue(taskReq);
     (createTaskService as jest.Mock).mockResolvedValue(task);
 
-    const response = await request(app).post('/tasks').send(taskReq);
+    const response = await request(app).post('/api/tasks').send(taskReq);
 
     expect(response.status).toBe(201);
     expect(response.body).toEqual(task);
@@ -242,7 +242,7 @@ describe('POST /tasks', () => {
       throw new Error('title is required');
     });
 
-    const response = await request(app).post('/tasks').send({});
+    const response = await request(app).post('/api/tasks').send({});
 
     expect(response.status).toBe(400);
     expect(response.body.error).toContain('title is required');
@@ -255,7 +255,7 @@ describe('POST /tasks', () => {
       new Error('Category not found: cat-missing'),
     );
 
-    const response = await request(app).post('/tasks').send(taskReq);
+    const response = await request(app).post('/api/tasks').send(taskReq);
 
     expect(response.status).toBe(400);
     expect(response.body.error).toContain('Category not found');
@@ -269,7 +269,7 @@ describe('PATCH /tasks/:id', () => {
     (updateTaskService as jest.Mock).mockResolvedValue(updated);
 
     const response = await request(app)
-      .patch('/tasks/task-1')
+      .patch('/api/tasks/task-1')
       .send({ title: 'Updated' });
 
     expect(response.status).toBe(200);
@@ -283,7 +283,7 @@ describe('PATCH /tasks/:id', () => {
     );
 
     const response = await request(app)
-      .patch('/tasks/missing')
+      .patch('/api/tasks/missing')
       .send({ title: 'X' });
 
     expect(response.status).toBe(404);
@@ -298,7 +298,7 @@ describe('PATCH /tasks/:id', () => {
     );
 
     const response = await request(app)
-      .patch('/tasks/task-1')
+      .patch('/api/tasks/task-1')
       .send({ status: 'planned' });
 
     expect(response.status).toBe(400);
@@ -310,7 +310,7 @@ describe('DELETE /tasks/:id', () => {
   it('should soft-delete a task and return 204', async () => {
     (deleteTaskService as jest.Mock).mockResolvedValue(undefined);
 
-    const response = await request(app).delete('/tasks/task-1');
+    const response = await request(app).delete('/api/tasks/task-1');
     expect(response.status).toBe(204);
   });
 
@@ -319,7 +319,7 @@ describe('DELETE /tasks/:id', () => {
       new Error('Task not found'),
     );
 
-    const response = await request(app).delete('/tasks/missing');
+    const response = await request(app).delete('/api/tasks/missing');
     expect(response.status).toBe(404);
   });
 });
@@ -330,7 +330,7 @@ describe('GET /tasks/series', () => {
   it('should return a list of active series', async () => {
     (listSeriesService as jest.Mock).mockResolvedValue([]);
 
-    const response = await request(app).get('/tasks/series');
+    const response = await request(app).get('/api/tasks/series');
     expect(response.status).toBe(200);
     expect(response.body).toEqual([]);
   });

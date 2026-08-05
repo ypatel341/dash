@@ -31,6 +31,8 @@ const en = {
   },
   errors: {
     unknownError: 'An unknown error occurred',
+    loadFailed: 'Something went wrong loading your data.',
+    retry: 'Retry',
   },
   tasksPage: {
     header: 'Tasks',

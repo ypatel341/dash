@@ -2,9 +2,10 @@
 
 ## Engineering Design Document
 
-**Status:** Draft for review — Revision 1.2  
-**Date:** 2026-07-27  
-**Scope:** Task planning, recurring task instances, categories, simple CRUD, calendar projection, and unit testing strategy
+**Status:** V1 shipped; V1.1 in progress — Revision 1.3  
+**Date:** 2026-08-05  
+**Scope:** Task planning, recurring task instances, categories, simple CRUD, calendar projection, and unit testing strategy  
+**V1 field test:** July 29–August 4, 2026 (see `docs/retros/TODO-feature/`)
 
 ---
 
@@ -586,36 +587,38 @@ V1 does not need a complete series-edit propagation system. It only needs a sche
 
 The first implementation can remain small.
 
-All routes are mounted under `/tasks`, matching the existing convention (`/budget/*`, `/daily-word/*`). A single `taskRoutes.ts` file defines all sub-routes.
+Task routes are mounted under `/api/tasks`. A single `taskRoutes.ts` file defines all sub-routes.
+
+The `/api` namespace was introduced in V1.1 to separate API routes from frontend SPA routes. Without it, direct browser navigation to `/tasks` was intercepted by Express before the SPA catch-all could serve `index.html`, returning a query-parameter validation error instead of the React page. Budget and daily-word routes (`/budget`, `/daily-word`) remain at the root level for now; their migration is tracked in `docs/handoffs/api-namespace-standardization-handoff.md`.
 
 ### Categories
 
 ```text
-GET    /tasks/categories
-POST   /tasks/categories
-PATCH  /tasks/categories/:id
+GET    /api/tasks/categories
+POST   /api/tasks/categories
+PATCH  /api/tasks/categories/:id
 ```
 
 ### One-time tasks
 
 ```text
-GET    /tasks?from=&to=&status=
-POST   /tasks
-GET    /tasks/:id
-PATCH  /tasks/:id
-DELETE /tasks/:id
+GET    /api/tasks?from=&to=&status=
+POST   /api/tasks
+GET    /api/tasks/:id
+PATCH  /api/tasks/:id
+DELETE /api/tasks/:id
 ```
 
 ### Recurring series
 
 ```text
-GET    /tasks/series
-POST   /tasks/series
-GET    /tasks/series/:id
-PATCH  /tasks/series/:id
-POST   /tasks/series/:id/pause
-POST   /tasks/series/:id/resume
-POST   /tasks/series/:id/archive
+GET    /api/tasks/series
+POST   /api/tasks/series
+GET    /api/tasks/series/:id
+PATCH  /api/tasks/series/:id
+POST   /api/tasks/series/:id/pause
+POST   /api/tasks/series/:id/resume
+POST   /api/tasks/series/:id/archive
 ```
 
 ### Occurrence generation
@@ -1003,7 +1006,7 @@ The first migration should remain narrow, but the task/series split, original oc
 | `src/app/tasks-page/components/UpcomingTaskList.tsx` | Fetches tasks for today+14 days, groups by date, assignee/status filters  |
 | `src/app/tasks-page/components/CalendarView.tsx`     | MUI DateCalendar with category-colored badge dots, day detail panel       |
 | `src/app/tasks-page/components/TodayTasksCard.tsx`   | Landing page card showing today's planned tasks                           |
-| `src/app/tasks-page/utils/taskApi.ts`                | Typed axios helpers for all task/series/category endpoints                |
+| `src/app/tasks-page/utils/taskApi.ts`                | Typed axios helpers for all `/api/tasks` endpoints                       |
 | `src/app/home-page/components/LandingPage.tsx`       | Landing page wrapper: WordOfTheDay + TodayTasksCard                       |
 | `src/app/i18n/en.ts`                                 | `tasksPage` block with all UI strings                                     |
 
@@ -1027,13 +1030,17 @@ Located in `cypress/e2e/tasks-page/`:
 | `task-crud.cy.ts`         | Create task, complete, skip/unskip, cancel with confirm, delete with confirm, dismiss confirm, validation, filters |
 | `series-flow.cy.ts`       | Create recurring series via form, cancel single occurrence                                                         |
 | `homepage-calendar.cy.ts` | Today card on landing page, "View all" navigation, calendar day detail, empty day state                            |
+| `task-routing.cy.ts`      | Direct navigation to `/tasks`, browser refresh, API vs SPA route separation, delete-then-refresh recovery          |
 
 Tests use the **real backend** pattern: `cy.request` for setup/cleanup, `cy.intercept` as spies to capture response data.
 
-### Known limitations (V1)
+### Known limitations (V1, updated V1.1)
 
+- ~~Direct navigation to `/tasks` returned an API validation error~~ — fixed in V1.1 PR1 via `/api` namespace
+- ~~Error state showed raw error text with no recovery~~ — fixed in V1.1 PR1 with retry button
 - No task edit UI (only create + status actions)
 - No series management UI (pause/resume/archive only via API)
 - Calendar shows first category color only when multiple categories exist on a day
 - Filter selectors use MUI Select which requires `[role="combobox"]` targeting in Cypress
 - No drag-and-drop or reordering
+- Mobile task row titles overlap at narrow viewports

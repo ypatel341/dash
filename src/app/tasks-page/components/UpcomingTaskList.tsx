@@ -1,5 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Box, Typography, Skeleton, SelectChangeEvent } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Skeleton,
+  SelectChangeEvent,
+  Button,
+} from '@mui/material';
 import dayjs from 'dayjs';
 import {
   Task,
@@ -101,9 +107,17 @@ const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
 
   if (error) {
     return (
-      <Typography color="error" sx={{ py: 2 }}>
-        {error}
-      </Typography>
+      <Box
+        data-testid="task-load-error"
+        sx={{ py: 4, textAlign: 'center' }}
+      >
+        <Typography color="error" sx={{ mb: 2 }}>
+          {en.errors.loadFailed}
+        </Typography>
+        <Button variant="outlined" onClick={loadData}>
+          {en.errors.retry}
+        </Button>
+      </Box>
     );
   }
 

@@ -15,12 +15,12 @@ describe('Homepage tasks card', () => {
     const title = `Cypress Home ${Date.now()}`;
     const today = new Date().toISOString().split('T')[0];
 
-    cy.request('GET', 'http://localhost:5000/tasks/categories')
+    cy.request('GET', 'http://localhost:5000/api/tasks/categories')
       .then(({ body: categories }) => {
         const categoryId = categories[0]?.id;
         expect(categoryId).to.be.a('string');
 
-        return cy.request('POST', 'http://localhost:5000/tasks', {
+        return cy.request('POST', 'http://localhost:5000/api/tasks', {
           assignedTo: 'Yogi',
           title,
           categoryId,
@@ -36,7 +36,7 @@ describe('Homepage tasks card', () => {
       cy.visit('http://localhost:3000/');
       cy.get('[data-testid="today-tasks-card"]').should('contain', title);
 
-      cy.request('DELETE', `http://localhost:5000/tasks/${taskId}`);
+      cy.request('DELETE', `http://localhost:5000/api/tasks/${taskId}`);
     });
   });
 });
@@ -52,7 +52,7 @@ describe('Calendar view', () => {
     const title = `Cypress Cal ${Date.now()}`;
     const today = new Date().toISOString().split('T')[0];
 
-    cy.request('POST', 'http://localhost:5000/tasks', {
+    cy.request('POST', 'http://localhost:5000/api/tasks', {
       assignedTo: 'Yogi',
       title,
       categoryId: null,
@@ -68,7 +68,7 @@ describe('Calendar view', () => {
       // The day detail should show the task when today is selected
       cy.get('[data-testid="calendar-day-detail"]').should('contain', title);
 
-      cy.request('DELETE', `http://localhost:5000/tasks/${taskId}`);
+      cy.request('DELETE', `http://localhost:5000/api/tasks/${taskId}`);
     });
   });
 
