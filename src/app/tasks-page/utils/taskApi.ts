@@ -130,7 +130,7 @@ export const createSeries = async (
 
 export const updateSeries = async (
   id: string,
-  data: Partial<TaskSeries>,
+  data: Partial<Omit<TaskSeries, 'id' | 'status' | 'generatedThrough'>>,
 ): Promise<TaskSeries> => {
   const response = await axios.patch(`${API_URL}/api/tasks/series/${id}`, data);
   return response.data;
