@@ -6,10 +6,12 @@ import ToastMessage from '../customizations/ToastMessages';
 import TaskForm from './components/TaskForm';
 import UpcomingTaskList from './components/UpcomingTaskList';
 import CalendarView from './components/CalendarView';
+import { Task } from './utils/taskApi';
 import en from '../i18n/en';
 
 const TasksHomePage: React.FC = () => {
   const [formOpen, setFormOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [toastMessage, setToastMessage] = useState('');
   const [toastSeverity, setToastSeverity] =
@@ -24,6 +26,16 @@ const TasksHomePage: React.FC = () => {
 
   const handleRefresh = () => {
     setRefreshKey((k) => k + 1);
+  };
+
+  const handleEdit = (task: Task) => {
+    setEditingTask(task);
+    setFormOpen(true);
+  };
+
+  const handleFormClose = () => {
+    setFormOpen(false);
+    setEditingTask(null);
   };
 
   return (
@@ -41,7 +53,11 @@ const TasksHomePage: React.FC = () => {
 
       <Grid container spacing={3}>
         <Grid item xs={12} md={8}>
-          <UpcomingTaskList refreshKey={refreshKey} onToast={handleToast} />
+          <UpcomingTaskList
+            refreshKey={refreshKey}
+            onEdit={handleEdit}
+            onToast={handleToast}
+          />
         </Grid>
         <Grid item xs={12} md={4}>
           <CalendarView refreshKey={refreshKey} />
@@ -50,7 +66,8 @@ const TasksHomePage: React.FC = () => {
 
       <TaskForm
         open={formOpen}
-        onClose={() => setFormOpen(false)}
+        editTask={editingTask}
+        onClose={handleFormClose}
         onSuccess={handleRefresh}
         onToast={handleToast}
       />
@@ -59,7 +76,10 @@ const TasksHomePage: React.FC = () => {
         color="primary"
         aria-label={en.tasksPage.createTask}
         data-testid="create-task-fab"
-        onClick={() => setFormOpen(true)}
+        onClick={() => {
+          setEditingTask(null);
+          setFormOpen(true);
+        }}
         sx={{ position: 'fixed', bottom: 24, right: 24 }}
       >
         <AddIcon />

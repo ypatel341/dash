@@ -103,8 +103,9 @@ describe('Task CRUD (real backend + database)', () => {
 
       cy.reload();
       cy.contains('[data-testid="task-row"]', title)
-        .find('[data-testid="task-action-skip"]')
+        .find('[data-testid="task-action-more"]')
         .click();
+      cy.get('[data-testid="task-action-skip"]').click();
 
       cy.contains('[data-testid="task-row"]', title).should(
         'contain',
@@ -138,8 +139,9 @@ describe('Task CRUD (real backend + database)', () => {
 
       cy.reload();
       cy.contains('[data-testid="task-row"]', title)
-        .find('[data-testid="task-action-cancel"]')
+        .find('[data-testid="task-action-more"]')
         .click();
+      cy.get('[data-testid="task-action-cancel"]').click();
 
       // Confirm dialog should appear
       cy.get('[data-testid="confirm-dialog"]').should('be.visible');
@@ -169,8 +171,9 @@ describe('Task CRUD (real backend + database)', () => {
 
       cy.reload();
       cy.contains('[data-testid="task-row"]', title)
-        .find('[data-testid="task-action-delete"]')
+        .find('[data-testid="task-action-more"]')
         .click();
+      cy.get('[data-testid="task-action-delete"]').click();
 
       cy.get('[data-testid="confirm-dialog"]').should('be.visible');
       cy.get('[data-testid="confirm-dialog-confirm"]').click();
@@ -194,8 +197,9 @@ describe('Task CRUD (real backend + database)', () => {
 
       cy.reload();
       cy.contains('[data-testid="task-row"]', title)
-        .find('[data-testid="task-action-delete"]')
+        .find('[data-testid="task-action-more"]')
         .click();
+      cy.get('[data-testid="task-action-delete"]').click();
 
       cy.get('[data-testid="confirm-dialog"]').should('be.visible');
       cy.get('[data-testid="confirm-dialog-cancel"]').click();
@@ -252,5 +256,64 @@ describe('Task CRUD (real backend + database)', () => {
 
       cy.request('DELETE', `http://localhost:5000/api/tasks/${taskId}`);
     });
+  });
+
+  it('edits a task via the overflow menu and verifies changes persist', () => {
+    const title = `Cypress Edit ${Date.now()}`;
+    const updatedTitle = `${title} UPDATED`;
+    cy.request('GET', 'http://localhost:5000/api/tasks/categories').then(
+      ({ body: categories }) => {
+        const categoryId = categories[0]?.id;
+
+        cy.request('POST', 'http://localhost:5000/api/tasks', {
+          assignedTo: 'Yogi',
+          title,
+          categoryId,
+          kind: 'event',
+          modality: 'none',
+          taskDate: new Date().toISOString().split('T')[0],
+          timeMode: 'date_only',
+        }).then(({ body }) => {
+          const taskId = body.id;
+
+          cy.reload();
+          cy.get('[data-testid="upcoming-task-list"]').should('contain', title);
+
+          // Open overflow menu and click Edit
+          cy.contains('[data-testid="task-row"]', title)
+            .find('[data-testid="task-action-more"]')
+            .click();
+          cy.get('[data-testid="task-menu-edit"]').click();
+
+          // Edit dialog should open with the current title
+          cy.get('[data-testid="task-form-dialog"]').should('be.visible');
+          cy.get('[data-testid="task-title-input"]')
+            .find('input')
+            .should('have.value', title);
+
+          // Clear and type new title
+          cy.get('[data-testid="task-title-input"]')
+            .find('input')
+            .clear()
+            .type(updatedTitle);
+
+          cy.intercept('PATCH', `**/api/tasks/${taskId}`).as('updateTask');
+          cy.get('[data-testid="task-form-submit"]').click();
+
+          cy.wait('@updateTask').then(({ response }) => {
+            expect(response?.statusCode).to.eq(200);
+          });
+
+          cy.get('[data-testid="task-form-dialog"]').should('not.exist');
+          cy.get('[data-testid="upcoming-task-list"]').should(
+            'contain',
+            updatedTitle,
+          );
+
+          // Clean up
+          cy.request('DELETE', `http://localhost:5000/api/tasks/${taskId}`);
+        });
+      },
+    );
   });
 });

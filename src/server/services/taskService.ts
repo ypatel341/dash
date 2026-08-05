@@ -389,6 +389,13 @@ export const updateTaskService = async (
     }
   }
 
+  const isDataEdit = Object.keys(dbData).some(
+    (k) => !['status', 'completed_at', 'canceled_at'].includes(k),
+  );
+  if (existing.seriesId && isDataEdit) {
+    dbData.is_exception = true;
+  }
+
   const updated = await updateTaskById(id, dbData);
   if (!updated) {
     throw new Error('Task not found');

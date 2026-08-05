@@ -2,7 +2,7 @@
 
 ## Engineering Design Document
 
-**Status:** V1 shipped; V1.1 in progress — Revision 1.3  
+**Status:** V1 shipped; V1.1 in progress — Revision 1.4  
 **Date:** 2026-08-05  
 **Scope:** Task planning, recurring task instances, categories, simple CRUD, calendar projection, and unit testing strategy  
 **V1 field test:** July 29–August 4, 2026 (see `docs/retros/TODO-feature/`)
@@ -53,7 +53,7 @@ The following are intentionally deferred:
 - Notification and reminder delivery
 - Email digests
 - External calendar synchronization
-- Editing “this and future occurrences”
+- ~~Editing “this and future occurrences”~~ — V1.1 PR2 implemented edit scope: “this occurrence” vs “entire series” with series reconciliation
 - Complex recurrence exceptions
 - Arbitrary user-defined task fields
 - Automated prioritization
@@ -573,13 +573,14 @@ Generated tasks copy the series defaults at creation time.
 
 This preserves history.
 
-When a series changes in a future release:
+When a series is edited (V1.1 PR2):
 
-- Future planned occurrences may be updated
+- **Data field changes** (title, description, assignedTo, category, kind, modality, timeMode, times, location): propagated to future planned non-exception occurrences via bulk update
+- **Schedule changes** (startsOn, recurrenceRule): future planned non-exception occurrences are deleted, `generated_through` is reset, and occurrences are re-materialized
 - Completed occurrences remain unchanged
-- Manually changed exceptions remain unchanged
+- Manually changed exceptions (`is_exception = true`) remain unchanged
 
-V1 does not need a complete series-edit propagation system. It only needs a schema that does not prevent one later.
+Editing an individual recurring occurrence sets `is_exception = true`, preventing future series edits from overwriting that occurrence. Status-only changes (complete, skip, cancel) do not set the exception flag.
 
 ---
 
@@ -656,9 +657,9 @@ The first version only needs:
 ### Task list
 
 - Upcoming tasks
-- Status update
-- Edit one-time task
-- Cancel or complete recurring occurrence
+- Status update (complete, skip, cancel)
+- Edit task via overflow menu (one-time or recurring with scope selector)
+- Series lifecycle actions via overflow menu (pause, resume, archive)
 
 ### Calendar view
 
@@ -688,6 +689,9 @@ Unit tests target the service layer (`taskService.ts`) and utility functions. Th
 | Task creation     | Validates required fields; rejects invalid `kind`, `modality`, `time_mode`, `status` |
 | Task creation     | Timed tasks require `start_time`; `all_day`/`date_only` ignore times                 |
 | Task update       | Status transitions are valid (e.g. cannot complete a canceled task)                  |
+| Task update       | Editing data fields on a recurring task sets `is_exception = true`                   |
+| Task update       | Status-only changes on a recurring task do not set `is_exception`                    |
+| Task update       | Editing a one-time task does not set `is_exception`                                  |
 | Task deletion     | One-time tasks can be hard-deleted; recurring occurrences are canceled, not deleted  |
 | Task listing      | Filters by date range and status; returns correct shape                              |
 | Series creation   | Validates RRULE via `rrule` library; rejects malformed rules                         |
@@ -698,6 +702,8 @@ Unit tests target the service layer (`taskService.ts`) and utility functions. Th
 | Series pause      | Paused series stop generating future occurrences                                     |
 | Series resume     | Resumed series regenerate from where they left off                                   |
 | Snapshot behavior | Generated occurrences copy series defaults at creation time                          |
+| Series update     | Field changes propagate to future planned non-exception occurrences                  |
+| Series update     | Schedule changes delete future planned tasks and re-materialize                      |
 | Metadata          | Rejects non-object values (arrays, primitives)                                       |
 
 #### Utility coverage
@@ -949,7 +955,7 @@ task_notes
 
 ### Series splitting
 
-“Edit this and future occurrences” can end the original series and create a new series beginning at the selected occurrence.
+V1.1 PR2 implemented “this occurrence” vs “entire series” editing. The remaining deferred capability is “this and future occurrences” — ending the original series at a chosen occurrence and creating a new series for the remainder.
 
 ### External calendars
 
@@ -968,7 +974,7 @@ These do not block the EDD, but should be answered before finalizing the migrati
 1. Should both spouses see all tasks by default, with assignment used only as a filter or visual indicator?
 2. ~~Does the existing application have a standard soft-delete pattern?~~ **Resolved:** Yes — `deleted_at` columns exist on `budget_monthly_expenses`, `user`, and `users_roles`. Task tables now include `deleted_at`.
 3. Should `location` contain both physical locations and virtual URLs, or should `virtual_url` become a separate column?
-4. Should recurring task occurrences be physically editable in V1, or only completable/skippable/cancelable?
+4. ~~Should recurring task occurrences be physically editable in V1, or only completable/skippable/cancelable?~~ **Resolved:** V1.1 PR2 added occurrence editing with `is_exception` flag and series-level editing with reconciliation.
 5. ~~Which recurrence library will parse and generate RRULE values?~~ **Resolved:** `rrule` npm package. See section 13.
 6. Should `assigned_to` remain application-validated only, or use a temporary database check constraint?
 
@@ -1000,10 +1006,10 @@ The first migration should remain narrow, but the task/series split, original oc
 | File                                                 | Purpose                                                                   |
 | ---------------------------------------------------- | ------------------------------------------------------------------------- |
 | `src/app/tasks-page/TasksHomePage.tsx`               | Top-level route: 2-column Grid (list + calendar), FAB, toast              |
-| `src/app/tasks-page/components/TaskForm.tsx`         | Dialog-based create form with recurrence toggle                           |
-| `src/app/tasks-page/components/TaskFormFields.tsx`   | Reusable field wrappers: SelectField, CategoryField, DateField, TimeField |
-| `src/app/tasks-page/components/TaskRow.tsx`          | Task row with status actions, confirm dialog for delete/cancel            |
-| `src/app/tasks-page/components/UpcomingTaskList.tsx` | Fetches tasks for today+14 days, groups by date, assignee/status filters  |
+| `src/app/tasks-page/components/TaskForm.tsx`         | Dialog-based create/edit form with recurrence toggle and edit scope selector |
+| `src/app/tasks-page/components/TaskFormFields.tsx`   | Reusable field wrappers: SelectField, CategoryField, DateField, TimeField   |
+| `src/app/tasks-page/components/TaskRow.tsx`          | Task row with complete button, overflow menu (edit, skip, cancel, delete, series actions), confirm dialog |
+| `src/app/tasks-page/components/UpcomingTaskList.tsx` | Fetches tasks for today+14 days, groups by date, assignee/status filters, passes onEdit |
 | `src/app/tasks-page/components/CalendarView.tsx`     | MUI DateCalendar with category-colored badge dots, day detail panel       |
 | `src/app/tasks-page/components/TodayTasksCard.tsx`   | Landing page card showing today's planned tasks                           |
 | `src/app/tasks-page/utils/taskApi.ts`                | Typed axios helpers for all `/api/tasks` endpoints                       |
@@ -1016,6 +1022,8 @@ The first migration should remain narrow, but the task/series split, original oc
 - **`data-testid` attributes** on all key elements for Cypress selectors
 - **`aria-label`** on all action IconButtons and the FAB
 - **Confirm dialog** gates delete and cancel actions (not skip/complete)
+- **Overflow menu** (`⋮` MoreVert) groups edit, skip, cancel, delete, and series lifecycle actions; complete button stays visible outside the menu
+- **Edit scope dialog** for recurring tasks asks "This occurrence" vs "Entire series" before submitting
 - **Server-side filtering** via query params (`status`, `assignedTo`) rather than client-side
 - **Trailing-slash defense** on `REACT_APP_API_URL` in taskApi.ts
 - **`displayMap`** on SelectField for translating enum values to human labels
@@ -1027,8 +1035,8 @@ Located in `cypress/e2e/tasks-page/`:
 
 | File                      | Coverage                                                                                                           |
 | ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `task-crud.cy.ts`         | Create task, complete, skip/unskip, cancel with confirm, delete with confirm, dismiss confirm, validation, filters |
-| `series-flow.cy.ts`       | Create recurring series via form, cancel single occurrence                                                         |
+| `task-crud.cy.ts`         | Create task, complete, skip/unskip, cancel with confirm, delete with confirm, dismiss confirm, validation, filters, edit via overflow menu |
+| `series-flow.cy.ts`       | Create recurring series via form, cancel single occurrence via overflow menu                                        |
 | `homepage-calendar.cy.ts` | Today card on landing page, "View all" navigation, calendar day detail, empty day state                            |
 | `task-routing.cy.ts`      | Direct navigation to `/tasks`, browser refresh, API vs SPA route separation, delete-then-refresh recovery          |
 
@@ -1038,8 +1046,8 @@ Tests use the **real backend** pattern: `cy.request` for setup/cleanup, `cy.inte
 
 - ~~Direct navigation to `/tasks` returned an API validation error~~ — fixed in V1.1 PR1 via `/api` namespace
 - ~~Error state showed raw error text with no recovery~~ — fixed in V1.1 PR1 with retry button
-- No task edit UI (only create + status actions)
-- No series management UI (pause/resume/archive only via API)
+- ~~No task edit UI (only create + status actions)~~ — fixed in V1.1 PR2 with edit via overflow menu and scope selector for recurring tasks
+- ~~No series management UI (pause/resume/archive only via API)~~ — fixed in V1.1 PR2 with series lifecycle actions in overflow menu
 - Calendar shows first category color only when multiple categories exist on a day
 - Filter selectors use MUI Select which requires `[role="combobox"]` targeting in Cypress
 - No drag-and-drop or reordering

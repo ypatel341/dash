@@ -47,6 +47,7 @@ describe('Series flow (real backend + database)', () => {
           .its('status')
           .should('eq', 204);
       });
+    });
   });
 
   it('cancels one occurrence of a recurring series', () => {
@@ -73,11 +74,12 @@ describe('Series flow (real backend + database)', () => {
           cy.visit('http://localhost:3000/tasks');
           cy.get('[data-testid="upcoming-task-list"]').should('contain', title);
 
-          // Cancel the first occurrence (today's task)
+          // Cancel the first occurrence (today's task) — open overflow menu first
           cy.contains('[data-testid="task-row"]', title)
             .first()
-            .find('[data-testid="task-action-cancel"]')
+            .find('[data-testid="task-action-more"]')
             .click();
+          cy.get('[data-testid="task-action-cancel"]').click();
 
           cy.get('[data-testid="confirm-dialog-confirm"]').click();
 

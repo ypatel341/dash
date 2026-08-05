@@ -29,11 +29,13 @@ const STATUS_FILTER = [
 
 type UpcomingTaskListProps = {
   refreshKey: number;
+  onEdit: (task: Task) => void;
   onToast: (message: string, severity: 'success' | 'error') => void;
 };
 
 const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
   refreshKey,
+  onEdit,
   onToast,
 }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -174,6 +176,7 @@ const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
                   task={task}
                   categories={categories}
                   onUpdate={loadData}
+                  onEdit={onEdit}
                   onToast={onToast}
                 />
               ))}

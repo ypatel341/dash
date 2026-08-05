@@ -17,6 +17,8 @@ import {
   updateTaskSeriesById,
   getCanceledExceptionDates,
   materializeOccurrences,
+  updateFuturePlannedOccurrences,
+  deleteFuturePlannedOccurrences,
 } from '../utils/db-operation-helpers';
 import { validateRRule, expandRRule } from '../utils/rruleHelper';
 import {
@@ -128,8 +130,11 @@ export const validateUpdateSeries = (body: unknown): UpdateSeriesRequest => {
       'status cannot be changed via update; use action endpoints',
     );
   }
-  if ('startsOn' in data) {
-    throw new Error('startsOn cannot be changed after creation');
+  if (data.startsOn !== undefined) {
+    if (typeof data.startsOn !== 'string' || !data.startsOn) {
+      throw new Error('startsOn must be a non-empty date string');
+    }
+    result.startsOn = data.startsOn as string;
   }
 
   if (data.title !== undefined) {
@@ -304,15 +309,46 @@ export const updateSeriesService = async (
   if ('startTime' in data) dbData.start_time = data.startTime ?? null;
   if ('endTime' in data) dbData.end_time = data.endTime ?? null;
   if ('location' in data) dbData.location = data.location ?? null;
+  if (data.startsOn !== undefined) dbData.starts_on = data.startsOn;
   if ('endsOn' in data) dbData.ends_on = data.endsOn ?? null;
   if (data.recurrenceRule !== undefined)
     dbData.recurrence_rule = data.recurrenceRule;
   if (data.metadata !== undefined) dbData.metadata = data.metadata;
 
+  const scheduleChanged =
+    data.startsOn !== undefined || data.recurrenceRule !== undefined;
+
   const updated = await updateTaskSeriesById(id, dbData);
   if (!updated) {
     throw new Error('Series not found');
   }
+
+  if (scheduleChanged) {
+    await deleteFuturePlannedOccurrences(id);
+    await updateTaskSeriesById(id, { generated_through: null });
+    const horizon = dayjs().add(DEFAULT_MATERIALIZATION_HORIZON_DAYS, 'day');
+    await ensureOccurrencesForDateRange(
+      dayjs().format('YYYY-MM-DD'),
+      horizon.format('YYYY-MM-DD'),
+    );
+  } else {
+    const taskData: Record<string, unknown> = {};
+    if (data.title !== undefined) taskData.title = data.title;
+    if ('description' in data) taskData.description = data.description ?? null;
+    if (data.assignedTo !== undefined) taskData.assigned_to = data.assignedTo;
+    if (data.categoryId !== undefined) taskData.category_id = data.categoryId;
+    if (data.kind !== undefined) taskData.kind = data.kind;
+    if (data.modality !== undefined) taskData.modality = data.modality;
+    if (data.timeMode !== undefined) taskData.time_mode = data.timeMode;
+    if ('startTime' in data) taskData.start_time = data.startTime ?? null;
+    if ('endTime' in data) taskData.end_time = data.endTime ?? null;
+    if ('location' in data) taskData.location = data.location ?? null;
+
+    if (Object.keys(taskData).length > 0) {
+      await updateFuturePlannedOccurrences(id, taskData);
+    }
+  }
+
   return updated;
 };
 
