@@ -25,7 +25,7 @@ describe('Task CRUD (real backend + database)', () => {
       .click();
     cy.get('ul[role="listbox"] li').first().click();
 
-    cy.intercept('POST', '**/tasks').as('createTask');
+    cy.intercept('POST', '**/api/tasks').as('createTask');
     cy.get('[data-testid="task-form-submit"]').click();
 
     cy.wait('@createTask').then(({ response }) => {
@@ -42,7 +42,7 @@ describe('Task CRUD (real backend + database)', () => {
       );
 
       // Clean up
-      cy.request('DELETE', `http://localhost:5000/tasks/${taskId}`).then(
+      cy.request('DELETE', `http://localhost:5000/api/tasks/${taskId}`).then(
         (deleteResponse) => {
           expect(deleteResponse.status).to.eq(204);
         },
@@ -53,12 +53,12 @@ describe('Task CRUD (real backend + database)', () => {
   it('completes a task and verifies the status updates', () => {
     // Create a task to act on
     const title = `Cypress Complete ${Date.now()}`;
-    cy.request('GET', 'http://localhost:5000/tasks/categories')
+    cy.request('GET', 'http://localhost:5000/api/tasks/categories')
       .then(({ body: categories }) => {
         const categoryId = categories[0]?.id;
         expect(categoryId).to.be.a('string');
 
-        return cy.request('POST', 'http://localhost:5000/tasks', {
+        return cy.request('POST', 'http://localhost:5000/api/tasks', {
           assignedTo: 'Yogi',
           title,
           categoryId,
@@ -84,13 +84,13 @@ describe('Task CRUD (real backend + database)', () => {
       );
 
       // Clean up
-      cy.request('DELETE', `http://localhost:5000/tasks/${taskId}`);
+      cy.request('DELETE', `http://localhost:5000/api/tasks/${taskId}`);
     });
   });
 
   it('skips a task and un-skips it back to planned', () => {
     const title = `Cypress Skip ${Date.now()}`;
-    cy.request('POST', 'http://localhost:5000/tasks', {
+    cy.request('POST', 'http://localhost:5000/api/tasks', {
       assignedTo: 'Yogi',
       title,
       categoryId: null,
@@ -119,13 +119,13 @@ describe('Task CRUD (real backend + database)', () => {
         .find('[data-testid="task-action-complete"]')
         .should('exist');
 
-      cy.request('DELETE', `http://localhost:5000/tasks/${taskId}`);
+      cy.request('DELETE', `http://localhost:5000/api/tasks/${taskId}`);
     });
   });
 
   it('cancels a task with confirmation dialog', () => {
     const title = `Cypress Cancel ${Date.now()}`;
-    cy.request('POST', 'http://localhost:5000/tasks', {
+    cy.request('POST', 'http://localhost:5000/api/tasks', {
       assignedTo: 'Yogi',
       title,
       categoryId: null,
@@ -150,13 +150,13 @@ describe('Task CRUD (real backend + database)', () => {
         'Canceled',
       );
 
-      cy.request('DELETE', `http://localhost:5000/tasks/${taskId}`);
+      cy.request('DELETE', `http://localhost:5000/api/tasks/${taskId}`);
     });
   });
 
   it('deletes a task with confirmation dialog', () => {
     const title = `Cypress Delete ${Date.now()}`;
-    cy.request('POST', 'http://localhost:5000/tasks', {
+    cy.request('POST', 'http://localhost:5000/api/tasks', {
       assignedTo: 'Yogi',
       title,
       categoryId: null,
@@ -181,7 +181,7 @@ describe('Task CRUD (real backend + database)', () => {
 
   it('dismisses the confirmation dialog with Go Back', () => {
     const title = `Cypress GoBack ${Date.now()}`;
-    cy.request('POST', 'http://localhost:5000/tasks', {
+    cy.request('POST', 'http://localhost:5000/api/tasks', {
       assignedTo: 'Yogi',
       title,
       categoryId: null,
@@ -204,7 +204,7 @@ describe('Task CRUD (real backend + database)', () => {
       // Task should still be there
       cy.get('[data-testid="upcoming-task-list"]').should('contain', title);
 
-      cy.request('DELETE', `http://localhost:5000/tasks/${taskId}`);
+      cy.request('DELETE', `http://localhost:5000/api/tasks/${taskId}`);
     });
   });
 
@@ -221,7 +221,7 @@ describe('Task CRUD (real backend + database)', () => {
 
   it('filters tasks by status', () => {
     const title = `Cypress Filter ${Date.now()}`;
-    cy.request('POST', 'http://localhost:5000/tasks', {
+    cy.request('POST', 'http://localhost:5000/api/tasks', {
       assignedTo: 'Yogi',
       title,
       categoryId: null,
@@ -233,7 +233,7 @@ describe('Task CRUD (real backend + database)', () => {
     }).then(({ body }) => {
       const taskId = body.id;
 
-      cy.request('PATCH', `http://localhost:5000/tasks/${taskId}`, {
+      cy.request('PATCH', `http://localhost:5000/api/tasks/${taskId}`, {
         status: 'completed',
       });
 
@@ -250,7 +250,7 @@ describe('Task CRUD (real backend + database)', () => {
 
       cy.get('[data-testid="upcoming-task-list"]').should('contain', title);
 
-      cy.request('DELETE', `http://localhost:5000/tasks/${taskId}`);
+      cy.request('DELETE', `http://localhost:5000/api/tasks/${taskId}`);
     });
   });
 });

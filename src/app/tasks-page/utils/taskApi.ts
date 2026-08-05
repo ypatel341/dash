@@ -87,7 +87,7 @@ export type CreateSeriesRequest = {
 };
 
 export const fetchCategories = async (): Promise<TaskCategory[]> => {
-  const response = await axios.get(`${API_URL}/tasks/categories`);
+  const response = await axios.get(`${API_URL}/api/tasks/categories`);
   return response.data;
 };
 
@@ -100,12 +100,12 @@ export const fetchTasks = async (
   const params = new URLSearchParams({ from, to });
   if (status) params.set('status', status);
   if (assignedTo) params.set('assignedTo', assignedTo);
-  const response = await axios.get(`${API_URL}/tasks?${params.toString()}`);
+  const response = await axios.get(`${API_URL}/api/tasks?${params.toString()}`);
   return response.data;
 };
 
 export const createTask = async (data: CreateTaskRequest): Promise<Task> => {
-  const response = await axios.post(`${API_URL}/tasks`, data);
+  const response = await axios.post(`${API_URL}/api/tasks`, data);
   return response.data;
 };
 
@@ -113,17 +113,17 @@ export const updateTask = async (
   id: string,
   data: Partial<Task>,
 ): Promise<Task> => {
-  const response = await axios.patch(`${API_URL}/tasks/${id}`, data);
+  const response = await axios.patch(`${API_URL}/api/tasks/${id}`, data);
   return response.data;
 };
 
 export const deleteTask = async (id: string): Promise<void> => {
-  await axios.delete(`${API_URL}/tasks/${id}`);
+  await axios.delete(`${API_URL}/api/tasks/${id}`);
 };
 
 export const createSeries = async (
   data: CreateSeriesRequest,
 ): Promise<{ series: TaskSeries; tasks: Task[] }> => {
-  const response = await axios.post(`${API_URL}/tasks/series`, data);
+  const response = await axios.post(`${API_URL}/api/tasks/series`, data);
   return response.data;
 };

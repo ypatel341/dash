@@ -61,7 +61,7 @@ describe('GET /tasks/series', () => {
     const series = [createTestTaskSeries()];
     (listSeriesService as jest.Mock).mockResolvedValue(series);
 
-    const response = await request(app).get('/tasks/series');
+    const response = await request(app).get('/api/tasks/series');
     expect(response.status).toBe(200);
     expect(response.body).toEqual(series);
   });
@@ -69,7 +69,7 @@ describe('GET /tasks/series', () => {
   it('should return 500 on service error', async () => {
     (listSeriesService as jest.Mock).mockRejectedValue(new Error('DB error'));
 
-    const response = await request(app).get('/tasks/series');
+    const response = await request(app).get('/api/tasks/series');
     expect(response.status).toBe(500);
   });
 });
@@ -85,7 +85,7 @@ describe('POST /tasks/series', () => {
     (validateCreateSeries as jest.Mock).mockReturnValue(validated);
     (createSeriesService as jest.Mock).mockResolvedValue({ series, tasks });
 
-    const response = await request(app).post('/tasks/series').send(validated);
+    const response = await request(app).post('/api/tasks/series').send(validated);
 
     expect(response.status).toBe(201);
     expect(response.body.series).toEqual(series);
@@ -97,7 +97,7 @@ describe('POST /tasks/series', () => {
       throw new Error('title is required');
     });
 
-    const response = await request(app).post('/tasks/series').send({});
+    const response = await request(app).post('/api/tasks/series').send({});
     expect(response.status).toBe(400);
     expect(response.body.error).toContain('title is required');
   });
@@ -110,7 +110,7 @@ describe('GET /tasks/series/:id', () => {
     const series = createTestTaskSeries();
     (getSeriesByIdService as jest.Mock).mockResolvedValue(series);
 
-    const response = await request(app).get('/tasks/series/series-1');
+    const response = await request(app).get('/api/tasks/series/series-1');
     expect(response.status).toBe(200);
     expect(response.body).toEqual(series);
   });
@@ -118,7 +118,7 @@ describe('GET /tasks/series/:id', () => {
   it('should return 404 if not found', async () => {
     (getSeriesByIdService as jest.Mock).mockResolvedValue(undefined);
 
-    const response = await request(app).get('/tasks/series/missing');
+    const response = await request(app).get('/api/tasks/series/missing');
     expect(response.status).toBe(404);
   });
 
@@ -127,7 +127,7 @@ describe('GET /tasks/series/:id', () => {
       new Error('DB error'),
     );
 
-    const response = await request(app).get('/tasks/series/series-1');
+    const response = await request(app).get('/api/tasks/series/series-1');
     expect(response.status).toBe(500);
   });
 });
@@ -141,7 +141,7 @@ describe('PATCH /tasks/series/:id', () => {
     (updateSeriesService as jest.Mock).mockResolvedValue(series);
 
     const response = await request(app)
-      .patch('/tasks/series/series-1')
+      .patch('/api/tasks/series/series-1')
       .send({ title: 'Updated' });
 
     expect(response.status).toBe(200);
@@ -155,7 +155,7 @@ describe('PATCH /tasks/series/:id', () => {
     );
 
     const response = await request(app)
-      .patch('/tasks/series/missing')
+      .patch('/api/tasks/series/missing')
       .send({ title: 'Nope' });
 
     expect(response.status).toBe(404);
@@ -167,7 +167,7 @@ describe('PATCH /tasks/series/:id', () => {
     });
 
     const response = await request(app)
-      .patch('/tasks/series/series-1')
+      .patch('/api/tasks/series/series-1')
       .send({ status: 'paused' });
 
     expect(response.status).toBe(400);
@@ -181,7 +181,7 @@ describe('POST /tasks/series/:id/pause', () => {
     const paused = createTestTaskSeries({ status: 'paused' });
     (pauseSeriesService as jest.Mock).mockResolvedValue(paused);
 
-    const response = await request(app).post('/tasks/series/series-1/pause');
+    const response = await request(app).post('/api/tasks/series/series-1/pause');
     expect(response.status).toBe(200);
     expect(response.body.status).toBe('paused');
   });
@@ -191,7 +191,7 @@ describe('POST /tasks/series/:id/pause', () => {
       new Error('Series not found'),
     );
 
-    const response = await request(app).post('/tasks/series/missing/pause');
+    const response = await request(app).post('/api/tasks/series/missing/pause');
     expect(response.status).toBe(404);
   });
 
@@ -200,7 +200,7 @@ describe('POST /tasks/series/:id/pause', () => {
       new Error('Cannot transition from archived to paused'),
     );
 
-    const response = await request(app).post('/tasks/series/series-1/pause');
+    const response = await request(app).post('/api/tasks/series/series-1/pause');
     expect(response.status).toBe(400);
   });
 });
@@ -216,7 +216,7 @@ describe('POST /tasks/series/:id/resume', () => {
       tasks,
     });
 
-    const response = await request(app).post('/tasks/series/series-1/resume');
+    const response = await request(app).post('/api/tasks/series/series-1/resume');
     expect(response.status).toBe(200);
     expect(response.body.series.status).toBe('active');
     expect(response.body.tasks).toHaveLength(1);
@@ -227,7 +227,7 @@ describe('POST /tasks/series/:id/resume', () => {
       new Error('Series not found'),
     );
 
-    const response = await request(app).post('/tasks/series/missing/resume');
+    const response = await request(app).post('/api/tasks/series/missing/resume');
     expect(response.status).toBe(404);
   });
 
@@ -236,7 +236,7 @@ describe('POST /tasks/series/:id/resume', () => {
       new Error('Cannot transition from active to active'),
     );
 
-    const response = await request(app).post('/tasks/series/series-1/resume');
+    const response = await request(app).post('/api/tasks/series/series-1/resume');
     expect(response.status).toBe(400);
   });
 });
@@ -248,7 +248,7 @@ describe('POST /tasks/series/:id/archive', () => {
     const archived = createTestTaskSeries({ status: 'archived' });
     (archiveSeriesService as jest.Mock).mockResolvedValue(archived);
 
-    const response = await request(app).post('/tasks/series/series-1/archive');
+    const response = await request(app).post('/api/tasks/series/series-1/archive');
     expect(response.status).toBe(200);
     expect(response.body.status).toBe('archived');
   });
@@ -258,7 +258,7 @@ describe('POST /tasks/series/:id/archive', () => {
       new Error('Series not found'),
     );
 
-    const response = await request(app).post('/tasks/series/missing/archive');
+    const response = await request(app).post('/api/tasks/series/missing/archive');
     expect(response.status).toBe(404);
   });
 
@@ -267,7 +267,7 @@ describe('POST /tasks/series/:id/archive', () => {
       new Error('Cannot transition from archived to archived'),
     );
 
-    const response = await request(app).post('/tasks/series/series-1/archive');
+    const response = await request(app).post('/api/tasks/series/series-1/archive');
     expect(response.status).toBe(400);
   });
 });
