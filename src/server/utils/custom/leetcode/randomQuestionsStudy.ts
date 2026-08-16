@@ -110,3 +110,122 @@ function countingFrequencies(words: string[]): Map<number, string[]>{
     return frequencyMap;
 }
  */
+
+
+
+type Transaction = {
+  transactionId: string;
+  accountId: string;
+  amount: number;
+  status: "APPROVED" | "DECLINED";
+  timestamp: string;
+};
+
+type AccountSummary = {
+  accountId: string;
+  totalApprovedAmount: number;
+  approvedCount: number;
+};
+
+function summarizeTransactions(
+  transactions: Transaction[]
+): AccountSummary[] {
+  const summaries = new Map<string, AccountSummary>();
+  const seenTransactionIds = new Set<string>();
+
+  for (const transaction of transactions) {
+    const {
+      transactionId,
+      accountId,
+      amount,
+      status,
+    } = transaction;
+
+    // First occurrence wins globally.
+    if (seenTransactionIds.has(transactionId)) {
+      continue;
+    }
+
+    seenTransactionIds.add(transactionId);
+
+    if (status === "DECLINED") {
+      continue;
+    }
+
+    const currentSummary = summaries.get(accountId);
+
+    if (currentSummary) {
+      currentSummary.totalApprovedAmount += amount;
+      currentSummary.approvedCount += 1;
+    } else {
+      summaries.set(accountId, {
+        accountId,
+        totalApprovedAmount: amount,
+        approvedCount: 1,
+      });
+    }
+  }
+
+  return Array.from(summaries.values()).sort(
+    (a, b) =>
+      b.totalApprovedAmount - a.totalApprovedAmount ||
+      a.accountId.localeCompare(b.accountId)
+  );
+}
+
+const transactions: Transaction[] = [
+  {
+    transactionId: "txn-1",
+    accountId: "acct-A",
+    amount: 100,
+    status: "APPROVED",
+    timestamp: "2026-08-05T10:00:00Z",
+  },
+  {
+    transactionId: "txn-2",
+    accountId: "acct-B",
+    amount: 75,
+    status: "APPROVED",
+    timestamp: "2026-08-05T10:05:00Z",
+  },
+  {
+    transactionId: "txn-3",
+    accountId: "acct-A",
+    amount: 40,
+    status: "APPROVED",
+    timestamp: "2026-08-05T10:10:00Z",
+  },
+  {
+    transactionId: "txn-4",
+    accountId: "acct-B",
+    amount: 200,
+    status: "DECLINED",
+    timestamp: "2026-08-05T10:15:00Z",
+  },
+  {
+    transactionId: "txn-2", // duplicate: ignore
+    accountId: "acct-B",
+    amount: 75,
+    status: "APPROVED",
+    timestamp: "2026-08-05T10:20:00Z",
+  },
+];
+
+summarizeTransactions(transactions)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
