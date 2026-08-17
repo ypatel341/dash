@@ -65,7 +65,7 @@ export const EnterExpensePage: React.FC = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/budget/info/allmonthexpense`,
+        `${process.env.REACT_APP_API_URL}/api/budget/info/allmonthexpense`,
       );
 
       const { data } = response;
@@ -167,7 +167,7 @@ export const EnterExpensePage: React.FC = () => {
     }
 
     const response = await axios.post(
-      `${process.env.REACT_APP_API_URL}/budget/expense`,
+      `${process.env.REACT_APP_API_URL}/api/budget/expense`,
       data,
     );
     const toastMessageSeverity: ToastMessageOptions = {
@@ -195,7 +195,7 @@ export const EnterExpensePage: React.FC = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/budget/info/getbymonthexpense/${formattedDate}`,
+        `${process.env.REACT_APP_API_URL}/api/budget/info/getbymonthexpense/${formattedDate}`,
       );
       const { data } = response;
       const formattedData = await formatMonthlyExpensesExpenseDate(data);

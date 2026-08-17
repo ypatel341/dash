@@ -75,7 +75,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({
   const handleSaveClick = async (id: string) => {
     try {
       await axios.patch(
-        `${process.env.REACT_APP_API_URL}/budget/expense/${id}`,
+        `${process.env.REACT_APP_API_URL}/api/budget/expense/${id}`,
         editedData,
       );
 

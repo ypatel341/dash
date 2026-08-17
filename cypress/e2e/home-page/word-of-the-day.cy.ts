@@ -1,6 +1,6 @@
 describe('Word of the Day (real backend + database)', () => {
   it('shows a word of the day on the home page and keeps serving the same word on reload', () => {
-    cy.intercept('GET', '**/daily-word').as('getDailyWord');
+    cy.intercept('GET', '**/api/daily-word').as('getDailyWord');
 
     cy.visit('http://localhost:3000/');
 
@@ -14,7 +14,7 @@ describe('Word of the Day (real backend + database)', () => {
 
       // Reloading should re-serve the same cached word for today rather than
       // fetching a new one, proving the daily cache is actually being read.
-      cy.intercept('GET', '**/daily-word').as('getDailyWordAgain');
+      cy.intercept('GET', '**/api/daily-word').as('getDailyWordAgain');
       cy.reload();
 
       cy.wait('@getDailyWordAgain').then(({ response: secondResponse }) => {

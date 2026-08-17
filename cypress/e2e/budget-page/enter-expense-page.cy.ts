@@ -12,7 +12,7 @@ describe('EnterExpensePage', () => {
     cy.get('[id="description-field"]').type('Description');
     // cy.get('[data-cy="date-field"]').click();
 
-    cy.intercept('POST', 'http://localhost:5000/budget/expense', {
+    cy.intercept('POST', 'http://localhost:5000/api/budget/expense', {
       statusCode: 200,
     }).as('postExpense');
 
@@ -37,7 +37,7 @@ describe('EnterExpensePage', () => {
     cy.get('[id="description-field"]').type('Description');
     // cy.get('[data-cy="date-field"]').click();
 
-    cy.intercept('POST', 'http://localhost:5000/budget/expense', {
+    cy.intercept('POST', 'http://localhost:5000/api/budget/expense', {
       statusCode: 500,
     }).as('postExpense');
 

@@ -28,7 +28,7 @@ const DeleteOrUpdateExpense: React.FC<DeleteOrUpdateExpenseProps> = ({
 
   const deleteExpense = async () => {
     const response = await axios.delete(
-      `${process.env.REACT_APP_API_URL}/budget/expense/${selectedRow?.id}`,
+      `${process.env.REACT_APP_API_URL}/api/budget/expense/${selectedRow?.id}`,
     );
 
     if (response.status !== 200) {

@@ -30,11 +30,11 @@ const dailyWord: DailyWord = {
   examples: [],
 };
 
-describe('GET /daily-word', () => {
+describe('GET /api/daily-word', () => {
   it('should return the word of the day', async () => {
     (getWordOfTheDayService as jest.Mock).mockResolvedValue(dailyWord);
 
-    const response = await request(app).get('/daily-word');
+    const response = await request(app).get('/api/daily-word');
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual(dailyWord);
@@ -45,7 +45,7 @@ describe('GET /daily-word', () => {
       new Error('Wordnik is down'),
     );
 
-    const response = await request(app).get('/daily-word');
+    const response = await request(app).get('/api/daily-word');
 
     expect(response.status).toBe(500);
     expect(response.body.error).toContain('Wordnik is down');
