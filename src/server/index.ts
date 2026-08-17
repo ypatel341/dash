@@ -45,8 +45,8 @@ if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
   app.use(express.json());
 
   // Enable URL-encoded body parsing
-  app.use('/budget', budgetRoutes);
-  app.use('/daily-word', dailyWordRoutes);
+  app.use('/api/budget', budgetRoutes);
+  app.use('/api/daily-word', dailyWordRoutes);
   app.use('/api/tasks', taskRoutes);
 
   // Health check for uptime monitoring
@@ -88,9 +88,9 @@ if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
   // Enable JSON body parsing
   app.use(express.json());
 
-  // Enable URL-encoded body parsing
-  app.use('/budget', budgetRoutes);
-  app.use('/daily-word', dailyWordRoutes);
+  // Mount API routes
+  app.use('/api/budget', budgetRoutes);
+  app.use('/api/daily-word', dailyWordRoutes);
   app.use('/api/tasks', taskRoutes);
 
   // Health check for uptime monitoring

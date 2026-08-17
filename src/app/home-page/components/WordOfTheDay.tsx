@@ -33,7 +33,7 @@ const WordOfTheDay: React.FC = () => {
     const fetchWordOfTheDay = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/daily-word`,
+          `${process.env.REACT_APP_API_URL}/api/daily-word`,
         );
         setWordDetails({
           id: response.data.id,

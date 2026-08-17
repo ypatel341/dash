@@ -590,7 +590,7 @@ The first implementation can remain small.
 
 Task routes are mounted under `/api/tasks`. A single `taskRoutes.ts` file defines all sub-routes.
 
-The `/api` namespace was introduced in V1.1 to separate API routes from frontend SPA routes. Without it, direct browser navigation to `/tasks` was intercepted by Express before the SPA catch-all could serve `index.html`, returning a query-parameter validation error instead of the React page. Budget and daily-word routes (`/budget`, `/daily-word`) remain at the root level for now; their migration is tracked in `docs/handoffs/api-namespace-standardization-handoff.md`.
+The `/api` namespace was introduced in V1.1 to separate API routes from frontend SPA routes. Without it, direct browser navigation to `/tasks` was intercepted by Express before the SPA catch-all could serve `index.html`, returning a query-parameter validation error instead of the React page. All API routes now live under `/api` — budget (`/api/budget`), daily-word (`/api/daily-word`), and tasks (`/api/tasks`). Only `/health` remains at the root level.
 
 ### Categories
 

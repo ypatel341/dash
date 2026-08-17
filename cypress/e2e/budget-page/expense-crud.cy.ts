@@ -10,7 +10,7 @@ describe('Expense CRUD (real backend + database)', () => {
     cy.get('li[data-value="groceries"]').click();
     cy.get('[id="description-field"]').type('Created by Cypress E2E test');
 
-    cy.intercept('POST', '**/budget/expense').as('postExpense');
+    cy.intercept('POST', '**/api/budget/expense').as('postExpense');
     cy.get('[id="submit-button"]').click();
 
     cy.wait('@postExpense').then(({ response }) => {
@@ -27,13 +27,13 @@ describe('Expense CRUD (real backend + database)', () => {
 
       // Clean up: delete the expense we created from the test database via the real API,
       // then confirm it no longer appears after a refetch.
-      cy.request('DELETE', `http://localhost:5000/budget/expense/${expenseId}`).then(
+      cy.request('DELETE', `http://localhost:5000/api/budget/expense/${expenseId}`).then(
         (deleteResponse) => {
           expect(deleteResponse.status).to.eq(200);
         },
       );
 
-      cy.intercept('GET', '**/budget/info/allmonthexpense').as('getExpenses');
+      cy.intercept('GET', '**/api/budget/info/allmonthexpense').as('getExpenses');
 
       cy.reload();
       cy.wait('@getExpenses');

@@ -35,7 +35,7 @@ describe('getAllBudgetData', () => {
   });
 });
 
-describe('POST /budget/expense', () => {
+describe('POST /api/budget/expense', () => {
   let idToDelete: string;
 
   afterAll(async () => {
@@ -46,7 +46,7 @@ describe('POST /budget/expense', () => {
 
   it('should insert an expense', async () => {
     const response = await request(app)
-      .post('/budget/expense')
+      .post('/api/budget/expense')
       .send(insertData);
 
     idToDelete = response.body.id;
@@ -55,14 +55,14 @@ describe('POST /budget/expense', () => {
   });
 
   it('should return an error if the expense is invalid', async () => {
-    const response = await request(app).post('/budget/expense').send({});
+    const response = await request(app).post('/api/budget/expense').send({});
 
     expect(response.status).toBe(400);
   });
 
   it('should return an error if the amount value is over 10,000', async () => {
     const response = await request(app)
-      .post('/budget/expense')
+      .post('/api/budget/expense')
       .send({ ...insertData, amount: 10001 });
 
     expect(response.body.error).toBe(
@@ -72,7 +72,7 @@ describe('POST /budget/expense', () => {
   });
 });
 
-describe('GET /budget/info/allmonthexpense', () => {
+describe('GET /api/budget/info/allmonthexpense', () => {
   let idToDelete: string;
   let idToDelete2: string;
 
@@ -96,7 +96,7 @@ describe('GET /budget/info/allmonthexpense', () => {
   });
 
   it('should retrieve all monthly expenses', async () => {
-    const response = await request(app).get('/budget/info/allmonthexpense');
+    const response = await request(app).get('/api/budget/info/allmonthexpense');
     const responsefromDB = await getAllMonthlyExpense();
 
     expect(response.status).toBe(200);
@@ -104,7 +104,7 @@ describe('GET /budget/info/allmonthexpense', () => {
   });
 });
 
-describe('GET /budget/info/allbucketexpense', () => {
+describe('GET /api/budget/info/allbucketexpense', () => {
   it('should retrieve all bucket expenses', async () => {
     const rawMonthlyData: MonthlyExpense[] = await getAllMonthlyExpense();
     const allBudgetData: BudgetType[] = await getAllBudgetData();
@@ -112,10 +112,10 @@ describe('GET /budget/info/allbucketexpense', () => {
   });
 });
 
-describe('GET /budget/info/bucketexpense', () => {
+describe('GET /api/budget/info/bucketexpense', () => {
   it('should return all expenses for the month provided', async () => {
     const response = await request(app).get(
-      '/budget/info/bucketexpense/rent/?YYYYMM=2025-04',
+      '/api/budget/info/bucketexpense/rent/?YYYYMM=2025-04',
     );
 
     expect(response.status).toBe(200);
@@ -124,7 +124,7 @@ describe('GET /budget/info/bucketexpense', () => {
 
   it('should throw an error if the date is invalid', async () => {
     const response = await request(app).get(
-      '/budget/info/bucketexpense/rent/?YYYYMM=invalid-date',
+      '/api/budget/info/bucketexpense/rent/?YYYYMM=invalid-date',
     );
 
     expect(response.status).toBe(400);
@@ -133,7 +133,7 @@ describe('GET /budget/info/bucketexpense', () => {
 
   it('should return an error if the bucket name is invalid', async () => {
     const response = await request(app).get(
-      '/budget/info/bucketexpense/invalid-bucket/?YYYYMM=2025-04',
+      '/api/budget/info/bucketexpense/invalid-bucket/?YYYYMM=2025-04',
     );
 
     expect(response.status).toBe(400);
