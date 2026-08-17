@@ -1,22 +1,38 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Container, Box, Typography, Fab, Grid } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { ToastSeverityOptions } from '../budgeting-page/types/BudgetCategoryTypes';
 import ToastMessage from '../customizations/ToastMessages';
 import TaskForm from './components/TaskForm';
+import TaskDetailDialog from './components/TaskDetailDialog';
 import UpcomingTaskList from './components/UpcomingTaskList';
 import CalendarView from './components/CalendarView';
-import { Task } from './utils/taskApi';
+import { Task, TaskCategory, fetchCategories } from './utils/taskApi';
 import en from '../i18n/en';
 
 const TasksHomePage: React.FC = () => {
   const [formOpen, setFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [categories, setCategories] = useState<TaskCategory[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
   const [toastMessage, setToastMessage] = useState('');
   const [toastSeverity, setToastSeverity] =
     useState<ToastSeverityOptions>('success');
   const [showToast, setShowToast] = useState(false);
+
+  const loadCategories = useCallback(async () => {
+    try {
+      const data = await fetchCategories();
+      setCategories(data);
+    } catch {
+      // categories will remain empty; TaskRow/TaskDetailDialog degrade gracefully
+    }
+  }, []);
+
+  useEffect(() => {
+    loadCategories();
+  }, [loadCategories, refreshKey]);
 
   const handleToast = (message: string, severity: 'success' | 'error') => {
     setToastMessage(message);
@@ -29,6 +45,7 @@ const TasksHomePage: React.FC = () => {
   };
 
   const handleEdit = (task: Task) => {
+    setSelectedTask(null);
     setEditingTask(task);
     setFormOpen(true);
   };
@@ -36,6 +53,10 @@ const TasksHomePage: React.FC = () => {
   const handleFormClose = () => {
     setFormOpen(false);
     setEditingTask(null);
+  };
+
+  const handleRowClick = (task: Task) => {
+    setSelectedTask(task);
   };
 
   return (
@@ -55,14 +76,23 @@ const TasksHomePage: React.FC = () => {
         <Grid item xs={12} md={8}>
           <UpcomingTaskList
             refreshKey={refreshKey}
+            categories={categories}
             onEdit={handleEdit}
             onToast={handleToast}
+            onRowClick={handleRowClick}
           />
         </Grid>
         <Grid item xs={12} md={4}>
           <CalendarView refreshKey={refreshKey} />
         </Grid>
       </Grid>
+
+      <TaskDetailDialog
+        task={selectedTask}
+        categories={categories}
+        open={!!selectedTask}
+        onClose={() => setSelectedTask(null)}
+      />
 
       <TaskForm
         open={formOpen}
