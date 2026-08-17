@@ -88,7 +88,7 @@ MUI is the component library. Tachyons is also available for utility classes.
 
 ### Backend (`src/server/`)
 
-Express app in `src/server/index.ts`. Currently only the budget domain has routes, mounted at `/budget`.
+Express app in `src/server/index.ts`. All API routes are mounted under the `/api` namespace (`/api/budget`, `/api/tasks`, `/api/daily-word`). The `/health` endpoint remains at the root level.
 
 Layer pattern: `routes/ → controllers/ → services/ → db-operation-helpers.ts`
 

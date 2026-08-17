@@ -88,7 +88,7 @@ if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
   // Enable JSON body parsing
   app.use(express.json());
 
-  // Enable URL-encoded body parsing
+  // Mount API routes
   app.use('/api/budget', budgetRoutes);
   app.use('/api/daily-word', dailyWordRoutes);
   app.use('/api/tasks', taskRoutes);
