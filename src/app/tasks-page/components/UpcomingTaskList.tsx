@@ -7,12 +7,7 @@ import {
   Button,
 } from '@mui/material';
 import dayjs from 'dayjs';
-import {
-  Task,
-  TaskCategory,
-  fetchTasks,
-  fetchCategories,
-} from '../utils/taskApi';
+import { Task, TaskCategory, fetchTasks } from '../utils/taskApi';
 import TaskRow from './TaskRow';
 import { SelectField } from './TaskFormFields';
 import en from '../../i18n/en';
@@ -29,17 +24,20 @@ const STATUS_FILTER = [
 
 type UpcomingTaskListProps = {
   refreshKey: number;
+  categories: TaskCategory[];
   onEdit: (task: Task) => void;
   onToast: (message: string, severity: 'success' | 'error') => void;
+  onRowClick?: (task: Task) => void;
 };
 
 const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
   refreshKey,
+  categories,
   onEdit,
   onToast,
+  onRowClick,
 }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [categories, setCategories] = useState<TaskCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [assignedToFilter, setAssignedToFilter] = useState('All');
@@ -55,13 +53,8 @@ const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
       const assignedParam =
         assignedToFilter !== 'All' ? assignedToFilter : undefined;
 
-      const [taskData, catData] = await Promise.all([
-        fetchTasks(from, to, statusParam, assignedParam),
-        fetchCategories(),
-      ]);
-
+      const taskData = await fetchTasks(from, to, statusParam, assignedParam);
       setTasks(taskData);
-      setCategories(catData);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : en.errors.unknownError);
     } finally {
@@ -109,10 +102,7 @@ const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
 
   if (error) {
     return (
-      <Box
-        data-testid="task-load-error"
-        sx={{ py: 4, textAlign: 'center' }}
-      >
+      <Box data-testid="task-load-error" sx={{ py: 4, textAlign: 'center' }}>
         <Typography color="error" sx={{ mb: 2 }}>
           {en.errors.loadFailed}
         </Typography>
@@ -125,7 +115,7 @@ const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
 
   return (
     <Box data-testid="upcoming-task-list">
-      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
         <Box sx={{ minWidth: 130 }}>
           <SelectField
             label={en.tasksPage.filterByAssignee}
@@ -178,6 +168,7 @@ const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
                   onUpdate={loadData}
                   onEdit={onEdit}
                   onToast={onToast}
+                  onRowClick={onRowClick}
                 />
               ))}
             </Box>

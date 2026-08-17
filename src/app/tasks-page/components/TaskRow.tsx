@@ -42,7 +42,7 @@ import {
 import en from '../../i18n/en';
 import dayjs from 'dayjs';
 
-const COLOR_KEY_MAP: Record<string, string> = {
+export const COLOR_KEY_MAP: Record<string, string> = {
   primary: 'primary.main',
   secondary: 'secondary.main',
   success: 'success.main',
@@ -58,6 +58,7 @@ type TaskRowProps = {
   onUpdate: () => void;
   onEdit: (task: Task) => void;
   onToast: (message: string, severity: 'success' | 'error') => void;
+  onRowClick?: (task: Task) => void;
 };
 
 const TaskRow: React.FC<TaskRowProps> = ({
@@ -66,6 +67,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
   onUpdate,
   onEdit,
   onToast,
+  onRowClick,
 }) => {
   const [pendingAction, setPendingAction] = useState<string | null>(null);
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
@@ -110,9 +112,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
     }
   };
 
-  const handleSeriesAction = async (
-    action: 'pause' | 'resume' | 'archive',
-  ) => {
+  const handleSeriesAction = async (action: 'pause' | 'resume' | 'archive') => {
     closeMenu();
     if (!task.seriesId) return;
     try {
@@ -134,14 +134,25 @@ const TaskRow: React.FC<TaskRowProps> = ({
   return (
     <Box
       data-testid="task-row"
+      role="button"
+      tabIndex={0}
+      onClick={() => onRowClick?.(task)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' && e.target === e.currentTarget) {
+          onRowClick?.(task);
+        }
+      }}
       sx={{
         display: 'flex',
         alignItems: 'center',
-        gap: 1.5,
+        flexWrap: { xs: 'wrap', sm: 'nowrap' },
+        gap: { xs: 1, sm: 1.5 },
         py: 1.5,
         px: 2,
         borderRadius: 1,
         bgcolor: 'background.paper',
+        cursor: 'pointer',
+        '&:hover': { bgcolor: 'action.hover' },
         opacity: isTerminal ? 0.5 : 1,
         textDecoration: isCompleted ? 'line-through' : 'none',
       }}
@@ -154,7 +165,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
             bgcolor: COLOR_KEY_MAP[category.colorKey] || 'grey.500',
             color: 'white',
             fontWeight: 500,
-            minWidth: 70,
+            minWidth: { xs: 'auto', sm: 70 },
           }}
         />
       )}
@@ -166,14 +177,16 @@ const TaskRow: React.FC<TaskRowProps> = ({
             sx={{
               fontWeight: 500,
               overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
+              textOverflow: { xs: 'unset', sm: 'ellipsis' },
+              whiteSpace: { xs: 'normal', sm: 'nowrap' },
             }}
           >
             {task.title}
           </Typography>
           {isRecurring && (
-            <RepeatIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+            <RepeatIcon
+              sx={{ fontSize: 16, color: 'text.secondary', flexShrink: 0 }}
+            />
           )}
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -201,7 +214,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
         size="small"
         label={task.assignedTo}
         variant="outlined"
-        sx={{ fontSize: 11 }}
+        sx={{ fontSize: 11, display: { xs: 'none', sm: 'inline-flex' } }}
       />
 
       {isOverdue && (
@@ -209,7 +222,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
           size="small"
           label={en.tasksPage.overdue}
           color="error"
-          sx={{ fontSize: 11 }}
+          sx={{ fontSize: 11, display: { xs: 'none', sm: 'inline-flex' } }}
         />
       )}
 
@@ -218,7 +231,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
           size="small"
           label={en.tasksPage.status.skipped}
           color="default"
-          sx={{ fontSize: 11 }}
+          sx={{ fontSize: 11, display: { xs: 'none', sm: 'inline-flex' } }}
         />
       )}
 
@@ -227,7 +240,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
           size="small"
           label={en.tasksPage.status.completed}
           color="success"
-          sx={{ fontSize: 11 }}
+          sx={{ fontSize: 11, display: { xs: 'none', sm: 'inline-flex' } }}
         />
       )}
 
@@ -236,11 +249,11 @@ const TaskRow: React.FC<TaskRowProps> = ({
           size="small"
           label={en.tasksPage.status.canceled}
           color="default"
-          sx={{ fontSize: 11 }}
+          sx={{ fontSize: 11, display: { xs: 'none', sm: 'inline-flex' } }}
         />
       )}
 
-      <Box sx={{ display: 'flex', gap: 0.25 }}>
+      <Box sx={{ display: 'flex', gap: 0.25, ml: 'auto', flexShrink: 0 }}>
         {task.status === 'planned' && (
           <Tooltip title={en.tasksPage.actions.complete}>
             <IconButton
@@ -248,7 +261,11 @@ const TaskRow: React.FC<TaskRowProps> = ({
               data-testid="task-action-complete"
               size="small"
               color="success"
-              onClick={() => requestAction('completed')}
+              onClick={(e) => {
+                e.stopPropagation();
+                requestAction('completed');
+              }}
+              sx={{ minWidth: 44, minHeight: 44 }}
             >
               <CheckCircleOutlineIcon fontSize="small" />
             </IconButton>
@@ -260,7 +277,11 @@ const TaskRow: React.FC<TaskRowProps> = ({
               aria-label={en.tasksPage.actions.unskip}
               data-testid="task-action-unskip"
               size="small"
-              onClick={() => requestAction('planned')}
+              onClick={(e) => {
+                e.stopPropagation();
+                requestAction('planned');
+              }}
+              sx={{ minWidth: 44, minHeight: 44 }}
             >
               <UndoIcon fontSize="small" />
             </IconButton>
@@ -271,7 +292,11 @@ const TaskRow: React.FC<TaskRowProps> = ({
             aria-label={en.tasksPage.actions.more}
             data-testid="task-action-more"
             size="small"
-            onClick={(e) => setMenuAnchor(e.currentTarget)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setMenuAnchor(e.currentTarget);
+            }}
+            sx={{ minWidth: 44, minHeight: 44 }}
           >
             <MoreVertIcon fontSize="small" />
           </IconButton>
@@ -282,12 +307,10 @@ const TaskRow: React.FC<TaskRowProps> = ({
         anchorEl={menuAnchor}
         open={Boolean(menuAnchor)}
         onClose={closeMenu}
+        onClick={(e) => e.stopPropagation()}
         data-testid="task-overflow-menu"
       >
-        <MenuItem
-          data-testid="task-menu-edit"
-          onClick={handleEditClick}
-        >
+        <MenuItem data-testid="task-menu-edit" onClick={handleEditClick}>
           <ListItemIcon>
             <EditIcon fontSize="small" />
           </ListItemIcon>
@@ -365,6 +388,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
       <Dialog
         open={pendingAction !== null}
         onClose={() => setPendingAction(null)}
+        onClick={(e) => e.stopPropagation()}
         data-testid="confirm-dialog"
       >
         <DialogTitle>
