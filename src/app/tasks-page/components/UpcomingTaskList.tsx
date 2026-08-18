@@ -5,14 +5,16 @@ import {
   Skeleton,
   SelectChangeEvent,
   Button,
+  IconButton,
 } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import dayjs from 'dayjs';
 import { Task, TaskCategory, fetchTasks } from '../utils/taskApi';
 import TaskRow from './TaskRow';
 import { SelectField } from './TaskFormFields';
 import en from '../../i18n/en';
 
-const LOOK_AHEAD_DAYS = 14;
 const ASSIGNED_TO_FILTER = ['All', 'Yogi', 'Riddhi', 'Both'] as const;
 const STATUS_FILTER = [
   'All',
@@ -42,13 +44,23 @@ const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
   const [error, setError] = useState('');
   const [assignedToFilter, setAssignedToFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [monthOffset, setMonthOffset] = useState(0);
 
   const loadData = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      const from = dayjs().format('YYYY-MM-DD');
-      const to = dayjs().add(LOOK_AHEAD_DAYS, 'day').format('YYYY-MM-DD');
+      const from =
+        monthOffset === 0
+          ? dayjs().format('YYYY-MM-DD')
+          : dayjs()
+              .add(monthOffset, 'month')
+              .startOf('month')
+              .format('YYYY-MM-DD');
+      const to = dayjs()
+        .add(monthOffset, 'month')
+        .endOf('month')
+        .format('YYYY-MM-DD');
       const statusParam = statusFilter !== 'All' ? statusFilter : undefined;
       const assignedParam =
         assignedToFilter !== 'All' ? assignedToFilter : undefined;
@@ -60,7 +72,7 @@ const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [statusFilter, assignedToFilter]);
+  }, [statusFilter, assignedToFilter, monthOffset]);
 
   useEffect(() => {
     loadData();
@@ -115,6 +127,59 @@ const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
 
   return (
     <Box data-testid="upcoming-task-list">
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          mb: 1,
+        }}
+      >
+        <Typography variant="subtitle1" fontWeight={500}>
+          {monthOffset === 0
+            ? en.tasksPage.monthView.thisMonth
+            : dayjs().add(monthOffset, 'month').format('MMMM YYYY')}
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 0.5 }}>
+          {monthOffset === 0 ? (
+            <Button
+              size="small"
+              endIcon={<ArrowForwardIcon />}
+              onClick={() => setMonthOffset((o) => o + 1)}
+              data-testid="month-nav-next"
+            >
+              {en.tasksPage.monthView.nextMonth}
+            </Button>
+          ) : (
+            <>
+              <IconButton
+                size="small"
+                onClick={() => setMonthOffset((o) => o - 1)}
+                data-testid="month-nav-back"
+                aria-label={en.tasksPage.monthView.previousMonth}
+              >
+                <ArrowBackIcon fontSize="small" />
+              </IconButton>
+              <Button
+                size="small"
+                onClick={() => setMonthOffset(0)}
+                data-testid="month-nav-current"
+              >
+                {en.tasksPage.monthView.current}
+              </Button>
+              <IconButton
+                size="small"
+                onClick={() => setMonthOffset((o) => o + 1)}
+                data-testid="month-nav-next"
+                aria-label={en.tasksPage.monthView.nextMonth}
+              >
+                <ArrowForwardIcon fontSize="small" />
+              </IconButton>
+            </>
+          )}
+        </Box>
+      </Box>
+
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
         <Box sx={{ minWidth: 130 }}>
           <SelectField
