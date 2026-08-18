@@ -44,16 +44,16 @@ const databaseConfig: DatabaseConfig = {
   },
 };
 
-const environment =
-  (process.env.NODE_ENV as keyof DatabaseConfig) || 'development';
-const config = databaseConfig[environment];
+const envKey =
+  process.env.NODE_ENV === 'production' ? 'production' : 'development';
+const config = databaseConfig[envKey];
 
-if (environment === 'production' && !process.env.DATABASE_URL) {
+if (envKey === 'production' && !process.env.DATABASE_URL) {
   throw new Error('Missing required environment variable: DATABASE_URL');
 }
 
 const db = knex(config);
 
-console.log(`🗄️  Database configured for ${environment} environment`);
+console.log(`🗄️  Database configured for ${envKey} environment`);
 
 export default db;

@@ -17,7 +17,7 @@ import { createInsertExpense } from '../server/utils/data-factory/testDataFactor
 
 afterAll(async () => {
   await db.destroy();
-  server.close();
+  server?.close();
 });
 
 const insertData: InsertExpenseType = createInsertExpense({

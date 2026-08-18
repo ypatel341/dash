@@ -61,9 +61,11 @@ if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
     res.sendFile(path.join(__dirname, '../../dist', 'index.html'));
   });
 
-  server = app.listen(port, () => {
-    logger.info(`Server running on port ${port}`);
-  });
+  if (process.env.NODE_ENV !== 'test' && !process.env.JEST_WORKER_ID) {
+    server = app.listen(port, () => {
+      logger.info(`Server running on port ${port}`);
+    });
+  }
 } else if (cluster.isPrimary) {
   logger.info(`Primary ${process.pid} is running`);
 

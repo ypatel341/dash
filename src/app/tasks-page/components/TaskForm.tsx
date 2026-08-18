@@ -42,7 +42,13 @@ const ASSIGNED_TO_OPTIONS = ['Yogi', 'Riddhi', 'Both'] as const;
 const KIND_OPTIONS = ['event', 'deadline', 'activity'] as const;
 const MODALITY_OPTIONS = ['physical', 'virtual', 'none'] as const;
 const TIME_MODE_OPTIONS = ['timed', 'all_day', 'date_only'] as const;
-const FREQUENCY_OPTIONS = ['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'] as const;
+const FREQUENCY_OPTIONS = [
+  'DAILY',
+  'WEEKLY',
+  'MONTHLY',
+  'SEMI_ANNUAL',
+  'YEARLY',
+] as const;
 
 type TaskFormData = {
   title: string;
@@ -90,6 +96,10 @@ type TaskFormProps = {
   onToast: (message: string, severity: 'success' | 'error') => void;
 };
 
+const isLeapDay = (date: Dayjs): boolean => {
+  return date.month() === 1 && date.date() === 29;
+};
+
 const buildRRule = (frequency: string, taskDate: Dayjs | null): string => {
   let rule = `FREQ=${frequency}`;
   if (frequency === 'WEEKLY' && taskDate) {
@@ -99,12 +109,31 @@ const buildRRule = (frequency: string, taskDate: Dayjs | null): string => {
   if (frequency === 'MONTHLY' && taskDate) {
     rule += `;BYMONTHDAY=${taskDate.date()}`;
   }
+  if (frequency === 'YEARLY' && taskDate && isLeapDay(taskDate)) {
+    rule += `;BYMONTH=2;BYMONTHDAY=-1`;
+  }
+  if (frequency === 'SEMI_ANNUAL' && taskDate) {
+    if (taskDate.date() === 31) {
+      rule = 'FREQ=MONTHLY;INTERVAL=6;BYMONTHDAY=-1';
+    } else {
+      rule = `FREQ=MONTHLY;INTERVAL=6;BYMONTHDAY=${taskDate.date()}`;
+    }
+  }
   return rule;
 };
 
 const parseFrequencyFromRRule = (rule: string): string => {
-  const match = rule.match(/FREQ=(\w+)/);
-  return match ? match[1] : 'WEEKLY';
+  const freqMatch = rule.match(/FREQ=(\w+)/);
+  const freq = freqMatch ? freqMatch[1] : 'WEEKLY';
+
+  if (freq === 'MONTHLY') {
+    const intervalMatch = rule.match(/INTERVAL=(\d+)/);
+    if (intervalMatch && parseInt(intervalMatch[1], 10) === 6) {
+      return 'SEMI_ANNUAL';
+    }
+  }
+
+  return freq;
 };
 
 const taskToFormData = (task: Task): TaskFormData => ({
@@ -235,8 +264,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
         if (formData.startsOn)
           data.startsOn = formData.startsOn.format('YYYY-MM-DD');
         data.recurrenceRule = buildRRule(formData.frequency, formData.startsOn);
-        if (formData.endsOn)
-          data.endsOn = formData.endsOn.format('YYYY-MM-DD');
+        if (formData.endsOn) data.endsOn = formData.endsOn.format('YYYY-MM-DD');
         else data.endsOn = null;
 
         await updateSeries(editTask.seriesId, data);
@@ -359,9 +387,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
       >
         <DialogTitle>{dialogTitle}</DialogTitle>
         <DialogContent>
-          <Box
-            sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}
-          >
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
             <TextField
               label={en.tasksPage.form.title}
               value={formData.title}

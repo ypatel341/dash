@@ -52,7 +52,7 @@ jest.mock('../server/services/seriesService', () => ({
 
 afterAll(async () => {
   await db.destroy();
-  server.close();
+  server?.close();
 });
 
 afterEach(() => {

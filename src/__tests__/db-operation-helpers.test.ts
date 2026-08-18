@@ -146,6 +146,6 @@ describe('handles all DB operations and closes the connection', () => {
       .del();
 
     await db.destroy();
-    server.close();
+    server?.close();
   });
 });

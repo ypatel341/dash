@@ -78,6 +78,7 @@ const en = {
       DAILY: 'Daily',
       WEEKLY: 'Weekly',
       MONTHLY: 'Monthly',
+      SEMI_ANNUAL: 'Every 6 months',
       YEARLY: 'Yearly',
     },
     status: {
@@ -142,6 +143,7 @@ const en = {
       DAILY: 'Daily',
       WEEKLY: 'Weekly',
       MONTHLY: 'Monthly',
+      SEMI_ANNUAL: 'Every 6 months',
       YEARLY: 'Yearly',
     },
     monthView: {

@@ -6,8 +6,8 @@ import {
   VALID_TASK_TIME_MODES,
   VALID_ASSIGNED_TO,
   VALID_SERIES_STATUS_TRANSITIONS,
-  DEFAULT_MATERIALIZATION_HORIZON_DAYS,
 } from '../utils/consts';
+import { getMaterializationHorizon } from '../utils/rruleHelper';
 import {
   getTaskCategoryById,
   getTaskSeriesById,
@@ -267,9 +267,7 @@ export const createSeriesService = async (
     metadata: data.metadata ?? {},
   });
 
-  const horizonDate = dayjs()
-    .add(DEFAULT_MATERIALIZATION_HORIZON_DAYS, 'day')
-    .format('YYYY-MM-DD');
+  const horizonDate = getMaterializationHorizon(data.recurrenceRule);
   const tasks = await ensureTaskOccurrences(series.id, horizonDate);
 
   return { series, tasks };
@@ -326,10 +324,10 @@ export const updateSeriesService = async (
   if (scheduleChanged) {
     await deleteFuturePlannedOccurrences(id);
     await updateTaskSeriesById(id, { generated_through: null });
-    const horizon = dayjs().add(DEFAULT_MATERIALIZATION_HORIZON_DAYS, 'day');
+    const horizonDate = getMaterializationHorizon(updated.recurrenceRule);
     await ensureOccurrencesForDateRange(
       dayjs().format('YYYY-MM-DD'),
-      horizon.format('YYYY-MM-DD'),
+      horizonDate,
     );
   } else {
     const taskData: Record<string, unknown> = {};
@@ -390,9 +388,7 @@ export const resumeSeriesService = async (
     throw new Error('Series not found');
   }
 
-  const horizonDate = dayjs()
-    .add(DEFAULT_MATERIALIZATION_HORIZON_DAYS, 'day')
-    .format('YYYY-MM-DD');
+  const horizonDate = getMaterializationHorizon(updated.recurrenceRule);
   const tasks = await ensureTaskOccurrences(updated.id, horizonDate);
 
   return { series: updated, tasks };
