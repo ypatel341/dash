@@ -325,10 +325,7 @@ export const updateSeriesService = async (
     await deleteFuturePlannedOccurrences(id);
     await updateTaskSeriesById(id, { generated_through: null });
     const horizonDate = getMaterializationHorizon(updated.recurrenceRule);
-    await ensureOccurrencesForDateRange(
-      dayjs().format('YYYY-MM-DD'),
-      horizonDate,
-    );
+    await ensureTaskOccurrences(id, horizonDate);
   } else {
     const taskData: Record<string, unknown> = {};
     if (data.title !== undefined) taskData.title = data.title;
