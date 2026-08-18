@@ -44,8 +44,11 @@ const databaseConfig: DatabaseConfig = {
   },
 };
 
-const envKey =
-  process.env.NODE_ENV === 'production' ? 'production' : 'development';
+const nodeEnv = process.env.NODE_ENV ?? 'development';
+if (nodeEnv !== 'production' && nodeEnv !== 'development' && nodeEnv !== 'test') {
+  throw new Error(`Unsupported NODE_ENV: ${nodeEnv}`);
+}
+const envKey: keyof DatabaseConfig = nodeEnv === 'production' ? 'production' : 'development';
 const config = databaseConfig[envKey];
 
 if (envKey === 'production' && !process.env.DATABASE_URL) {
