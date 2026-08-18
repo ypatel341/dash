@@ -148,6 +148,7 @@ const en = {
       thisMonth: 'This month',
       nextMonth: 'Next month',
       current: 'Current',
+      previousMonth: 'Previous month',
     },
     overdue: 'Overdue',
     today: 'Today',

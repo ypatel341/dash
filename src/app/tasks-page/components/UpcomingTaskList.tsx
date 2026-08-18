@@ -5,6 +5,7 @@ import {
   Skeleton,
   SelectChangeEvent,
   Button,
+  IconButton,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -151,14 +152,14 @@ const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
             </Button>
           ) : (
             <>
-              <Button
+              <IconButton
                 size="small"
                 onClick={() => setMonthOffset((o) => o - 1)}
                 data-testid="month-nav-back"
-                sx={{ minWidth: 'auto', px: 1 }}
+                aria-label={en.tasksPage.monthView.previousMonth}
               >
                 <ArrowBackIcon fontSize="small" />
-              </Button>
+              </IconButton>
               <Button
                 size="small"
                 onClick={() => setMonthOffset(0)}
@@ -166,14 +167,14 @@ const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
               >
                 {en.tasksPage.monthView.current}
               </Button>
-              <Button
+              <IconButton
                 size="small"
                 onClick={() => setMonthOffset((o) => o + 1)}
                 data-testid="month-nav-next"
-                sx={{ minWidth: 'auto', px: 1 }}
+                aria-label={en.tasksPage.monthView.nextMonth}
               >
                 <ArrowForwardIcon fontSize="small" />
-              </Button>
+              </IconButton>
             </>
           )}
         </Box>
