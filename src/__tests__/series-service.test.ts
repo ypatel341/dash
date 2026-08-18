@@ -42,10 +42,14 @@ jest.mock('../server/utils/db-operation-helpers', () => ({
   deleteFuturePlannedOccurrences: jest.fn().mockResolvedValue(0),
 }));
 
-jest.mock('../server/utils/rruleHelper', () => ({
-  validateRRule: jest.fn(),
-  expandRRule: jest.fn(),
-}));
+jest.mock('../server/utils/rruleHelper', () => {
+  const actual = jest.requireActual('../server/utils/rruleHelper');
+  return {
+    ...actual,
+    validateRRule: jest.fn(),
+    expandRRule: jest.fn(),
+  };
+});
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -397,8 +401,9 @@ describe('updateSeriesService', () => {
 
     await updateSeriesService('series-1', { title: 'Updated' });
 
-    const { updateFuturePlannedOccurrences } =
-      jest.requireMock('../server/utils/db-operation-helpers');
+    const { updateFuturePlannedOccurrences } = jest.requireMock(
+      '../server/utils/db-operation-helpers',
+    );
     expect(updateFuturePlannedOccurrences).toHaveBeenCalledWith('series-1', {
       title: 'Updated',
     });
@@ -412,8 +417,9 @@ describe('updateSeriesService', () => {
 
     await updateSeriesService('series-1', { startsOn: '2026-09-01' });
 
-    const { deleteFuturePlannedOccurrences } =
-      jest.requireMock('../server/utils/db-operation-helpers');
+    const { deleteFuturePlannedOccurrences } = jest.requireMock(
+      '../server/utils/db-operation-helpers',
+    );
     expect(deleteFuturePlannedOccurrences).toHaveBeenCalledWith('series-1');
     expect(updateTaskSeriesById).toHaveBeenCalledWith('series-1', {
       generated_through: null,
@@ -765,5 +771,352 @@ describe('ensureOccurrencesForDateRange', () => {
     await ensureOccurrencesForDateRange('2026-08-01', '2026-10-29');
 
     expect(getTaskSeriesById).not.toHaveBeenCalled();
+  });
+});
+
+// --- Frequency-aware materialization horizon ---
+
+describe('Materialization horizon through service paths', () => {
+  const yearlyDates = Array.from({ length: 25 }, (_, i) => `${2026 + i}-08-18`);
+  const semiAnnualDates: string[] = [];
+  (() => {
+    let d = new Date(2026, 7, 18);
+    while (d <= new Date(2050, 11, 31)) {
+      semiAnnualDates.push(
+        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`,
+      );
+      d = new Date(d.getFullYear(), d.getMonth() + 6, d.getDate());
+    }
+  })();
+
+  it('createSeriesService — yearly series materializes through 2050', async () => {
+    const category = createTestTaskCategory();
+    const series = createTestTaskSeries({
+      recurrenceRule: 'FREQ=YEARLY',
+      startsOn: '2026-08-18',
+    });
+
+    (getTaskCategoryById as jest.Mock).mockResolvedValue(category);
+    (insertTaskSeries as jest.Mock).mockResolvedValue(series);
+    (getTaskSeriesById as jest.Mock).mockResolvedValue(series);
+    (expandRRule as jest.Mock).mockReturnValue(yearlyDates);
+    (getCanceledExceptionDates as jest.Mock).mockResolvedValue([]);
+    (materializeOccurrences as jest.Mock).mockResolvedValue([]);
+
+    await createSeriesService(
+      createTestCreateSeriesRequest({
+        recurrenceRule: 'FREQ=YEARLY',
+        startsOn: '2026-08-18',
+      }),
+    );
+
+    expect(expandRRule).toHaveBeenCalledWith(
+      'FREQ=YEARLY',
+      '2026-08-18',
+      expect.any(String),
+      '2050-12-31',
+      null,
+    );
+    const taskRows = (materializeOccurrences as jest.Mock).mock.calls[0][1];
+    expect(taskRows).toHaveLength(25);
+  });
+
+  it('createSeriesService — six-month series materializes through 2050', async () => {
+    const category = createTestTaskCategory();
+    const series = createTestTaskSeries({
+      recurrenceRule: 'FREQ=MONTHLY;INTERVAL=6;BYMONTHDAY=18',
+      startsOn: '2026-08-18',
+    });
+
+    (getTaskCategoryById as jest.Mock).mockResolvedValue(category);
+    (insertTaskSeries as jest.Mock).mockResolvedValue(series);
+    (getTaskSeriesById as jest.Mock).mockResolvedValue(series);
+    (expandRRule as jest.Mock).mockReturnValue(semiAnnualDates);
+    (getCanceledExceptionDates as jest.Mock).mockResolvedValue([]);
+    (materializeOccurrences as jest.Mock).mockResolvedValue([]);
+
+    await createSeriesService(
+      createTestCreateSeriesRequest({
+        recurrenceRule: 'FREQ=MONTHLY;INTERVAL=6;BYMONTHDAY=18',
+        startsOn: '2026-08-18',
+      }),
+    );
+
+    expect(expandRRule).toHaveBeenCalledWith(
+      'FREQ=MONTHLY;INTERVAL=6;BYMONTHDAY=18',
+      '2026-08-18',
+      expect.any(String),
+      '2050-12-31',
+      null,
+    );
+    const taskRows = (materializeOccurrences as jest.Mock).mock.calls[0][1];
+    expect(taskRows).toHaveLength(semiAnnualDates.length);
+  });
+
+  it('createSeriesService — daily series remains at 90 days', async () => {
+    const category = createTestTaskCategory();
+    const series = createTestTaskSeries({
+      recurrenceRule: 'FREQ=DAILY',
+      startsOn: '2026-08-18',
+    });
+
+    (getTaskCategoryById as jest.Mock).mockResolvedValue(category);
+    (insertTaskSeries as jest.Mock).mockResolvedValue(series);
+    (getTaskSeriesById as jest.Mock).mockResolvedValue(series);
+    (expandRRule as jest.Mock).mockReturnValue([]);
+    (getCanceledExceptionDates as jest.Mock).mockResolvedValue([]);
+    (materializeOccurrences as jest.Mock).mockImplementation(() => []);
+    (updateTaskSeriesById as jest.Mock).mockResolvedValue(series);
+
+    await createSeriesService(
+      createTestCreateSeriesRequest({
+        recurrenceRule: 'FREQ=DAILY',
+        startsOn: '2026-08-18',
+      }),
+    );
+
+    const beforeArg = (expandRRule as jest.Mock).mock.calls[0][3];
+    expect(beforeArg).not.toBe('2050-12-31');
+  });
+
+  it('updateSeriesService — schedule change on yearly reconciles through 2050', async () => {
+    const series = createTestTaskSeries({
+      recurrenceRule: 'FREQ=YEARLY',
+      startsOn: '2026-08-18',
+    });
+    const updated = { ...series, startsOn: '2026-09-01' };
+
+    (getTaskSeriesById as jest.Mock).mockResolvedValue(series);
+    (updateTaskSeriesById as jest.Mock).mockResolvedValue(updated);
+    (getSeriesNeedingMaterialization as jest.Mock).mockResolvedValue([updated]);
+    (expandRRule as jest.Mock).mockReturnValue([]);
+    (getCanceledExceptionDates as jest.Mock).mockResolvedValue([]);
+
+    await updateSeriesService('series-1', {
+      startsOn: '2026-09-01',
+    });
+
+    const { deleteFuturePlannedOccurrences } = jest.requireMock(
+      '../server/utils/db-operation-helpers',
+    );
+    expect(deleteFuturePlannedOccurrences).toHaveBeenCalledWith('series-1');
+
+    const ensureCall = (getSeriesNeedingMaterialization as jest.Mock).mock
+      .calls[0];
+    expect(ensureCall[0]).toBe('2050-12-31');
+  });
+
+  it('resumeSeriesService — yearly series materializes through 2050', async () => {
+    const paused = createTestTaskSeries({
+      status: 'paused',
+      recurrenceRule: 'FREQ=YEARLY',
+      startsOn: '2026-08-18',
+    });
+    const active = { ...paused, status: 'active' };
+
+    (getTaskSeriesById as jest.Mock)
+      .mockResolvedValueOnce(paused)
+      .mockResolvedValueOnce(active);
+    (updateTaskSeriesById as jest.Mock).mockResolvedValue(active);
+    (expandRRule as jest.Mock).mockReturnValue(yearlyDates);
+    (getCanceledExceptionDates as jest.Mock).mockResolvedValue([]);
+    (materializeOccurrences as jest.Mock).mockResolvedValue([]);
+
+    await resumeSeriesService('series-1');
+
+    expect(expandRRule).toHaveBeenCalledWith(
+      'FREQ=YEARLY',
+      '2026-08-18',
+      expect.any(String),
+      '2050-12-31',
+      null,
+    );
+  });
+
+  it('resumeSeriesService — six-month series materializes through 2050', async () => {
+    const paused = createTestTaskSeries({
+      status: 'paused',
+      recurrenceRule: 'FREQ=MONTHLY;INTERVAL=6;BYMONTHDAY=18',
+      startsOn: '2026-08-18',
+    });
+    const active = { ...paused, status: 'active' };
+
+    (getTaskSeriesById as jest.Mock)
+      .mockResolvedValueOnce(paused)
+      .mockResolvedValueOnce(active);
+    (updateTaskSeriesById as jest.Mock).mockResolvedValue(active);
+    (expandRRule as jest.Mock).mockReturnValue(semiAnnualDates);
+    (getCanceledExceptionDates as jest.Mock).mockResolvedValue([]);
+    (materializeOccurrences as jest.Mock).mockResolvedValue([]);
+
+    await resumeSeriesService('series-1');
+
+    expect(expandRRule).toHaveBeenCalledWith(
+      'FREQ=MONTHLY;INTERVAL=6;BYMONTHDAY=18',
+      '2026-08-18',
+      expect.any(String),
+      '2050-12-31',
+      null,
+    );
+  });
+
+  it('series endsOn before 2050 remains authoritative', async () => {
+    const category = createTestTaskCategory();
+    const series = createTestTaskSeries({
+      recurrenceRule: 'FREQ=YEARLY',
+      startsOn: '2026-08-18',
+      endsOn: '2030-12-31',
+    });
+
+    (getTaskCategoryById as jest.Mock).mockResolvedValue(category);
+    (insertTaskSeries as jest.Mock).mockResolvedValue(series);
+    (getTaskSeriesById as jest.Mock).mockResolvedValue(series);
+    (expandRRule as jest.Mock).mockReturnValue([
+      '2027-08-18',
+      '2028-08-18',
+      '2029-08-18',
+      '2030-08-18',
+    ]);
+    (getCanceledExceptionDates as jest.Mock).mockResolvedValue([]);
+    (materializeOccurrences as jest.Mock).mockResolvedValue([]);
+
+    await createSeriesService(
+      createTestCreateSeriesRequest({
+        recurrenceRule: 'FREQ=YEARLY',
+        startsOn: '2026-08-18',
+        endsOn: '2030-12-31',
+      }),
+    );
+
+    expect(expandRRule).toHaveBeenCalledWith(
+      'FREQ=YEARLY',
+      '2026-08-18',
+      expect.any(String),
+      '2030-12-31',
+      '2030-12-31',
+    );
+    const taskRows = (materializeOccurrences as jest.Mock).mock.calls[0][1];
+    expect(taskRows).toHaveLength(4);
+  });
+
+  it('re-running materialization creates no duplicates', async () => {
+    const series = createTestTaskSeries({
+      recurrenceRule: 'FREQ=YEARLY',
+      startsOn: '2026-08-18',
+      generatedThrough: null,
+    });
+
+    (getTaskSeriesById as jest.Mock).mockResolvedValue(series);
+    (expandRRule as jest.Mock).mockReturnValue(yearlyDates);
+    (getCanceledExceptionDates as jest.Mock).mockResolvedValue([]);
+    (materializeOccurrences as jest.Mock).mockResolvedValue([]);
+
+    await ensureTaskOccurrences('series-1', '2050-12-31');
+    const firstCallRows = (materializeOccurrences as jest.Mock).mock
+      .calls[0][1];
+
+    jest.clearAllMocks();
+
+    const seriesAfterFirst = {
+      ...series,
+      generatedThrough: '2050-12-31',
+    };
+    (getTaskSeriesById as jest.Mock).mockResolvedValue(seriesAfterFirst);
+
+    await ensureTaskOccurrences('series-1', '2050-12-31');
+
+    expect(expandRRule).not.toHaveBeenCalled();
+    expect(firstCallRows).toHaveLength(25);
+  });
+
+  it('completing one occurrence leaves series and future occurrences intact', async () => {
+    const series = createTestTaskSeries({
+      recurrenceRule: 'FREQ=YEARLY',
+      startsOn: '2026-08-18',
+      generatedThrough: '2050-12-31',
+    });
+
+    (getTaskSeriesById as jest.Mock).mockResolvedValue(series);
+
+    const result = await ensureTaskOccurrences('series-1', '2050-12-31');
+
+    expect(result).toEqual([]);
+    expect(expandRRule).not.toHaveBeenCalled();
+    expect(materializeOccurrences).not.toHaveBeenCalled();
+    expect(series.status).toBe('active');
+  });
+
+  it('non-planned occurrences survive schedule reconciliation', async () => {
+    const series = createTestTaskSeries({
+      recurrenceRule: 'FREQ=YEARLY',
+      startsOn: '2026-08-18',
+    });
+    const updated = { ...series, recurrenceRule: 'FREQ=YEARLY' };
+
+    (getTaskSeriesById as jest.Mock).mockResolvedValue(series);
+    (updateTaskSeriesById as jest.Mock).mockResolvedValue(updated);
+    (getSeriesNeedingMaterialization as jest.Mock).mockResolvedValue([updated]);
+    (expandRRule as jest.Mock).mockReturnValue([]);
+    (getCanceledExceptionDates as jest.Mock).mockResolvedValue([]);
+
+    await updateSeriesService('series-1', {
+      recurrenceRule: 'FREQ=YEARLY',
+    });
+
+    const { deleteFuturePlannedOccurrences } = jest.requireMock(
+      '../server/utils/db-operation-helpers',
+    );
+    expect(deleteFuturePlannedOccurrences).toHaveBeenCalledWith('series-1');
+  });
+
+  it('weekly and monthly series remain at 90 days', async () => {
+    const weeklyCategory = createTestTaskCategory();
+    const weeklySeries = createTestTaskSeries({
+      recurrenceRule: 'FREQ=WEEKLY;BYDAY=MO',
+      startsOn: '2026-08-18',
+    });
+
+    (getTaskCategoryById as jest.Mock).mockResolvedValue(weeklyCategory);
+    (insertTaskSeries as jest.Mock).mockResolvedValue(weeklySeries);
+    (getTaskSeriesById as jest.Mock).mockResolvedValue(weeklySeries);
+    (expandRRule as jest.Mock).mockReturnValue([]);
+    (getCanceledExceptionDates as jest.Mock).mockResolvedValue([]);
+    (materializeOccurrences as jest.Mock).mockImplementation(() => []);
+    (updateTaskSeriesById as jest.Mock).mockResolvedValue(weeklySeries);
+
+    await createSeriesService(
+      createTestCreateSeriesRequest({
+        recurrenceRule: 'FREQ=WEEKLY;BYDAY=MO',
+        startsOn: '2026-08-18',
+      }),
+    );
+
+    const beforeArg = (expandRRule as jest.Mock).mock.calls[0][3];
+    expect(beforeArg).not.toBe('2050-12-31');
+
+    jest.clearAllMocks();
+
+    const monthlySeries = createTestTaskSeries({
+      recurrenceRule: 'FREQ=MONTHLY;BYMONTHDAY=18',
+      startsOn: '2026-08-18',
+    });
+
+    (getTaskCategoryById as jest.Mock).mockResolvedValue(weeklyCategory);
+    (insertTaskSeries as jest.Mock).mockResolvedValue(monthlySeries);
+    (getTaskSeriesById as jest.Mock).mockResolvedValue(monthlySeries);
+    (expandRRule as jest.Mock).mockReturnValue([]);
+    (getCanceledExceptionDates as jest.Mock).mockResolvedValue([]);
+    (materializeOccurrences as jest.Mock).mockImplementation(() => []);
+    (updateTaskSeriesById as jest.Mock).mockResolvedValue(monthlySeries);
+
+    await createSeriesService(
+      createTestCreateSeriesRequest({
+        recurrenceRule: 'FREQ=MONTHLY;BYMONTHDAY=18',
+        startsOn: '2026-08-18',
+      }),
+    );
+
+    const monthlyBeforeArg = (expandRRule as jest.Mock).mock.calls[0][3];
+    expect(monthlyBeforeArg).not.toBe('2050-12-31');
   });
 });

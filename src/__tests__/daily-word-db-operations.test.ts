@@ -56,7 +56,7 @@ describe('daily word DB operations', () => {
     }
 
     await db.destroy();
-    server.close();
+    server?.close();
   });
 
   it('should insert a daily word with its definitions and examples', async () => {

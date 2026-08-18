@@ -9,7 +9,7 @@ jest.mock('../server/services/dailyWordService', () => ({
 
 afterAll(async () => {
   await db.destroy();
-  server.close();
+  server?.close();
 });
 
 afterEach(() => {

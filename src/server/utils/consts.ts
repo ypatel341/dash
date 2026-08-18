@@ -70,6 +70,7 @@ export const VALID_SERIES_STATUS_TRANSITIONS: Record<string, string[]> = {
 
 // Materialization
 export const DEFAULT_MATERIALIZATION_HORIZON_DAYS = 90;
+export const YEARLY_MATERIALIZATION_THROUGH = '2050-12-31';
 export const MATERIALIZATION_HORIZON_BY_FREQUENCY: Record<string, number> = {
   DAILY: 90,
   WEEKLY: 180,

@@ -110,6 +110,10 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     setCurrentMonth(month);
   };
 
+  const handleYearChange = (year: Dayjs) => {
+    setCurrentMonth(year);
+  };
+
   const handleDateChange = (date: Dayjs | null) => {
     if (date) {
       setSelectedDate(date);
@@ -124,6 +128,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           value={selectedDate}
           onChange={handleDateChange}
           onMonthChange={handleMonthChange}
+          onYearChange={handleYearChange}
           loading={loading}
           renderLoading={() => (
             <Box sx={{ p: 2 }}>

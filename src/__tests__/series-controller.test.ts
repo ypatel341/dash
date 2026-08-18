@@ -47,7 +47,7 @@ jest.mock('../server/services/taskService', () => ({
 
 afterAll(async () => {
   await db.destroy();
-  server.close();
+  server?.close();
 });
 
 afterEach(() => {

@@ -1,5 +1,10 @@
 import { RRule, Frequency } from 'rrule';
-import { SUPPORTED_RRULE_FREQUENCIES } from './consts';
+import dayjs from 'dayjs';
+import {
+  SUPPORTED_RRULE_FREQUENCIES,
+  DEFAULT_MATERIALIZATION_HORIZON_DAYS,
+  YEARLY_MATERIALIZATION_THROUGH,
+} from './consts';
 
 const FREQ_NAME_MAP: Record<number, string> = {
   [Frequency.YEARLY]: 'YEARLY',
@@ -28,6 +33,29 @@ export const validateRRule = (ruleString: string): void => {
       `Unsupported frequency: ${freqName || rule.options.freq}. Supported: ${SUPPORTED_RRULE_FREQUENCIES.join(', ')}`,
     );
   }
+};
+
+export const getRecurrenceFrequency = (rruleString: string): string => {
+  const match = rruleString.match(/FREQ=(\w+)/);
+  return match ? match[1] : 'DAILY';
+};
+
+export const getRecurrenceInterval = (rruleString: string): number => {
+  const match = rruleString.match(/INTERVAL=(\d+)/);
+  return match ? parseInt(match[1], 10) : 1;
+};
+
+export const getMaterializationHorizon = (rruleString: string): string => {
+  const frequency = getRecurrenceFrequency(rruleString);
+  const interval = getRecurrenceInterval(rruleString);
+
+  if (frequency === 'YEARLY' || (frequency === 'MONTHLY' && interval === 6)) {
+    return YEARLY_MATERIALIZATION_THROUGH;
+  }
+
+  return dayjs()
+    .add(DEFAULT_MATERIALIZATION_HORIZON_DAYS, 'day')
+    .format('YYYY-MM-DD');
 };
 
 export const expandRRule = (

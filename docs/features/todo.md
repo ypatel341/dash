@@ -2,9 +2,9 @@
 
 ## Engineering Design Document
 
-**Status:** V1 shipped; V1.1 in progress — Revision 1.4  
-**Date:** 2026-08-05  
-**Scope:** Task planning, recurring task instances, categories, simple CRUD, calendar projection, and unit testing strategy  
+**Status:** V1 shipped; V1.1 shipped; V1.2 in progress — Revision 1.5  
+**Date:** 2026-08-18  
+**Scope:** Task planning, recurring task instances, categories, simple CRUD, calendar projection, unit testing strategy, responsive UI, month browsing, and infrequent recurrence  
 **V1 field test:** July 29–August 4, 2026 (see `docs/retros/TODO-feature/`)
 
 ---
@@ -293,13 +293,21 @@ Running generation repeatedly must not create duplicates.
 
 ### 6.4 Rolling materialization
 
-Do not generate recurring tasks indefinitely.
+Do not generate recurring tasks indefinitely — with one exception for infrequent recurrences (see below).
 
-Recommended initial horizon:
+Default horizon:
 
 ```text
-90 days
+90 days (daily, weekly, monthly, quarterly)
 ```
+
+Yearly and semi-annual series use an extended horizon:
+
+```text
+2050-12-31 (yearly and semi-annual only)
+```
+
+The rationale: a birthday or annual renewal saved today won't have next year's occurrence in the database under a 90-day window. The 2050 horizon eagerly creates all occurrences at series creation time, guaranteeing data exists for calendar display and far-future browsing. The `endsOn` field on the series is authoritative — if a series ends before 2050, materialization stops at the end date, not 2050. See Appendix B for the full product decision record.
 
 The system generates missing occurrences through a target date and records progress in:
 
@@ -307,11 +315,12 @@ The system generates missing occurrences through a target date and records progr
 generated_through
 ```
 
-Generation can initially run:
+Generation runs:
 
 - When a series is created
-- When upcoming tasks are requested
-- Through a scheduled job later, if needed
+- When a series is resumed from paused state
+- When a series schedule is updated (deletes future planned occurrences, resets `generated_through`, re-materializes)
+- When upcoming tasks are requested (lazy materialization through the requested date range)
 
 ### 6.5 Series and occurrence status
 
@@ -676,7 +685,7 @@ This section covers unit testing for Task Planning V1. Integration and end-to-en
 
 ### Recurrence library
 
-V1 will use the [`rrule`](https://www.npmjs.com/package/rrule) npm package for parsing, validating, and expanding RFC 5545 RRULE strings. It is the most widely adopted JS implementation, supports all standard recurrence patterns, and works in both Node and browser contexts. The simple V1 form will generate only `FREQ=DAILY`, `FREQ=WEEKLY`, `FREQ=MONTHLY`, and `FREQ=YEARLY` rules — `rrule` handles these without configuration.
+V1 will use the [`rrule`](https://www.npmjs.com/package/rrule) npm package for parsing, validating, and expanding RFC 5545 RRULE strings. It is the most widely adopted JS implementation, supports all standard recurrence patterns, and works in both Node and browser contexts. The form generates `FREQ=DAILY`, `FREQ=WEEKLY`, `FREQ=MONTHLY`, `FREQ=YEARLY`, and semi-annual (`FREQ=MONTHLY;INTERVAL=6`) rules — `rrule` handles these without configuration.
 
 ### What to test
 
@@ -684,27 +693,31 @@ Unit tests target the service layer (`taskService.ts`) and utility functions. Th
 
 #### Service layer coverage
 
-| Area              | What to assert                                                                       |
-| ----------------- | ------------------------------------------------------------------------------------ |
-| Task creation     | Validates required fields; rejects invalid `kind`, `modality`, `time_mode`, `status` |
-| Task creation     | Timed tasks require `start_time`; `all_day`/`date_only` ignore times                 |
-| Task update       | Status transitions are valid (e.g. cannot complete a canceled task)                  |
-| Task update       | Editing data fields on a recurring task sets `is_exception = true`                   |
-| Task update       | Status-only changes on a recurring task do not set `is_exception`                    |
-| Task update       | Editing a one-time task does not set `is_exception`                                  |
-| Task deletion     | One-time tasks can be hard-deleted; recurring occurrences are canceled, not deleted  |
-| Task listing      | Filters by date range and status; returns correct shape                              |
-| Series creation   | Validates RRULE via `rrule` library; rejects malformed rules                         |
-| Series creation   | Generates occurrences through the 90-day horizon                                     |
-| Materialization   | Idempotent — running twice produces no duplicates                                    |
-| Materialization   | Respects `generated_through` and only fills the gap                                  |
-| Materialization   | Skips dates with existing canceled exceptions                                        |
-| Series pause      | Paused series stop generating future occurrences                                     |
-| Series resume     | Resumed series regenerate from where they left off                                   |
-| Snapshot behavior | Generated occurrences copy series defaults at creation time                          |
-| Series update     | Field changes propagate to future planned non-exception occurrences                  |
-| Series update     | Schedule changes delete future planned tasks and re-materialize                      |
-| Metadata          | Rejects non-object values (arrays, primitives)                                       |
+| Area              | What to assert                                                                        |
+| ----------------- | ------------------------------------------------------------------------------------- |
+| Task creation     | Validates required fields; rejects invalid `kind`, `modality`, `time_mode`, `status`  |
+| Task creation     | Timed tasks require `start_time`; `all_day`/`date_only` ignore times                  |
+| Task update       | Status transitions are valid (e.g. cannot complete a canceled task)                   |
+| Task update       | Editing data fields on a recurring task sets `is_exception = true`                    |
+| Task update       | Status-only changes on a recurring task do not set `is_exception`                     |
+| Task update       | Editing a one-time task does not set `is_exception`                                   |
+| Task deletion     | One-time tasks can be hard-deleted; recurring occurrences are canceled, not deleted   |
+| Task listing      | Filters by date range and status; returns correct shape                               |
+| Series creation   | Validates RRULE via `rrule` library; rejects malformed rules                          |
+| Series creation   | Generates occurrences through the frequency-aware horizon                             |
+| Materialization   | Idempotent — running twice produces no duplicates                                     |
+| Materialization   | Respects `generated_through` and only fills the gap                                   |
+| Materialization   | Skips dates with existing canceled exceptions                                         |
+| Materialization   | Yearly/semi-annual series materialize through 2050; others through 90 days            |
+| Materialization   | `endsOn` before 2050 is authoritative — materialization stops at the end date         |
+| Series pause      | Paused series stop generating future occurrences                                      |
+| Series resume     | Resumed series regenerate from where they left off                                    |
+| Snapshot behavior | Generated occurrences copy series defaults at creation time                           |
+| Series update     | Field changes propagate to future planned non-exception occurrences                   |
+| Series update     | Schedule changes delete future planned tasks and re-materialize                       |
+| Reconciliation    | Non-planned occurrences (completed, skipped, canceled, edited) survive reconciliation |
+| Reconciliation    | Completing one occurrence leaves the series and future occurrences intact             |
+| Metadata          | Rejects non-object values (arrays, primitives)                                        |
 
 #### Utility coverage
 
@@ -1003,18 +1016,18 @@ The first migration should remain narrow, but the task/series split, original oc
 
 ### Frontend file inventory
 
-| File                                                 | Purpose                                                                   |
-| ---------------------------------------------------- | ------------------------------------------------------------------------- |
-| `src/app/tasks-page/TasksHomePage.tsx`               | Top-level route: 2-column Grid (list + calendar), FAB, toast              |
-| `src/app/tasks-page/components/TaskForm.tsx`         | Dialog-based create/edit form with recurrence toggle and edit scope selector |
-| `src/app/tasks-page/components/TaskFormFields.tsx`   | Reusable field wrappers: SelectField, CategoryField, DateField, TimeField   |
+| File                                                 | Purpose                                                                                                   |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `src/app/tasks-page/TasksHomePage.tsx`               | Top-level route: 2-column Grid (list + calendar), FAB, toast                                              |
+| `src/app/tasks-page/components/TaskForm.tsx`         | Dialog-based create/edit form with recurrence toggle and edit scope selector                              |
+| `src/app/tasks-page/components/TaskFormFields.tsx`   | Reusable field wrappers: SelectField, CategoryField, DateField, TimeField                                 |
 | `src/app/tasks-page/components/TaskRow.tsx`          | Task row with complete button, overflow menu (edit, skip, cancel, delete, series actions), confirm dialog |
-| `src/app/tasks-page/components/UpcomingTaskList.tsx` | Fetches tasks for today+14 days, groups by date, assignee/status filters, passes onEdit |
-| `src/app/tasks-page/components/CalendarView.tsx`     | MUI DateCalendar with category-colored badge dots, day detail panel       |
-| `src/app/tasks-page/components/TodayTasksCard.tsx`   | Landing page card showing today's planned tasks                           |
-| `src/app/tasks-page/utils/taskApi.ts`                | Typed axios helpers for all `/api/tasks` endpoints                       |
-| `src/app/home-page/components/LandingPage.tsx`       | Landing page wrapper: WordOfTheDay + TodayTasksCard                       |
-| `src/app/i18n/en.ts`                                 | `tasksPage` block with all UI strings                                     |
+| `src/app/tasks-page/components/UpcomingTaskList.tsx` | Fetches tasks for today+14 days, groups by date, assignee/status filters, passes onEdit                   |
+| `src/app/tasks-page/components/CalendarView.tsx`     | MUI DateCalendar with category-colored badge dots, day detail panel                                       |
+| `src/app/tasks-page/components/TodayTasksCard.tsx`   | Landing page card showing today's planned tasks                                                           |
+| `src/app/tasks-page/utils/taskApi.ts`                | Typed axios helpers for all `/api/tasks` endpoints                                                        |
+| `src/app/home-page/components/LandingPage.tsx`       | Landing page wrapper: WordOfTheDay + TodayTasksCard                                                       |
+| `src/app/i18n/en.ts`                                 | `tasksPage` block with all UI strings                                                                     |
 
 ### Patterns
 
@@ -1033,22 +1046,105 @@ The first migration should remain narrow, but the task/series split, original oc
 
 Located in `cypress/e2e/tasks-page/`:
 
-| File                      | Coverage                                                                                                           |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `task-crud.cy.ts`         | Create task, complete, skip/unskip, cancel with confirm, delete with confirm, dismiss confirm, validation, filters, edit via overflow menu |
-| `series-flow.cy.ts`       | Create recurring series via form, cancel single occurrence via overflow menu                                        |
-| `homepage-calendar.cy.ts` | Today card on landing page, "View all" navigation, calendar day detail, empty day state                            |
-| `task-routing.cy.ts`      | Direct navigation to `/tasks`, browser refresh, API vs SPA route separation, delete-then-refresh recovery          |
+| File                      | Coverage                                                                                                                                     |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `task-crud.cy.ts`         | Create task, complete, skip/unskip, cancel with confirm, delete with confirm, dismiss confirm, validation, filters, edit via overflow menu   |
+| `series-flow.cy.ts`       | Create recurring series via form, cancel single occurrence, create semi-annual series (verifies RRULE), edit series to semi-annual frequency |
+| `homepage-calendar.cy.ts` | Today card on landing page, "View all" navigation, calendar day detail, empty day state                                                      |
+| `task-routing.cy.ts`      | Direct navigation to `/tasks`, browser refresh, API vs SPA route separation, delete-then-refresh recovery                                    |
 
 Tests use the **real backend** pattern: `cy.request` for setup/cleanup, `cy.intercept` as spies to capture response data.
 
-### Known limitations (V1, updated V1.1)
+### Known limitations (V1, updated through V1.2)
 
 - ~~Direct navigation to `/tasks` returned an API validation error~~ — fixed in V1.1 PR1 via `/api` namespace
 - ~~Error state showed raw error text with no recovery~~ — fixed in V1.1 PR1 with retry button
 - ~~No task edit UI (only create + status actions)~~ — fixed in V1.1 PR2 with edit via overflow menu and scope selector for recurring tasks
 - ~~No series management UI (pause/resume/archive only via API)~~ — fixed in V1.1 PR2 with series lifecycle actions in overflow menu
+- ~~Mobile task row titles overlap at narrow viewports~~ — fixed in V1.2 PR-A with responsive flex-wrap layout
+- ~~No detail view for inspecting a full task record~~ — fixed in V1.2 PR-A with TaskDetailDialog (full-screen on mobile)
+- ~~Hardcoded 14-day look-ahead for upcoming tasks~~ — fixed in V1.2 PR-B with month-based browsing and unlimited month pagination
+- ~~Annual tasks disappear after 90 days~~ — fixed in V1.2 PR-C with frequency-aware materialization horizon (yearly/semi-annual → 2050)
+- ~~No semi-annual frequency option~~ — fixed in V1.2 PR-C with "Every 6 months" in the frequency selector
+- ~~Feb 29 birthdays skipped in non-leap years~~ — fixed in V1.2 PR-C with `BYMONTHDAY=-1` for leap day yearly tasks
 - Calendar shows first category color only when multiple categories exist on a day
 - Filter selectors use MUI Select which requires `[role="combobox"]` targeting in Cypress
 - No drag-and-drop or reordering
-- Mobile task row titles overlap at narrow viewports
+- No "every N months" general capability — only explicit 6-month option (see Appendix B)
+
+---
+
+## Appendix B: V1.2 Product Decisions (PR-A through PR-C)
+
+**Date:** 2026-08-18
+
+These are intentional product choices made during V1.2 development. They're documented here because they would surprise a reader who encounters the behavior without context.
+
+### B.1 Semi-annual month-end: day 30 keeps the literal day number
+
+A task created on **June 30** with "Every 6 months" frequency produces **December 30** — not December 31, even though December 31 exists.
+
+This is intentional. The RRULE uses `BYMONTHDAY=30`, which means "the 30th of the month." Only tasks starting on **day 31** use `BYMONTHDAY=-1` (last day of month), because day 31 doesn't exist in every month and needs the fallback.
+
+The principle: if the user's chosen day exists in all relevant months, use it literally. Reserve last-day-of-month semantics for day 31 where the literal day genuinely doesn't exist in shorter months.
+
+| Start date | RRULE stored    | 6 months later | Why                                                  |
+| ---------- | --------------- | -------------- | ---------------------------------------------------- |
+| Jun 30     | `BYMONTHDAY=30` | Dec 30         | 30 exists in December — use it                       |
+| Aug 31     | `BYMONTHDAY=-1` | Feb 28 or 29   | 31 doesn't exist in February — fall back to last day |
+| Jan 15     | `BYMONTHDAY=15` | Jul 15         | 15 exists everywhere — straightforward               |
+
+**Edge case — day 30 in February:** A semi-annual task with `BYMONTHDAY=30` that lands in February will be skipped by the rrule library, because February doesn't have a 30th. This is acceptable — "the 30th" genuinely doesn't exist in February, and landing on the 28th when the user explicitly chose the 30th would be more surprising.
+
+### B.2 Feb 29 birthdays: last day of February, not skipped
+
+A yearly task created on **February 29** (a leap day) uses `FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=-1`, which produces:
+
+- **Feb 29** in leap years (2028, 2032, ...)
+- **Feb 28** in non-leap years (2025, 2026, 2027, ...)
+
+This only applies to Feb 29 specifically. All other yearly dates (including Dec 31, Jun 30) use plain `FREQ=YEARLY` because they exist in every year.
+
+The detection is explicit: `date.month() === 1 && date.date() === 29` — not a generic "is last day of month" check. This avoids accidentally triggering last-day semantics for dates like March 31, which the rrule library handles correctly for yearly recurrence since every year has a March 31.
+
+### B.3 Materialization horizon: 2050, not infinity
+
+Yearly and semi-annual series eagerly materialize all occurrences through **December 31, 2050** at creation time. Everything else stays at today + 90 days.
+
+Why 2050 instead of infinity: the `INSERT ... ON CONFLICT DO NOTHING` idempotency guarantee and the finite date range keep row counts bounded and predictable. A yearly task from 2026 produces exactly 25 rows. A semi-annual from 2026-01-15 produces exactly 50.
+
+Why not a longer horizon for all frequencies: a daily task through 2050 would produce ~8,900 rows per series — wasteful for something that only needs 90 days of look-ahead.
+
+The `endsOn` field on the series is authoritative. A yearly series with `endsOn: 2030-12-31` materializes through 2030, not 2050. The horizon is a ceiling, not a mandate.
+
+### B.4 "Every 6 months" is the only semi-annual option
+
+V1.2 adds exactly one new frequency: "Every 6 months." There is no general "every N months" picker, no quarterly option, no "every 2 months."
+
+This is intentional scope control. The semi-annual case is the same underlying concern as yearly — infrequent recurrences that disappear under a 90-day horizon. Quarterly (every 3 months) fits within the 90-day window, so it doesn't need the extended horizon and can stay as a future addition if needed.
+
+The implementation maps `SEMI_ANNUAL` to `FREQ=MONTHLY;INTERVAL=6` in the RRULE. If a general "every N months" is added later, the RRULE representation already works — only the frontend selector and the horizon decision need to change.
+
+### B.5 No birthday-specific behavior
+
+Birthdays are ordinary annual tasks. There is no birthday category, birthday kind, age calculation, advance display ("turning 30 in 3 days"), or greeting functionality.
+
+The task system handles birthdays through the same recurrence mechanics as any other yearly event. A birthday on Feb 29 gets the leap-day treatment (B.2), and a birthday on any other date gets plain `FREQ=YEARLY`.
+
+### B.6 Responsive task rows: information hierarchy on mobile
+
+At narrow viewports (below 600px), task rows hide the **assignee chip** and **status chips** (overdue, skipped, completed, canceled). These are always available by tapping the row to open the detail dialog.
+
+The visible elements on mobile are: category chip, title (wraps to multiple lines), time/modality sub-line, and action buttons (Complete/Undo + overflow menu). This ensures the primary action (completing a task) is always reachable without scrolling.
+
+### B.7 Month browsing is unlimited
+
+The upcoming task list uses a `monthOffset` numeric state (0 = current month, 1 = next month, -1 = previous month) with no bounds. Users can page forward or backward indefinitely through `← Current →` navigation.
+
+The current month view shows tasks from **today through end of month**. Any other month shows the **full month** (1st through last day). This means paging back to the current month always starts from today, not from the 1st — past tasks this month are not shown in the default view.
+
+### B.8 Reconciliation preserves non-planned occurrences
+
+When a series schedule is changed (startsOn or recurrenceRule), the system deletes **only future planned non-exception occurrences** and re-materializes. Completed, skipped, canceled, and manually edited (`is_exception = true`) occurrences are never touched.
+
+This means a user who completed a task 3 months ago won't lose that history when they change the series frequency from weekly to daily. The `deleteFuturePlannedOccurrences` function filters on `status = 'planned' AND is_exception = false AND task_date >= today`.
